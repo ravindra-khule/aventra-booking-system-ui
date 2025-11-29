@@ -5,6 +5,8 @@ import { TourService } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
 import { WaitlistForm } from '../components/WaitlistForm';
 import { ArrowLeft, Check, Calendar, Users, Shield, AlertCircle } from 'lucide-react';
+import { Button, Badge, Card } from '../src/shared/components/ui';
+import { formatCurrency, formatDate } from '../src/shared/utils';
 
 export const TourDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,18 +39,19 @@ export const TourDetails = () => {
       <div className="relative h-[400px]">
         <img src={tour.imageUrl} alt={tour.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <button 
+        <Button 
           onClick={() => navigate(-1)} 
-          className="absolute top-6 left-6 bg-white/20 backdrop-blur-md p-2 rounded-full hover:bg-white/30 text-white transition"
+          variant="ghost"
+          className="absolute top-6 left-6 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white !p-2 rounded-full"
         >
           <ArrowLeft className="h-6 w-6" />
-        </button>
+        </Button>
         <div className="absolute bottom-0 left-0 right-0 p-8 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold mb-2 inline-block">
+              <Badge variant="info" size="md" className="mb-2">
                 {tour.difficulty} {t('home.level')}
-              </span>
+              </Badge>
               <h1 className="text-4xl font-bold text-white">{tour.title}</h1>
               <div className="flex items-center text-gray-200 mt-2 space-x-4">
                 <span className="flex items-center"><Calendar className="h-4 w-4 mr-1"/> {tour.durationDays} {t('home.days')}</span>
@@ -57,7 +60,7 @@ export const TourDetails = () => {
             </div>
             <div className="text-white md:text-right">
               <p className="text-sm opacity-90">{t('tourDetails.startingFrom')}</p>
-              <p className="text-3xl font-bold">{tour.price.toLocaleString()} {tour.currency}</p>
+              <p className="text-3xl font-bold">{formatCurrency(tour.price, tour.currency)}</p>
             </div>
           </div>
         </div>
@@ -102,21 +105,21 @@ export const TourDetails = () => {
 
         {/* Sidebar / Booking Card */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-xl p-6 border border-gray-100 sticky top-24">
+          <Card shadow="xl" className="sticky top-24">
             <h3 className="text-xl font-bold text-gray-900 mb-6">{t('tourDetails.bookCardTitle')}</h3>
             
             <div className="space-y-4 mb-6">
                <div className={`p-4 rounded-lg border ${isFullyBooked ? 'bg-orange-50 border-orange-200' : 'bg-gray-50 border-gray-200'}`}>
                  <p className="text-sm text-gray-500 mb-1">{t('tourDetails.nextDeparture')}</p>
                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-900">{tour.nextDate}</span>
+                    <span className="font-semibold text-gray-900">{formatDate(tour.nextDate)}</span>
                     {isFullyBooked ? (
-                      <span className="text-sm text-orange-600 font-bold uppercase flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1" />
+                      <Badge variant="warning" size="sm" className="uppercase">
+                        <AlertCircle className="h-3 w-3 mr-1" />
                         {t('tourDetails.fullyBooked')}
-                      </span>
+                      </Badge>
                     ) : (
-                      <span className="text-sm text-green-600 font-medium">{tour.availableSpots} {t('home.spotsLeft')}</span>
+                      <Badge variant="success" size="sm">{tour.availableSpots} {t('home.spotsLeft')}</Badge>
                     )}
                  </div>
                </div>
@@ -129,20 +132,26 @@ export const TourDetails = () => {
                     <strong>{t('tourDetails.fullyBookedInfo')}</strong> {t('tourDetails.joinWaitlistInfo')}
                   </p>
                 </div>
-                <button 
+                <Button 
                   onClick={() => setShowWaitlistForm(true)}
-                  className="w-full bg-orange-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-orange-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  className="bg-orange-600 hover:bg-orange-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   {t('tourDetails.joinWaitlist')}
-                </button>
+                </Button>
               </>
             ) : (
-              <button 
+              <Button 
                 onClick={() => navigate(`/book/${tour.id}`)}
-                className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                variant="primary"
+                size="lg"
+                fullWidth
+                className="shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {t('tourDetails.bookNow')}
-              </button>
+              </Button>
             )}
 
             <div className="mt-6 space-y-3">
@@ -155,7 +164,7 @@ export const TourDetails = () => {
                 <span>{t('tourDetails.freeCancel')}</span>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

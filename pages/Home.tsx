@@ -4,6 +4,8 @@ import { TourService } from '../services/api';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '../context/LanguageContext';
 import { MapPin, Calendar, Clock, ArrowRight, Loader2 } from 'lucide-react';
+import { Button, Badge, Card } from '../src/shared/components/ui';
+import { formatCurrency, formatDate } from '../src/shared/utils';
 
 export const Home = () => {
   const { t } = useTranslation();
@@ -48,12 +50,14 @@ export const Home = () => {
             <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto">
               {t('home.heroSubtitle')}
             </p>
-            <button 
+            <Button 
               onClick={scrollToTours}
-              className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition transform hover:scale-105"
+              variant="primary"
+              size="lg"
+              className="rounded-full transform hover:scale-105"
             >
               {t('home.exploreBtn')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -71,18 +75,20 @@ export const Home = () => {
             {tours.map((tour) => {
               const isFullyBooked = tour.availableSpots === 0;
               return (
-              <div key={tour.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 border border-gray-100 flex flex-col">
+              <Card key={tour.id} padding="none" hover clickable className="flex flex-col">
                 <div className="relative h-48">
                   <img src={tour.imageUrl} alt={tour.title} className="w-full h-full object-cover" />
                   {isFullyBooked && (
                     <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                      <span className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase">
+                      <Badge variant="warning" size="lg" className="uppercase">
                         {t('home.fullyBooked')}
-                      </span>
+                      </Badge>
                     </div>
                   )}
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 uppercase tracking-wide">
-                    {tour.difficulty}
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="default" size="sm" className="bg-white/90 backdrop-blur-sm text-gray-800 uppercase tracking-wide">
+                      {tour.difficulty}
+                    </Badge>
                   </div>
                 </div>
                 
@@ -99,7 +105,7 @@ export const Home = () => {
                     </div>
                     <div className="flex items-center text-gray-500 text-sm">
                       <Calendar className="h-4 w-4 mr-2" />
-                      {t('home.next')}: {tour.nextDate}
+                      {t('home.next')}: {formatDate(tour.nextDate)}
                     </div>
                     <div className="flex items-center text-gray-500 text-sm">
                       <Clock className="h-4 w-4 mr-2" />
@@ -109,8 +115,7 @@ export const Home = () => {
 
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">{tour.price.toLocaleString()}</span>
-                      <span className="text-gray-500 text-sm ml-1">{tour.currency}</span>
+                      <span className="text-2xl font-bold text-gray-900">{formatCurrency(tour.price, tour.currency)}</span>
                     </div>
                     <Link 
                       to={`/tour/${tour.id}`} 
@@ -120,7 +125,7 @@ export const Home = () => {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </Card>
               );
             })}
           </div>

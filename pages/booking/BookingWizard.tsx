@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Tour, Traveler, PayerDetails } from '../../types';
 import { TourService, BookingService, PromoCodeService } from '../../services/api';
 import { useTranslation } from '../../context/LanguageContext';
-import { CheckCircle2, ChevronRight, CreditCard, Shield, Info, ArrowLeft, Tag, X, Loader2 } from 'lucide-react';
+import { CheckCircle2, ChevronRight, CreditCard, Shield, Info, ArrowLeft, Tag, X } from 'lucide-react';
+import { Button, Input, Select } from '../../src/shared/components/ui';
+import { formatCurrency } from '../../src/shared/utils';
 
 const EMPTY_PAYER: PayerDetails = {
   firstName: '',
@@ -400,44 +402,81 @@ export const BookingWizard = () => {
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.firstName')} <span className="text-red-500">*</span></label>
-                            <input type="text" value={payer.firstName} onChange={e => handlePayerChange('firstName', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" />
+                        <Input
+                            label={t('booking.payer.firstName')}
+                            type="text"
+                            value={payer.firstName}
+                            onChange={e => handlePayerChange('firstName', e.target.value)}
+                            required
+                            fullWidth
+                        />
+                        <Input
+                            label={t('booking.payer.lastName')}
+                            type="text"
+                            value={payer.lastName}
+                            onChange={e => handlePayerChange('lastName', e.target.value)}
+                            required
+                            fullWidth
+                        />
+                        <div className="md:col-span-2">
+                            <Select
+                                label={t('booking.payer.country')}
+                                value={payer.country}
+                                onChange={e => handlePayerChange('country', e.target.value)}
+                                options={[
+                                    { value: 'Sweden', label: 'Sweden' },
+                                    { value: 'Norway', label: 'Norway' },
+                                    { value: 'Denmark', label: 'Denmark' },
+                                    { value: 'United Kingdom', label: 'United Kingdom' },
+                                    { value: 'USA', label: 'USA' }
+                                ]}
+                                required
+                                fullWidth
+                            />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.lastName')} <span className="text-red-500">*</span></label>
-                            <input type="text" value={payer.lastName} onChange={e => handlePayerChange('lastName', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" />
+                        <div className="md:col-span-2">
+                            <Input
+                                label={t('booking.payer.address')}
+                                type="text"
+                                value={payer.address}
+                                onChange={e => handlePayerChange('address', e.target.value)}
+                                placeholder="Street and number"
+                                required
+                                fullWidth
+                            />
                         </div>
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.country')} <span className="text-red-500">*</span></label>
-                            <select value={payer.country} onChange={e => handlePayerChange('country', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border bg-white">
-                                <option>Sweden</option>
-                                <option>Norway</option>
-                                <option>Denmark</option>
-                                <option>United Kingdom</option>
-                                <option>USA</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.address')} <span className="text-red-500">*</span></label>
-                            <input type="text" value={payer.address} onChange={e => handlePayerChange('address', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" placeholder="Street and number" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.zip')} <span className="text-red-500">*</span></label>
-                            <input type="text" value={payer.zipCode} onChange={e => handlePayerChange('zipCode', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.city')} <span className="text-red-500">*</span></label>
-                            <input type="text" value={payer.city} onChange={e => handlePayerChange('city', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.phone')} <span className="text-red-500">*</span></label>
-                            <input type="tel" value={payer.phone} onChange={e => handlePayerChange('phone', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">{t('booking.payer.email')} <span className="text-red-500">*</span></label>
-                            <input type="email" value={payer.email} onChange={e => handlePayerChange('email', e.target.value)} className="w-full border-gray-300 rounded-md p-3 border" />
-                        </div>
+                        <Input
+                            label={t('booking.payer.zip')}
+                            type="text"
+                            value={payer.zipCode}
+                            onChange={e => handlePayerChange('zipCode', e.target.value)}
+                            required
+                            fullWidth
+                        />
+                        <Input
+                            label={t('booking.payer.city')}
+                            type="text"
+                            value={payer.city}
+                            onChange={e => handlePayerChange('city', e.target.value)}
+                            required
+                            fullWidth
+                        />
+                        <Input
+                            label={t('booking.payer.phone')}
+                            type="tel"
+                            value={payer.phone}
+                            onChange={e => handlePayerChange('phone', e.target.value)}
+                            required
+                            fullWidth
+                        />
+                        <Input
+                            label={t('booking.payer.email')}
+                            type="email"
+                            value={payer.email}
+                            onChange={e => handlePayerChange('email', e.target.value)}
+                            required
+                            fullWidth
+                        />
                     </div>
                 </section>
 
@@ -466,88 +505,84 @@ export const BookingWizard = () => {
                             </div>
 
                             <div className={`grid grid-cols-1 md:grid-cols-2 gap-6`}>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.firstName')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        value={traveler.firstName} 
-                                        onChange={(e) => handleTravelerChange(index, 'firstName', e.target.value)} 
-                                        disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.lastName')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        value={traveler.lastName} 
-                                        onChange={(e) => handleTravelerChange(index, 'lastName', e.target.value)} 
-                                        disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.phone')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="tel" 
-                                        value={traveler.phone} 
-                                        onChange={(e) => handleTravelerChange(index, 'phone', e.target.value)} 
-                                        disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.email')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="email" 
-                                        value={traveler.email} 
-                                        onChange={(e) => handleTravelerChange(index, 'email', e.target.value)} 
-                                        disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
-                                    />
-                                </div>
+                                <Input
+                                    label={t('booking.payer.firstName')}
+                                    type="text"
+                                    value={traveler.firstName}
+                                    onChange={(e) => handleTravelerChange(index, 'firstName', e.target.value)}
+                                    disabled={traveler.isPayer}
+                                    required
+                                    fullWidth
+                                />
+                                <Input
+                                    label={t('booking.payer.lastName')}
+                                    type="text"
+                                    value={traveler.lastName}
+                                    onChange={(e) => handleTravelerChange(index, 'lastName', e.target.value)}
+                                    disabled={traveler.isPayer}
+                                    required
+                                    fullWidth
+                                />
+                                <Input
+                                    label={t('booking.payer.phone')}
+                                    type="tel"
+                                    value={traveler.phone}
+                                    onChange={(e) => handleTravelerChange(index, 'phone', e.target.value)}
+                                    disabled={traveler.isPayer}
+                                    required
+                                    fullWidth
+                                />
+                                <Input
+                                    label={t('booking.payer.email')}
+                                    type="email"
+                                    value={traveler.email}
+                                    onChange={(e) => handleTravelerChange(index, 'email', e.target.value)}
+                                    disabled={traveler.isPayer}
+                                    required
+                                    fullWidth
+                                />
 
-                                <div className="md:col-span-2 space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.address')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
+                                <div className="md:col-span-2">
+                                    <Input
+                                        label={t('booking.payer.address')}
+                                        type="text"
                                         value={traveler.address}
                                         onChange={(e) => handleTravelerChange(index, 'address', e.target.value)}
                                         disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
                                         placeholder="Street Address"
+                                        required
+                                        fullWidth
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.zip')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        value={traveler.zipCode}
-                                        onChange={(e) => handleTravelerChange(index, 'zipCode', e.target.value)}
-                                        disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.payer.city')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
-                                        value={traveler.city}
-                                        onChange={(e) => handleTravelerChange(index, 'city', e.target.value)}
-                                        disabled={traveler.isPayer}
-                                        className="w-full border-gray-300 rounded-md p-3 border disabled:bg-gray-100 disabled:text-gray-500" 
-                                    />
-                                </div>
+                                <Input
+                                    label={t('booking.payer.zip')}
+                                    type="text"
+                                    value={traveler.zipCode}
+                                    onChange={(e) => handleTravelerChange(index, 'zipCode', e.target.value)}
+                                    disabled={traveler.isPayer}
+                                    required
+                                    fullWidth
+                                />
+                                <Input
+                                    label={t('booking.payer.city')}
+                                    type="text"
+                                    value={traveler.city}
+                                    onChange={(e) => handleTravelerChange(index, 'city', e.target.value)}
+                                    disabled={traveler.isPayer}
+                                    required
+                                    fullWidth
+                                />
                                 
-                                <div className="md:col-span-2 space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.traveler.ssn')} <span className="text-red-500">*</span></label>
-                                    <input 
-                                        type="text" 
+                                <div className="md:col-span-2">
+                                    <Input
+                                        label={t('booking.traveler.ssn')}
+                                        type="text"
+                                        value={traveler.ssn}
+                                        onChange={(e) => handleTravelerChange(index, 'ssn', e.target.value)}
                                         placeholder="YYYYMMDD"
-                                        value={traveler.ssn} 
-                                        onChange={(e) => handleTravelerChange(index, 'ssn', e.target.value)} 
-                                        className="w-full border-gray-300 rounded-md p-3 border bg-white" 
+                                        required
+                                        fullWidth
                                     />
                                 </div>
 
@@ -620,20 +655,14 @@ export const BookingWizard = () => {
                               className="flex-1 border border-purple-300 rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                               disabled={isValidatingPromo}
                            />
-                           <button
+                           <Button
                               onClick={handleApplyPromoCode}
                               disabled={isValidatingPromo || !promoCode.trim()}
-                              className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                              loading={isValidatingPromo}
+                              className="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
                            >
-                              {isValidatingPromo ? (
-                                 <>
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Validating...
-                                 </>
-                              ) : (
-                                 'Apply'
-                              )}
-                           </button>
+                              {isValidatingPromo ? 'Validating...' : 'Apply'}
+                           </Button>
                         </div>
                      ) : (
                         <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-4">
@@ -681,12 +710,28 @@ export const BookingWizard = () => {
                      </div>
                      
                      <div className="space-y-4 max-w-md">
-                        <input type="text" placeholder={t('booking.payment.cardNumber')} className="w-full border border-gray-300 rounded p-3" />
+                        <Input
+                            type="text"
+                            placeholder={t('booking.payment.cardNumber')}
+                            fullWidth
+                        />
                         <div className="grid grid-cols-2 gap-4">
-                            <input type="text" placeholder={t('booking.payment.expiry')} className="w-full border border-gray-300 rounded p-3" />
-                            <input type="text" placeholder={t('booking.payment.cvc')} className="w-full border border-gray-300 rounded p-3" />
+                            <Input
+                                type="text"
+                                placeholder={t('booking.payment.expiry')}
+                                fullWidth
+                            />
+                            <Input
+                                type="text"
+                                placeholder={t('booking.payment.cvc')}
+                                fullWidth
+                            />
                         </div>
-                        <input type="text" placeholder={t('booking.payment.holderName')} className="w-full border border-gray-300 rounded p-3" />
+                        <Input
+                            type="text"
+                            placeholder={t('booking.payment.holderName')}
+                            fullWidth
+                        />
                      </div>
                   </div>
                   
@@ -723,8 +768,8 @@ export const BookingWizard = () => {
                         <p className="text-sm text-gray-500 mt-4">{t('booking.confirmation.emailSent')} <span className="text-gray-900 font-medium">{payer.email}</span></p>
                     </div>
                     <div className="flex justify-center space-x-4">
-                        <button onClick={() => navigate('/')} className="text-gray-600 font-medium hover:text-gray-900">{t('booking.confirmation.homeBtn')}</button>
-                        <button onClick={() => navigate('/my-pages')} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">{t('booking.confirmation.myPagesBtn')}</button>
+                        <Button onClick={() => navigate('/')} variant="ghost">{t('booking.confirmation.homeBtn')}</Button>
+                        <Button onClick={() => navigate('/my-pages')} variant="primary">{t('booking.confirmation.myPagesBtn')}</Button>
                     </div>
                 </div>
             )}
@@ -733,20 +778,28 @@ export const BookingWizard = () => {
             {currentStep < 3 && (
                 <div className="mt-8 pt-8 border-t border-gray-100 flex justify-end">
                     {currentStep === 2 ? (
-                        <button 
+                        <Button
                             onClick={handleNext}
                             disabled={isProcessing}
-                            className="w-full md:w-auto bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow-lg flex items-center justify-center"
+                            loading={isProcessing}
+                            variant="primary"
+                            size="lg"
+                            fullWidth
+                            className="md:w-auto shadow-lg"
                         >
-                            {isProcessing ? t('common.processing') : `${t('booking.payment.payBtn')} ${depositTotal.toLocaleString()} ${tour.currency}`}
-                        </button>
+                            {isProcessing ? t('common.processing') : `${t('booking.payment.payBtn')} ${formatCurrency(depositTotal, tour.currency)}`}
+                        </Button>
                     ) : (
-                        <button 
+                        <Button
                             onClick={handleNext}
-                            className="w-full md:w-auto bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow-lg flex items-center justify-center"
+                            variant="primary"
+                            size="lg"
+                            fullWidth
+                            className="md:w-auto shadow-lg"
+                            icon={<ChevronRight className="h-5 w-5" />}
                         >
-                            {t('booking.payment.nextStep')} <ChevronRight className="h-5 w-5 ml-2" />
-                        </button>
+                            {t('booking.payment.nextStep')}
+                        </Button>
                     )}
                 </div>
             )}
