@@ -2,6 +2,8 @@
  * Booking Types - Booking management, travelers, and payments
  */
 
+import { SelectedAddOn } from '../../tours/types/tour.types';
+
 // Booking status enum
 export enum BookingStatus {
   PENDING = 'PENDING',
@@ -67,6 +69,7 @@ export interface Booking {
   tourImageUrl?: string;
   promoCode?: string; // Applied promo code
   discountAmount?: number; // Discount applied
+  selectedAddOns?: SelectedAddOn[]; // Tour add-ons selected
 }
 
 // Waitlist interface
