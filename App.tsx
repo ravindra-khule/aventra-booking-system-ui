@@ -6,8 +6,12 @@ import { TourDetails } from './pages/TourDetails';
 import { BookingWizard } from './pages/booking/BookingWizard';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { BookingManager } from './pages/admin/BookingManager';
+import { CustomerManager } from './pages/admin/CustomerManager';
+import { WaitlistManager } from './pages/admin/WaitlistManager';
+import { PromoCodeManager } from './pages/admin/PromoCodeManager';
+import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { LanguageProvider, useTranslation } from './context/LanguageContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { UserRole } from './types';
 
 // Protected Route Wrapper
@@ -25,21 +29,6 @@ const ProtectedRoute = ({ children, requiredRole }: { children?: React.ReactNode
   }
   
   return <>{children}</>;
-};
-
-// Component wrapper for My Pages to use hook
-const MyPages = () => {
-    const { t } = useTranslation();
-    return (
-        <div className="p-8 text-center">
-            <h1 className="text-2xl font-bold">{t('myPages.title')}</h1>
-            <p className="text-gray-600 mt-2">{t('myPages.welcome')}</p>
-            <div className="mt-8 bg-white p-6 rounded shadow max-w-2xl mx-auto">
-                <h2 className="text-lg font-bold mb-4">{t('myPages.upcoming')}</h2>
-                <p className="text-gray-400">{t('myPages.noTrips')}</p>
-            </div>
-        </div>
-    );
 };
 
 const AppRoutes = () => {
@@ -63,6 +52,21 @@ const AppRoutes = () => {
                 <Route path="/admin/bookings" element={
                     <ProtectedRoute requiredRole={UserRole.ADMIN}>
                         <BookingManager />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/customers" element={
+                    <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                        <CustomerManager />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/waitlist" element={
+                    <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                        <WaitlistManager />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/promocodes" element={
+                    <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                        <PromoCodeManager />
                     </ProtectedRoute>
                 } />
 

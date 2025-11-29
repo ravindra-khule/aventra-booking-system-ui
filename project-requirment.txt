@@ -1,0 +1,212 @@
+1. Overview
+The system will streamline booking operations, enhance customer engagement, and improve administrative efficiency through automation, secure payments, and integrated accounting. It integrates with Fortnox for accounting and Stripe for payments, while ensuring GDPR and PCI DSS compliance.
+
+2. Objectives
+Develop a unified platform for bookings, payments, and customer management.
+
+
+Automate tour availability, payment reminders, and customer follow-ups.
+
+
+Enable real-time Fortnox sync (including VMB VAT calculations) and Stripe payments.
+
+
+Provide a mobile-responsive, multilingual interface (Swedish/English).
+
+
+Implement a self-service customer portal and advanced analytics.
+
+
+
+3. System Architecture
+3.1 Frontend
+Website (swett.se):
+
+
+WordPress-based tour listings with dynamic pricing, images, and itineraries.
+
+
+Mobile-responsive design with multilingual support (Swedish/English).
+
+
+Customer Portal ("My Pages"):
+
+
+Self-service portal for customers to view bookings, manage add-ons, and access trip preparation pages.
+
+
+3.2 Backend
+Booking System & CRM (booking.swett.se):
+
+
+Custom backend with role-based access control (Admin, Support Agent, Accountant).
+
+
+API-first design for integrations (Fortnox, Stripe, Twilio/SendGrid).
+
+
+3.3 Database
+PostgreSQL/MySQL: Scalable database for bookings, customers, and transactions.
+
+
+3.4 Integrations
+Payment Gateway: Stripe (credit/debit cards, refunds, PCI DSS-compliant).
+
+
+Accounting: Fortnox (invoice sync, refunds, VMB VAT calculations).
+
+
+Email/SMS: Twilio/SendGrid (automated notifications, tracking).
+
+
+Hosting: Hostinger with automated backups and disaster recovery.
+
+
+
+4. User Flow
+4.1 Customer Journey
+Browse tours on swett.se (filter by date, price, duration).
+
+
+Select tour → Click "Book Now" → Redirect to booking.swett.se.
+
+
+Enter traveler details, apply promo codes, and select add-ons (e.g., extra nights).
+
+
+Complete payment via Stripe (full/partial).
+
+
+Receive confirmation email/SMS with tickets and cancellation policy.
+
+
+Create account to modify bookings or view history via the Customer Portal.
+
+
+4.2 Admin Journey
+Log in to the admin panel
+
+
+Manage bookings (approve/cancel/modify), track payments, and issue refunds.
+
+
+Generate invoices in Fortnox (automated VAT calculations).
+
+
+Monitor customer interactions via CRM dashboard and export reports (CSV/PDF).
+
+
+
+5. Features & Functionalities
+5.1 Booking System
+Tour Management:
+
+
+Real-time availability calendar with waitlist functionality.
+
+
+Add-ons/extra nights booking
+
+
+Checkout Process:
+
+
+Guest checkout or user accounts.
+
+
+Partial payments, promo codes, and GDPR-compliant data collection.
+
+
+Post-Booking:
+
+
+cancellation portal.
+
+
+5.2 CRM Features
+Customer Profiles:
+
+
+Travel history, booking details, communication logs.
+
+
+Admins and customers can update personal information.
+
+
+Automation:
+
+
+Automated emails triggered by departure dates, destinations, or custom parameters.
+
+
+Pre-tour checklists, post-tour feedback surveys, abandoned cart recovery.
+
+
+Email Templates:
+
+
+Editable templates with variables (e.g., {{customer_name}}, {{departure_date}}).
+
+
+Schedule emails 
+
+
+5.3 Customer Portal ("My Pages")
+View bookings, download tickets, and manage add-ons.
+
+
+Access preparation pages for trips (e.g., packing lists, itineraries).
+
+
+5.4 Reporting & Analytics
+Real-Time Dashboards: Revenue, occupancy rates, customer demographics.
+
+
+Export Data: Passenger lists in CSV, Excel, PDF (Google Sheets-compatible).
+
+
+
+6. Technical Requirements
+Security:
+
+
+SSL encryption, GDPR compliance (data deletion, consent management).
+
+
+PCI DSS compliance via Stripe integration.
+
+
+APIs: RESTful APIs for Fortnox, Stripe, and SendGrid.
+
+
+Email Service Provider: SendGrid/Mailgun for reliable email automation.
+
+
+
+7. Fortnox Integration
+Automated daily sync of bookings, payments, and refunds.
+
+
+VMB VAT calculations to eliminate manual work.
+
+
+Error logging and manual override for failed transactions.
+
+
+
+8. Payment Integration (Stripe)
+Credit/debit card payments with audit trails for refunds.
+
+
+Failed payment retry logic.
+
+
+
+9. Admin Panel
+Roles & Permissions: Admin, Support Agent, Accountant.
+
+
+Audit Logs: Track user actions for compliance.
+
+
+Content Management: Update FAQs, policies, and tour details.

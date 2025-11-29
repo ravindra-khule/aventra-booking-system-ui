@@ -68,10 +68,19 @@ export const Home = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tours.map((tour) => (
+            {tours.map((tour) => {
+              const isFullyBooked = tour.availableSpots === 0;
+              return (
               <div key={tour.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 border border-gray-100 flex flex-col">
                 <div className="relative h-48">
                   <img src={tour.imageUrl} alt={tour.title} className="w-full h-full object-cover" />
+                  {isFullyBooked && (
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                      <span className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase">
+                        {t('home.fullyBooked')}
+                      </span>
+                    </div>
+                  )}
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 uppercase tracking-wide">
                     {tour.difficulty}
                   </div>
@@ -112,7 +121,8 @@ export const Home = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

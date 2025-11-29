@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tour, Traveler, PayerDetails } from '../../types';
-import { TourService, BookingService } from '../../services/api';
+import { TourService, BookingService, PromoCodeService } from '../../services/api';
 import { useTranslation } from '../../context/LanguageContext';
-import { CheckCircle2, ChevronRight, CreditCard, Shield, Info, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, ChevronRight, CreditCard, Shield, Info, ArrowLeft, Tag, X, Loader2 } from 'lucide-react';
 
 const EMPTY_PAYER: PayerDetails = {
   firstName: '',
@@ -44,6 +44,14 @@ export const BookingWizard = () => {
   const [participants, setParticipants] = useState(1);
   const [payer, setPayer] = useState<PayerDetails>(EMPTY_PAYER);
   const [travelers, setTravelers] = useState<Traveler[]>([]);
+  
+  // Promo Code State
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromoCode, setAppliedPromoCode] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [promoMessage, setPromoMessage] = useState('');
+  const [promoError, setPromoError] = useState('');
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
   
   const steps = [
     t('booking.steps.overview'), 
@@ -136,23 +144,89 @@ export const BookingWizard = () => {
     setTravelers(updatedTravelers);
   };
 
+  // Promo Code Handlers
+  const handleApplyPromoCode = async () => {
+    if (!promoCode.trim()) {
+      setPromoError('Please enter a promo code');
+      return;
+    }
+
+    setIsValidatingPromo(true);
+    setPromoError('');
+    setPromoMessage('');
+
+    try {
+      const totalAmount = (tour?.price || 0) * participants;
+      const validation = await PromoCodeService.validatePromoCode(
+        promoCode.trim(),
+        tour?.id || '',
+        totalAmount
+      );
+
+      if (validation.isValid) {
+        setAppliedPromoCode(promoCode.trim().toUpperCase());
+        setDiscountAmount(validation.discountAmount || 0);
+        setPromoMessage(validation.message);
+        setPromoError('');
+      } else {
+        setPromoError(validation.message);
+        setAppliedPromoCode('');
+        setDiscountAmount(0);
+      }
+    } catch (error) {
+      setPromoError('Failed to validate promo code');
+      console.error('Promo code validation error:', error);
+    } finally {
+      setIsValidatingPromo(false);
+    }
+  };
+
+  const handleRemovePromoCode = () => {
+    setPromoCode('');
+    setAppliedPromoCode('');
+    setDiscountAmount(0);
+    setPromoMessage('');
+    setPromoError('');
+  };
+
   const handleNext = async () => {
     if (currentStep === 2) {
       // Payment & Submit
       setIsProcessing(true);
       try {
-        const depositTotal = (tour?.depositPrice || 0) * participants;
-        await BookingService.create({
+        const baseTotal = (tour?.price || 0) * participants;
+        const finalTotal = baseTotal - discountAmount;
+        const depositTotal = Math.round((tour?.depositPrice || 0) * participants * (finalTotal / baseTotal));
+        
+        const newBooking = await BookingService.create({
             tourId: tour?.id,
             tourTitle: tour?.title,
             participants: participants,
             payer: payer,
             travelers: travelers,
-            totalAmount: (tour?.price || 0) * participants,
+            totalAmount: finalTotal,
             paidAmount: depositTotal, // Initial payment
             tripDate: date,
             tourImageUrl: tour?.imageUrl,
+            promoCode: appliedPromoCode || undefined,
+            discountAmount: discountAmount || undefined,
         });
+        
+        // Increment promo code usage
+        if (appliedPromoCode) {
+          await PromoCodeService.incrementUsage(appliedPromoCode);
+        }
+        
+        // Save booking to localStorage
+        try {
+          const existingBookings = localStorage.getItem('userBookings');
+          const bookings = existingBookings ? JSON.parse(existingBookings) : [];
+          bookings.push(newBooking);
+          localStorage.setItem('userBookings', JSON.stringify(bookings));
+        } catch (storageError) {
+          console.error('Failed to save booking to localStorage', storageError);
+        }
+        
         setCurrentStep(3); 
       } catch (e) {
         alert('Booking failed. Please try again.');
@@ -167,9 +241,10 @@ export const BookingWizard = () => {
 
   if (!tour) return <div className="min-h-screen flex justify-center items-center">{t('common.loading')}</div>;
 
-  const totalAmount = (tour.price * participants);
-  const depositTotal = (tour.depositPrice * participants);
-  const remainingAmount = totalAmount - depositTotal;
+  const baseAmount = (tour.price * participants);
+  const finalAmount = baseAmount - discountAmount;
+  const depositTotal = Math.round((tour.depositPrice * participants) * (finalAmount / baseAmount));
+  const remainingAmount = finalAmount - depositTotal;
 
   // Reusable Order Summary Component
   const OrderSummary = () => (
@@ -194,9 +269,26 @@ export const BookingWizard = () => {
       <div className="border-t border-orange-200 py-4 space-y-2">
         <div className="flex justify-between text-sm">
            <span className="text-gray-600">{t('booking.summary.totalPrice')}</span>
-           <span className="text-gray-900">{totalAmount.toLocaleString()} {tour.currency}</span>
+           <span className="text-gray-900">{baseAmount.toLocaleString()} {tour.currency}</span>
         </div>
-        <div className="flex justify-between text-sm font-semibold text-gray-900">
+        
+        {/* Show discount if applied */}
+        {discountAmount > 0 && (
+          <>
+            <div className="flex justify-between text-sm text-green-600 font-medium">
+               <span className="flex items-center gap-1">
+                 <Tag className="h-3 w-3" /> Discount ({appliedPromoCode})
+               </span>
+               <span>-{discountAmount.toLocaleString()} {tour.currency}</span>
+            </div>
+            <div className="flex justify-between text-sm font-bold text-blue-600">
+               <span>Discounted Total</span>
+               <span>{finalAmount.toLocaleString()} {tour.currency}</span>
+            </div>
+          </>
+        )}
+        
+        <div className="flex justify-between text-sm font-semibold text-gray-900 pt-2 border-t border-orange-200">
            <span>{t('booking.payment.payNow')}</span>
            <span>{depositTotal.toLocaleString()} {tour.currency}</span>
         </div>
@@ -508,6 +600,73 @@ export const BookingWizard = () => {
                             <span className="text-xs text-gray-500 mt-1">{t('booking.payment.dueLater')}</span>
                         </div>
                      </div>
+                  </div>
+
+                  {/* Promo Code Section */}
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6 mb-6">
+                     <div className="flex items-center gap-2 mb-4">
+                        <Tag className="h-5 w-5 text-purple-600" />
+                        <h3 className="text-lg font-bold text-gray-900">Have a Promo Code?</h3>
+                     </div>
+                     
+                     {!appliedPromoCode ? (
+                        <div className="flex gap-3">
+                           <input 
+                              type="text" 
+                              placeholder="Enter promo code"
+                              value={promoCode}
+                              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                              onKeyPress={(e) => e.key === 'Enter' && handleApplyPromoCode()}
+                              className="flex-1 border border-purple-300 rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              disabled={isValidatingPromo}
+                           />
+                           <button
+                              onClick={handleApplyPromoCode}
+                              disabled={isValidatingPromo || !promoCode.trim()}
+                              className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                           >
+                              {isValidatingPromo ? (
+                                 <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Validating...
+                                 </>
+                              ) : (
+                                 'Apply'
+                              )}
+                           </button>
+                        </div>
+                     ) : (
+                        <div className="flex items-center justify-between bg-green-100 border border-green-300 rounded-lg p-4">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                 <CheckCircle2 className="h-6 w-6 text-white" />
+                              </div>
+                              <div>
+                                 <p className="font-bold text-green-900">{appliedPromoCode}</p>
+                                 <p className="text-sm text-green-700">You saved {discountAmount.toLocaleString()} {tour.currency}!</p>
+                              </div>
+                           </div>
+                           <button
+                              onClick={handleRemovePromoCode}
+                              className="p-2 hover:bg-green-200 rounded-full transition"
+                              title="Remove promo code"
+                           >
+                              <X className="h-5 w-5 text-green-700" />
+                           </button>
+                        </div>
+                     )}
+                     
+                     {/* Messages */}
+                     {promoMessage && !appliedPromoCode && (
+                        <p className="mt-3 text-sm text-green-600 flex items-center gap-2">
+                           <CheckCircle2 className="h-4 w-4" /> {promoMessage}
+                        </p>
+                     )}
+                     {promoError && (
+                        <p className="mt-3 text-sm text-red-600 flex items-center gap-2">
+                           <X className="h-4 w-4" /> {promoError}
+                        </p>
+                     )}
                   </div>
 
                   <div className="bg-white border border-gray-300 rounded-xl p-6 mb-6">

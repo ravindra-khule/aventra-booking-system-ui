@@ -194,6 +194,31 @@ export const BookingManager = () => {
                                     <CreditCard className="h-4 w-4 mr-2" /> Financials
                                 </h3>
                                 <div className="space-y-2 text-sm">
+                                    {/* Show promo code discount if applied */}
+                                    {formData.promoCode && formData.discountAmount && (
+                                        <>
+                                            <div className="flex justify-between text-purple-600 bg-purple-50 -mx-4 px-4 py-2 rounded">
+                                                <span className="flex items-center gap-1 font-medium">
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                    </svg>
+                                                    Promo Code Applied
+                                                </span>
+                                            </div>
+                                            <div className="bg-purple-50 -mx-4 px-4 pb-3 space-y-1">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600 text-xs">Code:</span>
+                                                    <span className="font-mono font-bold text-purple-700 text-sm">{formData.promoCode}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600 text-xs">Discount:</span>
+                                                    <span className="font-bold text-purple-700">-{formData.discountAmount.toLocaleString()} SEK</span>
+                                                </div>
+                                            </div>
+                                            <div className="border-t border-gray-200 pt-2"></div>
+                                        </>
+                                    )}
+                                    
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Total Amount</span>
                                         <span className="font-medium">{formData.totalAmount.toLocaleString()} SEK</span>
@@ -384,8 +409,21 @@ export const BookingManager = () => {
                     <div className="text-sm text-gray-500">{booking.payer.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{booking.tourTitle}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm text-gray-900">{booking.tourTitle}</div>
+                      {booking.promoCode && (
+                        <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                          <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                          </svg>
+                          {booking.promoCode}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-gray-500">{booking.tripDate}</div>
+                    {booking.discountAmount && (
+                      <div className="text-xs text-purple-600 font-medium">Saved: {booking.discountAmount.toLocaleString()} SEK</div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(booking.status)}`}>

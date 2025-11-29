@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Tour } from '../types';
 import { TourService } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
-import { ArrowLeft, Check, Calendar, Users, Shield } from 'lucide-react';
+import { WaitlistForm } from '../components/WaitlistForm';
+import { ArrowLeft, Check, Calendar, Users, Shield, AlertCircle } from 'lucide-react';
 
 export const TourDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +12,7 @@ export const TourDetails = () => {
   const { t } = useTranslation();
   const [tour, setTour] = useState<Tour | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [showWaitlistForm, setShowWaitlistForm] = useState(false);
 
   useEffect(() => {
     const fetchTour = async () => {
@@ -26,8 +28,11 @@ export const TourDetails = () => {
   if (loading) return <div className="min-h-screen flex items-center justify-center">{t('common.loading')}</div>;
   if (!tour) return <div className="min-h-screen flex items-center justify-center">Tour not found</div>;
 
+  const isFullyBooked = tour.availableSpots === 0;
+
   return (
     <div className="bg-white min-h-screen">
+      {showWaitlistForm && <WaitlistForm tour={tour} onClose={() => setShowWaitlistForm(false)} />}
       {/* Hero Image */}
       <div className="relative h-[400px]">
         <img src={tour.imageUrl} alt={tour.title} className="w-full h-full object-cover" />
@@ -101,21 +106,44 @@ export const TourDetails = () => {
             <h3 className="text-xl font-bold text-gray-900 mb-6">{t('tourDetails.bookCardTitle')}</h3>
             
             <div className="space-y-4 mb-6">
-               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+               <div className={`p-4 rounded-lg border ${isFullyBooked ? 'bg-orange-50 border-orange-200' : 'bg-gray-50 border-gray-200'}`}>
                  <p className="text-sm text-gray-500 mb-1">{t('tourDetails.nextDeparture')}</p>
                  <div className="flex justify-between items-center">
                     <span className="font-semibold text-gray-900">{tour.nextDate}</span>
-                    <span className="text-sm text-green-600 font-medium">{tour.availableSpots} {t('home.spotsLeft')}</span>
+                    {isFullyBooked ? (
+                      <span className="text-sm text-orange-600 font-bold uppercase flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {t('tourDetails.fullyBooked')}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-green-600 font-medium">{tour.availableSpots} {t('home.spotsLeft')}</span>
+                    )}
                  </div>
                </div>
             </div>
 
-            <button 
-              onClick={() => navigate(`/book/${tour.id}`)}
-              className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              {t('tourDetails.bookNow')}
-            </button>
+            {isFullyBooked ? (
+              <>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-orange-800">
+                    <strong>{t('tourDetails.fullyBookedInfo')}</strong> {t('tourDetails.joinWaitlistInfo')}
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setShowWaitlistForm(true)}
+                  className="w-full bg-orange-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-orange-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  {t('tourDetails.joinWaitlist')}
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => navigate(`/book/${tour.id}`)}
+                className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                {t('tourDetails.bookNow')}
+              </button>
+            )}
 
             <div className="mt-6 space-y-3">
               <div className="flex items-center text-sm text-gray-500">
