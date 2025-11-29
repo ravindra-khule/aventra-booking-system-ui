@@ -392,7 +392,7 @@ export const BookingWizard = () => {
 
       <div className="mt-6 pt-4 border-t border-green-200">
         <Button 
-          onClick={() => navigate('/my-pages')} 
+          onClick={() => navigate('/my-bookings')} 
           variant="primary" 
           fullWidth
           className="mb-2"
@@ -1335,8 +1335,8 @@ export const BookingWizard = () => {
                             <CreditCard className="h-4 w-4" />
                             Print Confirmation
                         </Button>
-                        <Button 
-                            onClick={() => navigate('/my-pages')} 
+            <Button 
+              onClick={() => navigate('/my-bookings')} 
                             variant="primary"
                             className="flex items-center gap-2"
                         >

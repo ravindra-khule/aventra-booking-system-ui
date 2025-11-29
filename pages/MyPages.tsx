@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { useTranslation } from '../context/LanguageContext';
 import { Booking, BookingStatus, PaymentStatus } from '../types';
-import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon } from 'lucide-react';
+import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download } from 'lucide-react';
 
 export const MyPages = () => {
   const { t } = useTranslation();
@@ -28,6 +30,32 @@ export const MyPages = () => {
 
     loadBookings();
   }, []);
+
+  const downloadBookingPDF = async (bookingId: string | number) => {
+    const el = document.getElementById(`booking-${bookingId}`);
+    if (!el) {
+      alert('Could not find booking to export');
+      return;
+    }
+
+    try {
+      // Render element to canvas
+      const canvas = await html2canvas(el, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+
+      // Create PDF and add image
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`booking-${bookingId}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+      alert('Failed to generate PDF');
+    }
+  };
 
   const getStatusColor = (status: BookingStatus) => {
     switch(status) {
@@ -89,7 +117,7 @@ export const MyPages = () => {
               const remainingAmount = booking.totalAmount - booking.paidAmount;
               
               return (
-                <div key={booking.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
+                <div id={`booking-${booking.id}`} key={booking.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
                   {/* Header with Image */}
                   <div className="relative h-48 bg-gradient-to-br from-blue-400 to-blue-600">
                     {booking.tourImageUrl ? (
@@ -103,7 +131,7 @@ export const MyPages = () => {
                         <MapPin className="h-16 w-16 text-white opacity-50" />
                       </div>
                     )}
-                    <div className="absolute top-4 right-4 flex gap-2">
+                    <div className="absolute top-4 right-4 flex gap-2 items-center">
                       <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(booking.status)}`}>
                         {booking.status}
                       </span>
@@ -115,6 +143,14 @@ export const MyPages = () => {
                           {booking.promoCode}
                         </span>
                       )}
+                      {/* Download PDF button */}
+                      <button
+                        title="Download confirmation PDF"
+                        onClick={() => downloadBookingPDF(booking.id)}
+                        className="inline-flex items-center justify-center p-2 rounded-full bg-white/80 text-blue-600 hover:bg-white text-sm shadow"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
 

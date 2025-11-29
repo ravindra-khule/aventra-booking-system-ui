@@ -58,7 +58,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Layout><Home /></Layout>} />
             <Route path="/tour/:id" element={<Layout><TourDetails /></Layout>} />
             <Route path="/book/:tourId" element={<Layout><BookingWizard /></Layout>} />
-            <Route path="/my-pages" element={<Layout><MyPages /></Layout>} />
+            <Route path="/my-bookings" element={<Layout><MyPages /></Layout>} />
 
             {/* Admin Routes with AdminLayout */}
             <Route path="/admin" element={

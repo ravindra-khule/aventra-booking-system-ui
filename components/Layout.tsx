@@ -40,7 +40,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                   {t('nav.tours')}
                 </Link>
                 {user?.role === UserRole.CUSTOMER && (
-                   <Link to="/my-pages" className="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-600 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                   <Link to="/my-bookings" className="border-transparent text-gray-500 hover:border-blue-500 hover:text-blue-600 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                      {t('nav.myPages')}
                    </Link>
                 )}
@@ -101,7 +101,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                 {t('nav.tours')}
               </Link>
               {user?.role === UserRole.CUSTOMER && (
-                <Link to="/my-pages" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <Link to="/my-bookings" className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                   {t('nav.myPages')}
                 </Link>
               )}
