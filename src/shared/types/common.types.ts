@@ -12,6 +12,14 @@ export enum UserRole {
   ACCOUNTANT = 'ACCOUNTANT'
 }
 
+// User status
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  PENDING = 'PENDING'
+}
+
 // User interface
 export interface User {
   id: string;
@@ -19,6 +27,35 @@ export interface User {
   email: string;
   role: UserRole;
   phone?: string;
+  status: UserStatus;
+  avatar?: string;
+  createdAt: Date;
+  lastLogin?: Date;
+  twoFactorEnabled: boolean;
+  createdBy?: string;
+  notes?: string;
+}
+
+// User activity log
+export interface UserActivity {
+  id: string;
+  userId: string;
+  action: string;
+  description: string;
+  timestamp: Date;
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+// User invitation
+export interface UserInvitation {
+  id: string;
+  email: string;
+  role: UserRole;
+  invitedBy: string;
+  invitedAt: Date;
+  expiresAt: Date;
+  status: 'PENDING' | 'ACCEPTED' | 'EXPIRED';
 }
 
 // Dashboard statistics interface

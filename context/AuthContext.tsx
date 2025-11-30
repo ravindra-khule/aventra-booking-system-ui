@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { User, UserRole } from '../types';
+import { User, UserRole, UserStatus } from '../types';
 import { AuthService } from '../services/api';
 
 interface AuthContextType {
@@ -18,7 +18,15 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const login = async (email: string, role: UserRole) => {
     try {
       const userData = await AuthService.login(email, role);
-      setUser(userData);
+      // Ensure the user has all required fields for the new User type
+      const fullUserData: User = {
+        ...userData,
+        status: UserStatus.ACTIVE,
+        createdAt: new Date(),
+        lastLogin: new Date(),
+        twoFactorEnabled: false
+      };
+      setUser(fullUserData);
     } catch (error) {
       console.error("Login failed", error);
     }

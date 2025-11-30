@@ -174,16 +174,19 @@ export const TourAddons: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading add-ons...</div>
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Loading add-ons...</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Tour Add-ons</h1>
           <p className="text-gray-600 mt-1">Manage optional extras and upgrades for tour bookings</p>
@@ -538,6 +541,7 @@ export const TourAddons: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

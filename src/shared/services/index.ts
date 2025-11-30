@@ -19,6 +19,7 @@ export { CustomerService } from '../../features/customers/services/customer.serv
 export { PromoCodeService } from '../../features/marketing/services/promo.service';
 export { emailTemplateService } from '../../features/marketing/services/email.service';
 export { AuthService } from './auth.service';
+export { UserService } from './user.service';
 
 // Re-export types for convenience
 export * from '../types';
