@@ -32,6 +32,7 @@ import { SystemLogs } from './pages/admin/settings/SystemLogs';
 import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { ToastProvider } from './src/shared/context/ToastContext';
 import { UserRole } from './types';
 
 // Protected Route Wrapper
@@ -209,9 +210,11 @@ function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <Router>
-            <AppRoutes />
-        </Router>
+        <ToastProvider>
+          <Router>
+              <AppRoutes />
+          </Router>
+        </ToastProvider>
       </LanguageProvider>
     </AuthProvider>
   );

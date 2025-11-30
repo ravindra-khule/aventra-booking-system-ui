@@ -2,20 +2,149 @@
  * Tour Types - Tour management and display
  */
 
-export interface Tour {
-  id: string;
+// Tour Status
+export enum TourStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED'
+}
+
+// Tour Difficulty
+export enum TourDifficulty {
+  EASY = 'Easy',
+  MEDIUM = 'Medium',
+  HARD = 'Hard',
+  EXTREME = 'Extreme'
+}
+
+// Multi-language content
+export interface TourTranslation {
+  language: 'en' | 'sv';
+  title: string;
+  shortDescription: string;
+  description: string;
+  highlights: string[];
+  itinerary: ItineraryDay[];
+  includedItems: string[];
+  excludedItems: string[];
+  requirements: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+}
+
+// Itinerary Day
+export interface ItineraryDay {
+  day: number;
   title: string;
   description: string;
+  activities: string[];
+  accommodation?: string;
+  meals?: string[];
+  distance?: string;
+  elevation?: string;
+}
+
+// Tour Category
+export interface TourCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  color?: string;
+}
+
+// Tour Tag
+export interface TourTag {
+  id: string;
+  name: string;
+  slug: string;
+  color?: string;
+}
+
+// Tour Image
+export interface TourImage {
+  id: string;
+  url: string;
+  alt: string;
+  caption?: string;
+  isPrimary: boolean;
+  order: number;
+}
+
+// Main Tour Interface
+export interface Tour {
+  id: string;
+  
+  // Basic Info
+  title: string;
+  slug: string;
   shortDescription: string;
+  description: string;
+  status: TourStatus;
+  
+  // Pricing
   price: number;
-  depositPrice: number; // Added for partial payments
+  depositPrice: number;
   currency: string;
+  
+  // Trip Details
   durationDays: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard' | 'Extreme';
-  imageUrl: string;
+  difficulty: TourDifficulty;
   location: string;
-  nextDate: string;
+  country: string;
+  region?: string;
+  
+  // Capacity & Availability
+  maxCapacity: number;
+  minCapacity: number;
   availableSpots: number;
+  nextDate: string;
+  
+  // Media
+  imageUrl: string; // Primary image
+  images: TourImage[];
+  videoUrl?: string;
+  galleryImages?: string[];
+  
+  // Categorization
+  categories: string[]; // Category IDs
+  tags: string[]; // Tag IDs
+  
+  // Content
+  highlights: string[];
+  itinerary: ItineraryDay[];
+  includedItems: string[];
+  excludedItems: string[];
+  requirements: string[];
+  
+  // Multi-language
+  translations: TourTranslation[];
+  defaultLanguage: 'en' | 'sv';
+  
+  // SEO
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+  
+  // Settings
+  isFeatured: boolean;
+  allowWaitlist: boolean;
+  autoConfirm: boolean;
+  requireApproval: boolean;
+  
+  // Metadata
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
+  
+  // Statistics (read-only)
+  totalBookings?: number;
+  revenue?: number;
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 /**

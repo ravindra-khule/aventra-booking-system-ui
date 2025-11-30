@@ -17,6 +17,7 @@ export { AddOnService } from '../../features/tours/services/addon.service';
 export { BookingService, WaitlistService } from '../../features/bookings/services/booking.service';
 export { CustomerService } from '../../features/customers/services/customer.service';
 export { PromoCodeService } from '../../features/marketing/services/promo.service';
+export { emailTemplateService } from '../../features/marketing/services/email.service';
 export { AuthService } from './auth.service';
 
 // Re-export types for convenience

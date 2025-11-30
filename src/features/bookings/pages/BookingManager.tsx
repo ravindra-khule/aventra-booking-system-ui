@@ -4,8 +4,10 @@ import { BookingService } from '../services/booking.service';
 import { Search, Filter, MoreHorizontal, Download, Eye, X, CreditCard, User, Users, Calendar, Edit2, Save, Trash } from 'lucide-react';
 import { Button, Badge, Input, Select } from '../../../shared/components/ui';
 import { formatCurrency, formatDate } from '../../../shared/utils';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export const BookingManager = () => {
+  const toast = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState('');
@@ -57,9 +59,10 @@ export const BookingManager = () => {
      // Persist
      try {
        await BookingService.update(updatedBooking.id, updatedBooking);
+       toast.success('Booking updated successfully!');
      } catch (e) {
        console.error("Failed to update booking", e);
-       alert("Failed to save changes");
+       toast.error('Failed to save changes. Please try again.');
      }
   };
 

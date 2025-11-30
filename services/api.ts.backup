@@ -38,7 +38,7 @@ const MOCK_TOURS: Tour[] = [
     currency: 'SEK',
     durationDays: 10,
     difficulty: 'Extreme',
-    imageUrl: 'https://images.unsplash.com/photo-1650635462886-069f20e98033?q=80&w=1000&auto=format&fit=crop', // Kilimanjaro
+    imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1000&auto=format&fit=cropcrop', // Kilimanjaro
     location: 'Tanzania',
     nextDate: '2026-01-24',
     availableSpots: 4
