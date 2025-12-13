@@ -1,0 +1,231 @@
+/* Availability Overview Styling */
+
+.availabilityContainer {
+  padding: var(--component-padding-md);
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.header {
+  margin-bottom: var(--spacing-md);
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: var(--spacing-sm);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.card {
+  padding: var(--spacing-sm);
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  min-height: 80px;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  border-color: #d1d5db;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.cardLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: var(--spacing-xs);
+  display: block;
+  line-height: 1.3;
+}
+
+.cardValue {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: var(--spacing-xs);
+}
+
+.cardIcon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  opacity: 0.4;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 16px 0 12px 0;
+}
+
+.detailedList {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.noData {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+  padding: 20px;
+}
+
+.availabilityItem {
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  border-left: 4px solid #e5e7eb;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tourName {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.occupancyBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.itemDetails {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+
+@media (max-width: 1024px) {
+  .summaryCards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .card {
+    min-height: 90px;
+    padding: 14px;
+  }
+
+  .cardValue {
+    font-size: 28px;
+  }
+
+  .cardLabel {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .summaryCards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    min-height: 85px;
+    padding: 12px;
+  }
+
+  .cardValue {
+    font-size: 26px;
+  }
+
+  .cardLabel {
+    font-size: 10px;
+    letter-spacing: 0.6px;
+  }
+
+  .availabilityContainer {
+    padding: 12px;
+  }
+
+  .detailedList {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .summaryCards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    min-height: 100px;
+    padding: 14px;
+  }
+
+  .cardValue {
+    font-size: 28px;
+  }
+
+  .availabilityContainer {
+    padding: 10px;
+  }
+}

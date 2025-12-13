@@ -1,22 +1,11 @@
-import React from 'react';
-import { ComingSoon } from '../../../components/ComingSoon';
+/**
+ * ⚠️ DEPRECATED: This file is now a compatibility layer
+ * 
+ * CommunicationLogs has been moved to the customers feature folder.
+ * This file re-exports from the new location for backward compatibility.
+ * 
+ * New import path:
+ * import { CommunicationLogs } from '../../../src/features/customers/pages';
+ */
 
-export const CommunicationLogs: React.FC = () => {
-  return (
-    <ComingSoon
-      title="Communication Logs"
-      description="Track all customer communications in one centralized location with full history and context."
-      features={[
-        'Complete history of emails, SMS, and calls',
-        'Search and filter communication logs',
-        'Customer interaction timeline',
-        'Email/SMS templates integration',
-        'Automated communication tracking',
-        'Response time analytics',
-        'Notes and internal comments',
-        'Attachment storage and management',
-        'Export communication history',
-      ]}
-    />
-  );
-};
+export { CommunicationLogs } from '../../../src/features/customers/pages';

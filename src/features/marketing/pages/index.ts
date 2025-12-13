@@ -5,3 +5,5 @@
  */
 
 export { PromoCodeManager } from './PromoCodeManager';
+export { CampaignsManager } from './CampaignsManager';
+export { AnalyticsPage } from './AnalyticsPage';

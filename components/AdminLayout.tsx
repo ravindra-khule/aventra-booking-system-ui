@@ -62,10 +62,10 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                 <button
                   onClick={toggleLanguage}
                   className="flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  title="Change language"
+                  title={language === 'en' ? 'Switch to Swedish' : 'Switch to English'}
                 >
                   <Globe className="h-4 w-4" />
-                  <span className="hidden sm:inline">{language === 'en' ? 'SV' : 'EN'}</span>
+                  <span className="hidden sm:inline">{language === 'en' ? 'EN' : 'SV'}</span>
                 </button>
 
                 {/* Demo Role Toggle */}

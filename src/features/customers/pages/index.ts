@@ -5,3 +5,4 @@
  */
 
 export { CustomerManager } from './CustomerManager';
+export { CommunicationLogs } from './CommunicationLogs';

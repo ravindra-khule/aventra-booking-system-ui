@@ -26,7 +26,8 @@ export const Logs: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="container px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -67,6 +68,7 @@ export const Logs: React.FC = () => {
 
       {/* Logs Table */}
       <LogsTable activeTab={activeTab} filters={filters} />
+    </div>
     </div>
   );
 };

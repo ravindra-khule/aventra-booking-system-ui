@@ -51,10 +51,11 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                {/* Language Toggle */}
                <button 
                  onClick={toggleLanguage}
-                 className="flex items-center text-gray-500 hover:text-gray-700 text-sm font-medium"
+                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors border border-gray-200"
+                 title={language === 'en' ? 'Switch to Swedish' : 'Switch to English'}
                >
-                 <Globe className="h-4 w-4 mr-1" />
-                 {language === 'en' ? 'SV' : 'EN'}
+                 <Globe className="h-4 w-4" />
+                 <span className="font-semibold">{language === 'en' ? 'EN' : 'SV'}</span>
                </button>
 
                {/* Demo Toggle */}
@@ -105,8 +106,12 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                   {t('nav.myPages')}
                 </Link>
               )}
-              <button onClick={toggleLanguage} className="w-full text-left border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                 {language === 'en' ? 'Byt till Svenska' : 'Switch to English'}
+              <button 
+                onClick={toggleLanguage} 
+                className="w-full text-left border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center gap-2"
+              >
+                <Globe className="h-4 w-4" />
+                {language === 'en' ? 'Svenska (SV)' : 'English (EN)'}
               </button>
             </div>
           </div>
