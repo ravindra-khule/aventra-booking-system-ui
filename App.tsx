@@ -28,7 +28,7 @@ import { CompanySettings } from './pages/admin/settings/CompanySettings';
 import { UserManagement } from './pages/admin/settings/UserManagement';
 import { RolesPermissions } from './pages/admin/settings/RolesPermissions';
 import { EmailSettings } from './pages/admin/settings/EmailSettings';
-import { SystemLogs } from './pages/admin/settings/SystemLogs';
+import { Logs } from './pages/admin/settings/components/Logs';
 import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -196,7 +196,7 @@ const AppRoutes = () => {
             } />
             <Route path="/admin/settings/logs" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><SystemLogs /></AdminLayout>
+                    <AdminLayout><Logs /></AdminLayout>
                 </ProtectedRoute>
             } />
 
