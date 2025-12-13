@@ -1,0 +1,279 @@
+/**
+ * Export Reports Styles
+ */
+
+.container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.header {
+  padding: 24px;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+}
+
+.headerContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.headerContent h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.headerContent p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.content {
+  padding: 24px;
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+.section:last-of-type {
+  margin-bottom: 24px;
+}
+
+.sectionLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.formatGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.formatCard {
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.formatCard:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.formatCard.selected {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.formatIcon {
+  display: flex;
+  justify-content: center;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.formatCard.selected .formatIcon {
+  color: #2563eb;
+}
+
+.formatName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.formatDesc {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.dateRangeButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rangeBtn {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rangeBtn:hover {
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.rangeBtn.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.customDateRange {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.dateInput {
+  display: flex;
+  flex-direction: column;
+}
+
+.dateInput label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dateInput input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+.dateInput input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+}
+
+.checkbox input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.errorMessage {
+  padding: 12px 16px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #991b1b;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.exportBtn {
+  width: 100%;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.exportBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+.exportBtn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.footer {
+  padding: 12px 24px;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.footer p {
+  margin: 4px 0;
+}
+
+.footer p:first-child {
+  margin-top: 0;
+}
+
+.footer p:last-child {
+  margin-bottom: 0;
+}

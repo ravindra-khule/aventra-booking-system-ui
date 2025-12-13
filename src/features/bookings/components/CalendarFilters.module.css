@@ -1,0 +1,191 @@
+/* Calendar Filters Styling */
+
+.filterContainer {
+  margin-bottom: var(--spacing-lg);
+}
+
+.filterToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+  transition: all var(--transition-fast);
+  font-size: 14px;
+}
+
+.filterToggle:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: var(--spacing-xs);
+}
+
+.filterPanel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--spacing-sm);
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.filterPanel.expanded {
+  display: block;
+}
+
+.filterSection {
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.filterSection:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.viewModeButtons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.viewModeBtn {
+  padding: var(--spacing-sm);
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  transition: all var(--transition-fast);
+}
+
+.viewModeBtn:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.viewModeBtn.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.filterOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+}
+
+.filterCheckbox input[type="checkbox"] {
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+}
+
+.filterCheckbox:hover {
+  color: #1f2937;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1f2937;
+  font-family: inherit;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #ef4444;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.clearButton:hover {
+  background-color: #fecaca;
+  border-color: #ef4444;
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  .filterPanel {
+    position: static;
+    box-shadow: none;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0;
+    margin-top: 0;
+    max-height: none;
+  }
+
+  .viewModeButtons {
+    grid-template-columns: 1fr;
+  }
+}

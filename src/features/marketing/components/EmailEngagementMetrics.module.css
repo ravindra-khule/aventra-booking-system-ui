@@ -1,0 +1,218 @@
+/**
+ * Email Engagement Metrics Styles
+ */
+
+.container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 24px 0;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metricCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.metricIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.metricContent {
+  flex: 1;
+}
+
+.metricLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.metricValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.metricSubValue {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.chartContainer {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.chartContainer h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.sortControls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sortBtn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sortBtn:hover {
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.sortBtn.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.trendChart {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 32px;
+}
+
+.trendChart h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.campaignTable {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.campaignTable h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead {
+  background-color: white;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.table th {
+  padding: 12px 12px;
+  text-align: left;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.table tbody tr:hover {
+  background-color: white;
+}
+
+.campaignName {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rate {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.loadingState {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

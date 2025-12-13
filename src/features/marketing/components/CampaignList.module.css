@@ -1,0 +1,292 @@
+/**
+ * Campaign List Styles
+ */
+
+.container {
+  display: grid;
+  gap: 16px;
+}
+
+.campaignCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.campaignCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.campaignCard.expanded {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.cardHeader {
+  padding: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cardHeader:hover {
+  background-color: #f9fafb;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cardTitle h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusDraft {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.statusScheduled {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statusActive {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.statusCompleted {
+  background-color: #dbeafe;
+  color: #0c4a6e;
+}
+
+.statusPaused {
+  background-color: #fecaca;
+  color: #7f1d1d;
+}
+
+.statusCancelled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.description {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.cardStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.statIcon {
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+}
+
+.channelsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.channelBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #eff6ff;
+  color: #0369a1;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #bae6fd;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 20px 20px;
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.expandButton:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+}
+
+.expandedContent {
+  padding: 0 20px 20px 20px;
+  border-top: 1px solid #e5e7eb;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 16px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.actionBtn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.primaryBtn {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.secondaryBtn {
+  background-color: white;
+  color: #374151;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.dangerBtn {
+  background-color: white;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+.loading,
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  background: white;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  color: #6b7280;
+}
+
+.emptyIcon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: #d1d5db;
+}
+
+.empty h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cardStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .actionBtn {
+    flex: 1;
+    justify-content: center;
+  }
+}

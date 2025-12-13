@@ -18,3 +18,6 @@ export interface Customer {
   lastBookingDate?: string;
   notes?: string;
 }
+
+// Re-export group types
+export * from './group.types';

@@ -1,0 +1,183 @@
+/**
+ * Conversion Funnel Styles
+ */
+
+.container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  background-color: #f3f4f6;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.chartToggle {
+  padding: 6px 12px;
+  border: none;
+  background: white;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chartToggle:hover {
+  color: #374151;
+  background-color: #fff;
+}
+
+.chartToggle.active {
+  background-color: white;
+  color: #2563eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stagesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.stageBar {
+  flex: 1;
+  height: 40px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  transition: all 0.3s ease;
+  border-radius: 8px 0 0 8px;
+}
+
+.bar:hover {
+  filter: brightness(1.1);
+}
+
+.count {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.stageInfo {
+  min-width: 200px;
+}
+
+.stageName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.stageMetrics {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.percentage {
+  color: #374151;
+  background-color: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.dropoff {
+  color: #ef4444;
+  background-color: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.summary {
+  display: flex;
+  gap: 32px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summaryValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.loadingState {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

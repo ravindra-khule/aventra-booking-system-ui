@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type Language = 'en' | 'sv';
 
@@ -166,6 +166,82 @@ const translations = {
       submitBtn: "Submit Request",
       successTitle: "You're on the List!",
       successMessage: "We'll notify you if a spot opens up for this tour.",
+    },
+    admin: {
+      dashboard: "Dashboard",
+      bookings: "Bookings",
+      allBookings: "All Bookings",
+      bookingCalendar: "Booking Calendar",
+      waitlist: "Waitlist",
+      marketing: "Marketing",
+      promoCodes: "Promo Codes",
+      emailTemplates: "Email Templates",
+      campaignManager: "Campaign Manager",
+      analytics: "Analytics",
+      customers: "Customers",
+      customerList: "Customer List",
+      customerGroups: "Customer Groups",
+      communicationLogs: "Communication Logs",
+      tours: "Tours",
+      tourManagement: "Tour Management",
+      pricingAvailability: "Pricing & Availability",
+      itineraries: "Itineraries",
+      addons: "Add-ons",
+      finance: "Finance",
+      paymentsRefunds: "Payments & Refunds",
+      invoices: "Invoices",
+      reports: "Reports",
+      fortnoxIntegration: "Fortnox Integration",
+      settings: "Settings",
+      companyInfo: "Company Info",
+      userManagement: "User Management",
+      rolesPermissions: "Roles & Permissions",
+      emailSettings: "Email Settings",
+      systemLogs: "System Logs",
+      managementPortal: "Management Portal",
+      needHelp: "Need Help?",
+      helpText: "Check our documentation or contact support",
+      // Common admin actions and labels
+      create: "Create",
+      edit: "Edit",
+      delete: "Delete",
+      save: "Save",
+      cancel: "Cancel",
+      search: "Search",
+      filter: "Filter",
+      export: "Export",
+      import: "Import",
+      preview: "Preview",
+      test: "Test",
+      send: "Send",
+      view: "View",
+      copy: "Copy",
+      active: "Active",
+      inactive: "Inactive",
+      draft: "Draft",
+      published: "Published",
+      archived: "Archived",
+      // Email Templates specific
+      manageEmailTemplates: "Manage your email templates for automated communications",
+      createTemplate: "Create Template",
+      searchTemplates: "Search templates...",
+      allCategories: "All Categories",
+      allStatuses: "All Statuses",
+      allLanguages: "All Languages",
+      bookingConfirmation: "Booking Confirmation",
+      confirmationEmailBooking: "Confirmation email sent when a booking is successfully created",
+      paymentReceipt: "Payment Receipt",
+      receiptEmailPayment: "Receipt sent after a successful payment",
+      tourReminder: "Tour Reminder",
+      reminderEmailTour: "Reminder email sent before tour departure",
+      templateVersion: "Version",
+      sent: "Sent",
+      languages: "Languages",
+      templateName: "Template Name",
+      category: "Category",
+      status: "Status",
+      lastModified: "Last Modified",
+      actions: "Actions",
     },
     footer: {
       tagline: "Premium guided tours and expeditions in Scandinavia.",
@@ -340,6 +416,82 @@ const translations = {
       successTitle: "Du är med på listan!",
       successMessage: "Vi meddelar dig om en plats öppnas för denna tur.",
     },
+    admin: {
+      dashboard: "Instrumentpanel",
+      bookings: "Bokningar",
+      allBookings: "Alla Bokningar",
+      bookingCalendar: "Bokningskalender",
+      waitlist: "Väntelista",
+      marketing: "Marknadsföring",
+      promoCodes: "Kampanjkoder",
+      emailTemplates: "E-postmallar",
+      campaignManager: "Kampanjhanterare",
+      analytics: "Analys",
+      customers: "Kunder",
+      customerList: "Kundlista",
+      customerGroups: "Kundgrupper",
+      communicationLogs: "Kommunikationsloggar",
+      tours: "Turer",
+      tourManagement: "Turhantering",
+      pricingAvailability: "Priser & Tillgänglighet",
+      itineraries: "Resplaner",
+      addons: "Tillägg",
+      finance: "Ekonomi",
+      paymentsRefunds: "Betalningar & Återbetalningar",
+      invoices: "Fakturor",
+      reports: "Rapporter",
+      fortnoxIntegration: "Fortnox-integration",
+      settings: "Inställningar",
+      companyInfo: "Företagsinformation",
+      userManagement: "Användarhantering",
+      rolesPermissions: "Roller & Behörigheter",
+      emailSettings: "E-postinställningar",
+      systemLogs: "Systemloggar",
+      managementPortal: "Hanteringskontrollpanel",
+      needHelp: "Behöver du hjälp?",
+      helpText: "Läs vår dokumentation eller kontakta support",
+      // Common admin actions and labels
+      create: "Skapa",
+      edit: "Redigera",
+      delete: "Radera",
+      save: "Spara",
+      cancel: "Avbryt",
+      search: "Sök",
+      filter: "Filtrera",
+      export: "Exportera",
+      import: "Importera",
+      preview: "Förhandsgranska",
+      test: "Testa",
+      send: "Skicka",
+      view: "Visa",
+      copy: "Kopiera",
+      active: "Aktiv",
+      inactive: "Inaktiv",
+      draft: "Utkast",
+      published: "Publicerad",
+      archived: "Arkiverad",
+      // Email Templates specific
+      manageEmailTemplates: "Hantera dina e-postmallar för automatiserad kommunikation",
+      createTemplate: "Skapa Mall",
+      searchTemplates: "Sök mallar...",
+      allCategories: "Alla Kategorier",
+      allStatuses: "Alla Status",
+      allLanguages: "Alla Språk",
+      bookingConfirmation: "Bokningsbekräftelse",
+      confirmationEmailBooking: "Bekräftelseemail skickad när en bokning skapas framgångsrikt",
+      paymentReceipt: "Betalningskvitto",
+      receiptEmailPayment: "Kvitto skickat efter en framgångsrik betalning",
+      tourReminder: "Turpåminnelse",
+      reminderEmailTour: "Påminnelseemail skickat före turavgång",
+      templateVersion: "Version",
+      sent: "Skickat",
+      languages: "Språk",
+      templateName: "Mallnamn",
+      category: "Kategori",
+      status: "Status",
+      lastModified: "Senast ändrad",
+      actions: "Åtgärder",
+    },
     footer: {
       tagline: "Premium guidade turer och expeditioner i Skandinavien.",
       support: "Support",
@@ -361,7 +513,23 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children?: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('en');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize language from localStorage on mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferredLanguage') as Language | null;
+    if (savedLanguage === 'en' || savedLanguage === 'sv') {
+      setLanguageState(savedLanguage);
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Update localStorage when language changes
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem('preferredLanguage', lang);
+  };
 
   // Helper function to get nested object value by string key (e.g. 'nav.tours')
   const t = (path: string): string => {

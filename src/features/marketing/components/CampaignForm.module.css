@@ -1,0 +1,380 @@
+/**
+ * Campaign Form Styles
+ */
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.form {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tabsContainer {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  overflow-x: auto;
+}
+
+.tab {
+  flex: 1;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: #333;
+  background-color: #f0f0f0;
+}
+
+.tab.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background-color: white;
+}
+
+.tabContent {
+  padding: 32px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.formGroup {
+  margin-bottom: 24px;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input.error,
+.textarea.error {
+  border-color: #ef4444;
+}
+
+.input.error:focus,
+.textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.errorText {
+  display: block;
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Templates Grid */
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.templateCard {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  background: white;
+}
+
+.templateCard:hover {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.templateCard.selected {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.templateCard h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.templateCard p {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Channels */
+.channelsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.channelOption {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.channelOption input {
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.channelOption:has(input:checked) {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.channelLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: #2563eb;
+}
+
+.channelContent {
+  margin-top: 24px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border-left: 4px solid #2563eb;
+}
+
+.channelContent h4 {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Segments */
+.segmentsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.segmentOption {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.segmentOption input {
+  margin-top: 4px;
+  margin-right: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.segmentOption:has(input:checked) {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.segmentInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.segmentName {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.segmentCount {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.segmentOption p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Checkbox */
+.checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.checkbox input {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 32px;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cancelButton,
+.submitButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.cancelButton:hover {
+  background-color: #e5e7eb;
+}
+
+.submitButton {
+  background-color: #2563eb;
+  color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tabsContainer {
+    gap: 0;
+  }
+
+  .tab {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+
+  .tabContent {
+    padding: 20px 16px;
+  }
+
+  .templateGrid,
+  .channelsGrid,
+  .segmentsList {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    padding: 16px;
+    flex-direction: column-reverse;
+  }
+
+  .cancelButton,
+  .submitButton {
+    width: 100%;
+  }
+}

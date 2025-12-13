@@ -5,6 +5,7 @@
 
 // Common types
 export * from './common.types';
+export * from './role-permission.types';
 
 // Re-export feature types for convenience
 export * from '../../features/bookings/types/booking.types';

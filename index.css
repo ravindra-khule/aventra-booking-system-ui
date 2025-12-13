@@ -1,0 +1,588 @@
+/* ========================================
+   AVENTRA BOOKING SYSTEM - GLOBAL STYLES
+   Global Spacing & Layout System
+   ======================================== */
+
+/* ========================================
+   CSS VARIABLES - RESPONSIVE SPACING SCALE
+   ======================================== */
+:root {
+  /* Spacing Scale (8px base unit) */
+  --spacing-xs: 0.25rem;    /* 4px */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 1rem;       /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  --spacing-xl: 2rem;       /* 32px */
+  --spacing-2xl: 3rem;      /* 48px */
+  --spacing-3xl: 4rem;      /* 64px */
+
+  /* Container Padding */
+  --container-padding-mobile: var(--spacing-md);    /* 16px on mobile */
+  --container-padding-tablet: var(--spacing-lg);    /* 24px on tablet */
+  --container-padding-desktop: var(--spacing-xl);   /* 32px on desktop */
+
+  /* Section Spacing */
+  --section-gap-mobile: var(--spacing-md);    /* 16px */
+  --section-gap-tablet: var(--spacing-lg);    /* 24px */
+  --section-gap-desktop: var(--spacing-xl);   /* 32px */
+
+  /* Component Spacing */
+  --component-padding-sm: var(--spacing-sm);  /* 8px */
+  --component-padding-md: var(--spacing-md);  /* 16px */
+  --component-padding-lg: var(--spacing-lg);  /* 24px */
+
+  /* Color Variables */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ========================================
+   GLOBAL UTILITY CLASSES - PADDING
+   ======================================== */
+
+/* Padding - XS (4px) */
+.p-xs { padding: var(--spacing-xs); }
+.px-xs { padding-left: var(--spacing-xs); padding-right: var(--spacing-xs); }
+.py-xs { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-xs); }
+.pt-xs { padding-top: var(--spacing-xs); }
+.pb-xs { padding-bottom: var(--spacing-xs); }
+.pl-xs { padding-left: var(--spacing-xs); }
+.pr-xs { padding-right: var(--spacing-xs); }
+
+/* Padding - SM (8px) */
+.p-sm { padding: var(--spacing-sm); }
+.px-sm { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
+.py-sm { padding-top: var(--spacing-sm); padding-bottom: var(--spacing-sm); }
+.pt-sm { padding-top: var(--spacing-sm); }
+.pb-sm { padding-bottom: var(--spacing-sm); }
+.pl-sm { padding-left: var(--spacing-sm); }
+.pr-sm { padding-right: var(--spacing-sm); }
+
+/* Padding - MD (16px) */
+.p-md { padding: var(--spacing-md); }
+.px-md { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
+.py-md { padding-top: var(--spacing-md); padding-bottom: var(--spacing-md); }
+.pt-md { padding-top: var(--spacing-md); }
+.pb-md { padding-bottom: var(--spacing-md); }
+.pl-md { padding-left: var(--spacing-md); }
+.pr-md { padding-right: var(--spacing-md); }
+
+/* Padding - LG (24px) */
+.p-lg { padding: var(--spacing-lg); }
+.px-lg { padding-left: var(--spacing-lg); padding-right: var(--spacing-lg); }
+.py-lg { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
+.pt-lg { padding-top: var(--spacing-lg); }
+.pb-lg { padding-bottom: var(--spacing-lg); }
+.pl-lg { padding-left: var(--spacing-lg); }
+.pr-lg { padding-right: var(--spacing-lg); }
+
+/* Padding - XL (32px) */
+.p-xl { padding: var(--spacing-xl); }
+.px-xl { padding-left: var(--spacing-xl); padding-right: var(--spacing-xl); }
+.py-xl { padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl); }
+.pt-xl { padding-top: var(--spacing-xl); }
+.pb-xl { padding-bottom: var(--spacing-xl); }
+.pl-xl { padding-left: var(--spacing-xl); }
+.pr-xl { padding-right: var(--spacing-xl); }
+
+/* Padding - 2XL (48px) */
+.p-2xl { padding: var(--spacing-2xl); }
+.px-2xl { padding-left: var(--spacing-2xl); padding-right: var(--spacing-2xl); }
+.py-2xl { padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl); }
+.pt-2xl { padding-top: var(--spacing-2xl); }
+.pb-2xl { padding-bottom: var(--spacing-2xl); }
+.pl-2xl { padding-left: var(--spacing-2xl); }
+.pr-2xl { padding-right: var(--spacing-2xl); }
+
+/* ========================================
+   GLOBAL UTILITY CLASSES - MARGIN
+   ======================================== */
+
+/* Margin - XS (4px) */
+.m-xs { margin: var(--spacing-xs); }
+.mx-xs { margin-left: var(--spacing-xs); margin-right: var(--spacing-xs); }
+.my-xs { margin-top: var(--spacing-xs); margin-bottom: var(--spacing-xs); }
+.mt-xs { margin-top: var(--spacing-xs); }
+.mb-xs { margin-bottom: var(--spacing-xs); }
+.ml-xs { margin-left: var(--spacing-xs); }
+.mr-xs { margin-right: var(--spacing-xs); }
+
+/* Margin - SM (8px) */
+.m-sm { margin: var(--spacing-sm); }
+.mx-sm { margin-left: var(--spacing-sm); margin-right: var(--spacing-sm); }
+.my-sm { margin-top: var(--spacing-sm); margin-bottom: var(--spacing-sm); }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.ml-sm { margin-left: var(--spacing-sm); }
+.mr-sm { margin-right: var(--spacing-sm); }
+
+/* Margin - MD (16px) */
+.m-md { margin: var(--spacing-md); }
+.mx-md { margin-left: var(--spacing-md); margin-right: var(--spacing-md); }
+.my-md { margin-top: var(--spacing-md); margin-bottom: var(--spacing-md); }
+.mt-md { margin-top: var(--spacing-md); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.ml-md { margin-left: var(--spacing-md); }
+.mr-md { margin-right: var(--spacing-md); }
+
+/* Margin - LG (24px) */
+.m-lg { margin: var(--spacing-lg); }
+.mx-lg { margin-left: var(--spacing-lg); margin-right: var(--spacing-lg); }
+.my-lg { margin-top: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.ml-lg { margin-left: var(--spacing-lg); }
+.mr-lg { margin-right: var(--spacing-lg); }
+
+/* Margin - XL (32px) */
+.m-xl { margin: var(--spacing-xl); }
+.mx-xl { margin-left: var(--spacing-xl); margin-right: var(--spacing-xl); }
+.my-xl { margin-top: var(--spacing-xl); margin-bottom: var(--spacing-xl); }
+.mt-xl { margin-top: var(--spacing-xl); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+.ml-xl { margin-left: var(--spacing-xl); }
+.mr-xl { margin-right: var(--spacing-xl); }
+
+/* Margin - 2XL (48px) */
+.m-2xl { margin: var(--spacing-2xl); }
+.mx-2xl { margin-left: var(--spacing-2xl); margin-right: var(--spacing-2xl); }
+.my-2xl { margin-top: var(--spacing-2xl); margin-bottom: var(--spacing-2xl); }
+.mt-2xl { margin-top: var(--spacing-2xl); }
+.mb-2xl { margin-bottom: var(--spacing-2xl); }
+.ml-2xl { margin-left: var(--spacing-2xl); }
+.mr-2xl { margin-right: var(--spacing-2xl); }
+
+/* ========================================
+   GAP UTILITY CLASSES
+   ======================================== */
+
+.gap-xs { gap: var(--spacing-xs); }
+.gap-sm { gap: var(--spacing-sm); }
+.gap-md { gap: var(--spacing-md); }
+.gap-lg { gap: var(--spacing-lg); }
+.gap-xl { gap: var(--spacing-xl); }
+.gap-2xl { gap: var(--spacing-2xl); }
+
+/* ========================================
+   CONTAINER CLASSES
+   ======================================== */
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding-mobile);
+  padding-right: var(--container-padding-mobile);
+}
+
+.container-padded {
+  padding-left: var(--container-padding-mobile);
+  padding-right: var(--container-padding-mobile);
+}
+
+.container-tight {
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+.container-relaxed {
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+/* ========================================
+   SECTION SPACING
+   ======================================== */
+
+.section {
+  padding-top: var(--section-gap-mobile);
+  padding-bottom: var(--section-gap-mobile);
+}
+
+.section-tight {
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+}
+
+.section-spacious {
+  padding-top: var(--section-gap-mobile);
+  padding-bottom: var(--section-gap-mobile);
+}
+
+.section-hero {
+  padding-top: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+/* Section separator gaps */
+.section-separator {
+  margin-top: var(--section-gap-mobile);
+  margin-bottom: var(--section-gap-mobile);
+}
+
+.section-separator-lg {
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* ========================================
+   COMPONENT SPACING PRESETS
+   ======================================== */
+
+.card {
+  padding: var(--component-padding-md);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.card-compact {
+  padding: var(--component-padding-sm);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.card-spacious {
+  padding: var(--component-padding-lg);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.panel {
+  padding: var(--component-padding-md);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.panel-compact {
+  padding: var(--component-padding-sm);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.panel-spacious {
+  padding: var(--component-padding-lg);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+/* ========================================
+   FORM SPACING
+   ======================================== */
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-field {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+}
+
+/* ========================================
+   LIST & ITEM SPACING
+   ======================================== */
+
+.list-item {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-compact .list-item {
+  padding: var(--spacing-sm);
+}
+
+.list-spacious .list-item {
+  padding: var(--spacing-lg);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN - TABLET
+   ======================================== */
+
+@media (min-width: 640px) {
+  :root {
+    --container-padding: var(--container-padding-tablet);
+    --section-gap: var(--section-gap-tablet);
+  }
+
+  .container {
+    padding-left: var(--container-padding-tablet);
+    padding-right: var(--container-padding-tablet);
+  }
+
+  .container-padded {
+    padding-left: var(--container-padding-tablet);
+    padding-right: var(--container-padding-tablet);
+  }
+
+  .section {
+    padding-top: var(--section-gap-tablet);
+    padding-bottom: var(--section-gap-tablet);
+  }
+
+  .section-separator {
+    margin-top: var(--section-gap-tablet);
+    margin-bottom: var(--section-gap-tablet);
+  }
+
+  .section-hero {
+    padding-top: var(--spacing-3xl);
+    padding-bottom: var(--spacing-3xl);
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN - DESKTOP
+   ======================================== */
+
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: var(--container-padding-desktop);
+    --section-gap: var(--section-gap-desktop);
+  }
+
+  .container {
+    max-width: 1200px;
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+
+  .container-padded {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+
+  .section {
+    padding-top: var(--section-gap-desktop);
+    padding-bottom: var(--section-gap-desktop);
+  }
+
+  .section-separator {
+    margin-top: var(--section-gap-desktop);
+    margin-bottom: var(--section-gap-desktop);
+  }
+
+  .section-hero {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+}
+
+/* ========================================
+   LAYOUT UTILITIES
+   ======================================== */
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grid-auto {
+  display: grid;
+  grid-auto-flow: dense;
+  gap: var(--spacing-md);
+}
+
+/* ========================================
+   COMMON COMPONENT PATTERNS
+   ======================================== */
+
+/* Header/Page Title Spacing */
+.page-header {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-header h1 {
+  margin-bottom: var(--spacing-sm);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+}
+
+/* Button Spacing */
+.button-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.button-group-lg {
+  gap: var(--spacing-md);
+}
+
+/* Alert/Notice Spacing */
+.alert {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.alert h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+}
+
+.alert p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ========================================
+   MOBILE-FIRST UTILITY CLASSES
+   ======================================== */
+
+/* Responsive padding */
+@media (max-width: 639px) {
+  .sm\:p-lg { padding: var(--spacing-md); }
+  .sm\:px-lg { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
+  .sm\:py-lg { padding-top: var(--spacing-md); padding-bottom: var(--spacing-md); }
+}
+
+@media (min-width: 640px) {
+  .sm\:p-lg { padding: var(--spacing-lg); }
+  .sm\:px-lg { padding-left: var(--spacing-lg); padding-right: var(--spacing-lg); }
+  .sm\:py-lg { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
+}
+
+@media (min-width: 1024px) {
+  .lg\:p-xl { padding: var(--spacing-xl); }
+  .lg\:px-xl { padding-left: var(--spacing-xl); padding-right: var(--spacing-xl); }
+  .lg\:py-xl { padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl); }
+}
+
+/* ========================================
+   RESET & DEFAULTS
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+ul, ol {
+  margin-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible styling for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

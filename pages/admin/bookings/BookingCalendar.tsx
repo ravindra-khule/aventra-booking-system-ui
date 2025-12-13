@@ -1,21 +1,75 @@
-import React from 'react';
-import { ComingSoon } from '../../../components/ComingSoon';
+import React, { useState, useEffect } from 'react';
+import { BookingCalendar as BookingCalendarComponent } from '../../../src/features/bookings/components';
+import { BookingService } from '../../../src/features/bookings/services/booking.service';
+import { TourService } from '../../../src/shared/services';
+import { Booking } from '../../../src/features/bookings/types/booking.types';
+import { Tour } from '../../../src/features/tours/types/tour.types';
 
 export const BookingCalendar: React.FC = () => {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load bookings and tours on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [bookingsData, toursData] = await Promise.all([
+          BookingService.getAll(),
+          TourService.getAll(),
+        ]);
+        setBookings(bookingsData);
+        setTours(toursData);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load calendar data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <p>Loading calendar...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <p style={{ color: 'red' }}>{error}</p>
+      </div>
+    );
+  }
+
   return (
-    <ComingSoon
-      title="Booking Calendar"
-      description="Visual calendar view of all bookings with drag-and-drop scheduling capabilities."
-      features={[
-        'Monthly/weekly/daily calendar views',
-        'Color-coded bookings by tour type',
-        'Drag and drop to reschedule bookings',
-        'Quick booking creation from calendar',
-        'Availability overview per tour',
-        'Filter by tour, status, or customer',
-        'Export calendar to PDF or iCal format',
-        'Sync with Google Calendar/Outlook',
-      ]}
+    <BookingCalendarComponent
+      bookings={bookings}
+      tours={tours}
+      onQuickBooking={(tourId, tripDate) => {
+        console.log('Quick booking:', tourId, tripDate);
+        // Implement quick booking logic
+      }}
+      onEditBooking={(booking) => {
+        console.log('Edit booking:', booking.id);
+        // Implement edit booking logic
+      }}
+      onDeleteBooking={(bookingId) => {
+        console.log('Delete booking:', bookingId);
+        // Implement delete booking logic
+      }}
+      onRescheduleBooking={(booking, newDate) => {
+        console.log('Reschedule booking:', booking.id, newDate);
+        // Implement reschedule logic
+      }}
     />
   );
 };

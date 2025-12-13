@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from '../context/LanguageContext';
 import {
   LayoutDashboard,
   Calendar,
@@ -44,10 +45,10 @@ interface MenuCategory {
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
-    'Dashboard',
-    'Bookings',
-    'Marketing',
+    t('admin.bookings'),
+    t('admin.marketing'),
   ]);
 
   const toggleCategory = (category: string) => {
@@ -66,154 +67,155 @@ const Sidebar: React.FC = () => {
     return items.some((item) => location.pathname === item.path);
   };
 
-  // Menu structure with categories
+  // Menu structure with categories - now using translations
+  // This is recreated on every render to ensure translations are updated
   const menuCategories: MenuCategory[] = [
     {
-      label: 'Bookings',
+      label: t('admin.bookings'),
       icon: <Calendar className="w-5 h-5" />,
       items: [
         {
-          label: 'All Bookings',
+          label: t('admin.allBookings'),
           path: '/admin/bookings',
           icon: <ListOrdered className="w-4 h-4" />,
         },
         {
-          label: 'Booking Calendar',
+          label: t('admin.bookingCalendar'),
           path: '/admin/bookings/calendar',
           icon: <CalendarClock className="w-4 h-4" />,
         },
         {
-          label: 'Waitlist',
+          label: t('admin.waitlist'),
           path: '/admin/waitlist',
           icon: <Clock className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: 'Marketing',
+      label: t('admin.marketing'),
       icon: <TrendingUp className="w-5 h-5" />,
       items: [
         {
-          label: 'Promo Codes',
+          label: t('admin.promoCodes'),
           path: '/admin/marketing/promo-codes',
           icon: <Tag className="w-4 h-4" />,
         },
         {
-          label: 'Email Templates',
+          label: t('admin.emailTemplates'),
           path: '/admin/marketing/email-templates',
           icon: <Mail className="w-4 h-4" />,
         },
         {
-          label: 'Campaign Manager',
+          label: t('admin.campaignManager'),
           path: '/admin/marketing/campaigns',
           icon: <TrendingUp className="w-4 h-4" />,
         },
         {
-          label: 'Analytics',
+          label: t('admin.analytics'),
           path: '/admin/marketing/analytics',
           icon: <BarChart3 className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: 'Customers',
+      label: t('admin.customers'),
       icon: <Users className="w-5 h-5" />,
       items: [
         {
-          label: 'Customer List',
+          label: t('admin.customerList'),
           path: '/admin/customers',
           icon: <UsersRound className="w-4 h-4" />,
         },
         {
-          label: 'Customer Groups',
+          label: t('admin.customerGroups'),
           path: '/admin/customers/groups',
           icon: <Users className="w-4 h-4" />,
         },
         {
-          label: 'Communication Logs',
+          label: t('admin.communicationLogs'),
           path: '/admin/customers/communications',
           icon: <MessageSquare className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: 'Tours',
+      label: t('admin.tours'),
       icon: <Map className="w-5 h-5" />,
       items: [
         {
-          label: 'Tour Management',
+          label: t('admin.tourManagement'),
           path: '/admin/tours',
           icon: <MapPin className="w-4 h-4" />,
         },
         {
-          label: 'Pricing & Availability',
+          label: t('admin.pricingAvailability'),
           path: '/admin/tours/pricing',
           icon: <DollarSign className="w-4 h-4" />,
         },
         {
-          label: 'Itineraries',
+          label: t('admin.itineraries'),
           path: '/admin/tours/itineraries',
           icon: <Map className="w-4 h-4" />,
         },
         {
-          label: 'Add-ons',
+          label: t('admin.addons'),
           path: '/admin/tours/addons',
           icon: <Package className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: 'Finance',
+      label: t('admin.finance'),
       icon: <DollarSign className="w-5 h-5" />,
       items: [
         {
-          label: 'Payments & Refunds',
+          label: t('admin.paymentsRefunds'),
           path: '/admin/finance/payments',
           icon: <DollarSign className="w-4 h-4" />,
         },
         {
-          label: 'Invoices',
+          label: t('admin.invoices'),
           path: '/admin/finance/invoices',
           icon: <Receipt className="w-4 h-4" />,
         },
         {
-          label: 'Reports',
+          label: t('admin.reports'),
           path: '/admin/finance/reports',
           icon: <FileText className="w-4 h-4" />,
         },
         {
-          label: 'Fortnox Integration',
+          label: t('admin.fortnoxIntegration'),
           path: '/admin/finance/fortnox',
           icon: <Building2 className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: 'Settings',
+      label: t('admin.settings'),
       icon: <Settings className="w-5 h-5" />,
       items: [
         {
-          label: 'Company Info',
+          label: t('admin.companyInfo'),
           path: '/admin/settings/company',
           icon: <Building2 className="w-4 h-4" />,
         },
         {
-          label: 'User Management',
+          label: t('admin.userManagement'),
           path: '/admin/settings/users',
           icon: <UserCog className="w-4 h-4" />,
         },
         {
-          label: 'Roles & Permissions',
+          label: t('admin.rolesPermissions'),
           path: '/admin/settings/roles',
           icon: <Shield className="w-4 h-4" />,
         },
         {
-          label: 'Email Settings',
+          label: t('admin.emailSettings'),
           path: '/admin/settings/email',
           icon: <MailOpen className="w-4 h-4" />,
         },
         {
-          label: 'System Logs',
+          label: t('admin.systemLogs'),
           path: '/admin/settings/logs',
           icon: <FileBarChart className="w-4 h-4" />,
         },
@@ -226,7 +228,7 @@ const Sidebar: React.FC = () => {
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <h2 className="text-xl font-bold text-purple-600">Aventra Admin</h2>
-        <p className="text-sm text-gray-500 mt-1">Management Portal</p>
+        <p className="text-sm text-gray-500 mt-1">{t('admin.managementPortal')}</p>
       </div>
 
       {/* Navigation */}
@@ -241,7 +243,7 @@ const Sidebar: React.FC = () => {
           }`}
         >
           <LayoutDashboard className="w-5 h-5" />
-          <span className="font-medium">Dashboard</span>
+          <span className="font-medium">{t('admin.dashboard')}</span>
         </Link>
 
         {/* Categories with submenus */}
@@ -303,9 +305,9 @@ const Sidebar: React.FC = () => {
       {/* Footer */}
       <div className="p-4 border-t border-gray-200">
         <div className="bg-purple-50 rounded-lg p-3">
-          <p className="text-xs text-purple-700 font-medium">Need Help?</p>
+          <p className="text-xs text-purple-700 font-medium">{t('admin.needHelp')}</p>
           <p className="text-xs text-gray-600 mt-1">
-            Check our documentation or contact support
+            {t('admin.helpText')}
           </p>
         </div>
       </div>

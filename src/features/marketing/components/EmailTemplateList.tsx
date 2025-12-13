@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../../../../context/LanguageContext';
 import {
   Mail,
   Plus,
@@ -41,6 +42,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
   onPreview,
   onSendTest
 }) => {
+  const { t } = useTranslation();
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -159,9 +161,9 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Email Templates</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('admin.emailTemplates')}</h2>
           <p className="mt-1 text-sm text-gray-600">
-            Manage your email templates for automated communications
+            {t('admin.manageEmailTemplates')}
           </p>
         </div>
         <button
@@ -169,7 +171,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Create Template
+          {t('admin.createTemplate')}
         </button>
       </div>
 
@@ -181,7 +183,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search templates..."
+              placeholder={t('admin.searchTemplates')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -194,7 +196,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
             onChange={(e) => setSelectedCategory(e.target.value as EmailTemplateCategory | '')}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">All Categories</option>
+            <option value="">{t('admin.allCategories')}</option>
             {Object.values(EmailTemplateCategory).map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -208,7 +210,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
             onChange={(e) => setSelectedStatus(e.target.value as EmailTemplateStatus | '')}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">All Statuses</option>
+            <option value="">{t('admin.allStatuses')}</option>
             {Object.values(EmailTemplateStatus).map((status) => (
               <option key={status} value={status}>
                 {status}
@@ -222,21 +224,21 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
             onChange={(e) => setSelectedLanguage(e.target.value as TemplateLanguage | '')}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">All Languages</option>
-            <option value="en">English</option>
-            <option value="sv">Swedish</option>
+            <option value="">{t('admin.allLanguages')}</option>
+            <option value="en">EN</option>
+            <option value="sv">SV</option>
           </select>
         </div>
 
         {/* Active Filters Summary */}
         {(searchQuery || selectedCategory || selectedStatus || selectedLanguage) && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-600 flex-wrap">
             <Filter className="w-4 h-4" />
-            <span>Active filters:</span>
-            {searchQuery && <span className="px-2 py-1 bg-gray-100 rounded">Search: "{searchQuery}"</span>}
-            {selectedCategory && <span className="px-2 py-1 bg-gray-100 rounded">Category: {selectedCategory}</span>}
-            {selectedStatus && <span className="px-2 py-1 bg-gray-100 rounded">Status: {selectedStatus}</span>}
-            {selectedLanguage && <span className="px-2 py-1 bg-gray-100 rounded">Language: {selectedLanguage === 'en' ? 'English' : 'Swedish'}</span>}
+            <span>{t('admin.filter')}:</span>
+            {searchQuery && <span className="px-2 py-1 bg-gray-100 rounded">{t('admin.search')}: "{searchQuery}"</span>}
+            {selectedCategory && <span className="px-2 py-1 bg-gray-100 rounded">{t('admin.category')}: {selectedCategory}</span>}
+            {selectedStatus && <span className="px-2 py-1 bg-gray-100 rounded">{t('admin.status')}: {selectedStatus}</span>}
+            {selectedLanguage && <span className="px-2 py-1 bg-gray-100 rounded">{t('admin.languages')}: {selectedLanguage === 'en' ? 'EN' : 'SV'}</span>}
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -273,7 +275,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-5 h-5" />
-              Create Template
+              {t('admin.createTemplate')}
             </button>
           )}
         </div>
@@ -310,21 +312,21 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
-                          Edit
+                          {t('admin.edit')}
                         </button>
                         <button
                           onClick={() => handleDuplicate(template)}
                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           <Copy className="w-4 h-4" />
-                          Duplicate
+                          {t('admin.copy')}
                         </button>
                         <button
                           onClick={() => handleArchive(template)}
                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           <Archive className="w-4 h-4" />
-                          {template.status === EmailTemplateStatus.ARCHIVED ? 'Unarchive' : 'Archive'}
+                          {template.status === EmailTemplateStatus.ARCHIVED ? t('admin.active') : t('admin.archived')}
                         </button>
                         <button
                           onClick={() => handleDelete(template)}
@@ -359,7 +361,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
               <div className="p-4 space-y-3">
                 {/* Languages */}
                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="font-medium">Languages:</span>
+                  <span className="font-medium">{t('admin.languages')}:</span>
                   {template.content.map((content) => (
                     <span key={content.language} className="px-2 py-1 bg-gray-100 rounded text-xs">
                       {content.language === 'en' ? '🇬🇧 EN' : '🇸🇪 SV'}
@@ -369,8 +371,8 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
 
                 {/* Stats */}
                 <div className="flex items-center justify-between text-sm text-gray-600">
-                  <span>Version: {template.version}</span>
-                  <span>Sent: {template.usageCount}</span>
+                  <span>{t('admin.templateVersion')}: {template.version}</span>
+                  <span>{t('admin.sent')}: {template.usageCount}</span>
                 </div>
 
                 {template.lastSent && (
@@ -387,14 +389,14 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <Eye className="w-4 h-4" />
-                  Preview
+                  {t('admin.preview')}
                 </button>
                 <button
                   onClick={() => onSendTest(template)}
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Send className="w-4 h-4" />
-                  Test
+                  {t('admin.test')}
                 </button>
               </div>
             </div>

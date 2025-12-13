@@ -1,0 +1,156 @@
+/* Booking Calendar Main Component Styling */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--container-padding-mobile);
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+  background-color: #ffffff;
+  padding: var(--component-padding-lg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.exportButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.exportButton:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.primaryButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.primaryButton:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--spacing-lg);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.mainContent {
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Responsive Design */
+
+@media (max-width: 1200px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--container-padding-mobile);
+    gap: var(--spacing-md);
+  }
+
+  .header {
+    flex-direction: column;
+    padding: var(--component-padding-md);
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .actionButtons {
+    width: 100%;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+  }
+
+  .exportButton,
+  .primaryButton {
+    flex: 1;
+    justify-content: center;
+    min-height: 40px;
+  }
+
+  .sidebar {
+    grid-template-columns: 1fr;
+  }
+}

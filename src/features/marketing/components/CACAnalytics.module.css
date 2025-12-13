@@ -1,0 +1,194 @@
+/**
+ * CAC Analytics Styles
+ */
+
+.container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  background-color: #f3f4f6;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.viewToggle {
+  padding: 6px 12px;
+  border: none;
+  background: white;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.viewToggle:hover {
+  color: #374151;
+}
+
+.viewToggle.active {
+  background-color: white;
+  color: #2563eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summaryCard {
+  padding: 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.cardLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.cardValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.channelTable {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.channelName {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cacValue {
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.positiveRoi {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.negativeRoi {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.insights {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+  border-radius: 8px;
+}
+
+.insights h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.insightsList {
+  margin: 0;
+  padding: 0 0 0 20px;
+  list-style: disc;
+}
+
+.insightsList li {
+  margin: 6px 0;
+  color: #166534;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.insightsList strong {
+  font-weight: 700;
+  color: #15803d;
+}
+
+.loadingState {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
