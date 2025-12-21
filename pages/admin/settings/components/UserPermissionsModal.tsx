@@ -196,7 +196,7 @@ export const UserPermissionsModal: React.FC<UserPermissionsModalProps> = ({
                 Select which modules this user can access
               </p>
               <p className="text-xs text-blue-700 mt-1">
-                Example: For support@aventra.com, select only "Booking Management" and "Customer
+                Example: For support@swett.com, select only "Booking Management" and "Customer
                 Management" to give support screen access only.
               </p>
             </div>

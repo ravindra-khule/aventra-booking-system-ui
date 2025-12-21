@@ -243,7 +243,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-purple-600">Aventra Admin</h2>
+            <h2 className="text-xl font-bold text-purple-600">Swett Admin</h2>
             <p className="text-sm text-gray-500 mt-1">{t('admin.managementPortal')}</p>
           </div>
           <button

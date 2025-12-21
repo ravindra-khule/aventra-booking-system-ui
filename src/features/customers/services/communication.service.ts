@@ -65,8 +65,8 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
     content:
       'Dear Anna, your Arctic Adventure tour starting on March 15, 2025 has been confirmed. Your booking reference is BOOK-2025-001. Please review the attached itinerary and prepare for an unforgettable experience!',
     sender: {
-      name: 'Aventra Support Team',
-      email: 'support@aventra.com',
+      name: 'Swett Support Team',
+      email: 'support@swett.com',
       type: 'staff',
     },
     recipient: {
@@ -101,7 +101,7 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
     status: 'delivered',
     content: 'Hi Anna! Quick reminder: Your Arctic Adventure tour starts in 5 days (March 15). Reply CONFIRM to acknowledge.',
     sender: {
-      name: 'Aventra Notifications',
+      name: 'Swett Notifications',
       phone: '+46701234567',
       type: 'staff',
     },
@@ -132,7 +132,7 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
       type: 'customer',
     },
     recipient: {
-      name: 'Aventra Support',
+      name: 'Swett Support',
       phone: '+46701234567',
     },
     timestamp: '2024-12-13T14:05:00Z',
@@ -151,7 +151,7 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
     content: 'Customer called asking about dietary restrictions. Confirmed vegetarian meal options available. Special request noted in booking.',
     sender: {
       name: 'Maria Garcia',
-      email: 'maria@aventra.com',
+      email: 'maria@swett.com',
       type: 'staff',
     },
     recipient: {
@@ -174,8 +174,8 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
     subject: 'Your Packing Checklist for Arctic Adventure',
     content: 'Dear Anna, here is your personalized packing checklist for your Arctic Adventure tour. We recommend packing light layers and waterproof clothing...',
     sender: {
-      name: 'Aventra Support Team',
-      email: 'support@aventra.com',
+      name: 'Swett Support Team',
+      email: 'support@swett.com',
       type: 'staff',
     },
     recipient: {
@@ -205,8 +205,8 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
     subject: 'Your Iceland Explorer Tour Confirmation',
     content: 'Dear Robert, your Iceland Explorer tour has been confirmed...',
     sender: {
-      name: 'Aventra Support Team',
-      email: 'support@aventra.com',
+      name: 'Swett Support Team',
+      email: 'support@swett.com',
       type: 'staff',
     },
     recipient: {
@@ -256,8 +256,8 @@ const MOCK_COMMUNICATIONS: CommunicationLog[] = [
       type: 'customer',
     },
     recipient: {
-      name: 'Aventra Support Team',
-      email: 'support@aventra.com',
+      name: 'Swett Support Team',
+      email: 'support@swett.com',
     },
     timestamp: '2024-12-12T09:15:00Z',
     sentAt: '2024-12-12T09:15:00Z',

@@ -202,8 +202,8 @@ let templates: InvoiceTemplate[] = [
     name: 'Default Template',
     isDefault: true,
     primaryColor: '#2563eb',
-    headerText: 'Aventra Tours',
-    footerText: 'Thank you for choosing Aventra Tours!',
+    headerText: 'Swett Tours',
+    footerText: 'Thank you for choosing Swett Tours!',
     termsAndConditions: 'Payment due within 30 days. Late payments may incur additional fees.',
     bankDetails: {
       bankName: 'Swedbank',

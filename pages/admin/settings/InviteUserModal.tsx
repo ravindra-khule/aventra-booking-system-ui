@@ -136,7 +136,7 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
             <h4 className="text-sm font-semibold text-gray-700 mb-2">Invitation Preview</h4>
             <div className="text-sm text-gray-600 space-y-2">
               <p><strong>To:</strong> {email || 'user@example.com'}</p>
-              <p><strong>Subject:</strong> You've been invited to join Aventra Booking System</p>
+              <p><strong>Subject:</strong> You've been invited to join Swett Booking System</p>
               <p><strong>Role:</strong> {role}</p>
               {message && (
                 <div className="mt-3 pt-3 border-t border-gray-300">

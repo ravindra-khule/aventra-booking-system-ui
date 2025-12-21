@@ -509,13 +509,13 @@ class ReportServiceClass {
           dateTo: '',
           period: ReportPeriod.LAST_MONTH
         },
-        recipients: ['finance@aventratours.com', 'management@aventratours.com'],
+        recipients: ['finance@swetttours.com', 'management@swetttours.com'],
         frequency: 'monthly',
         nextRunDate: '2025-01-01',
         format: ExportFormat.EXCEL,
         enabled: true,
         createdAt: '2024-01-15',
-        createdBy: 'admin@aventratours.com'
+        createdBy: 'admin@swetttours.com'
       }
     ];
   }
@@ -528,7 +528,7 @@ class ReportServiceClass {
       ...report,
       id: `sched-${Date.now()}`,
       createdAt: new Date().toISOString(),
-      createdBy: 'current-user@aventratours.com'
+      createdBy: 'current-user@swetttours.com'
     };
     
     return newReport;

@@ -29,8 +29,8 @@ const roleOptions: RoleOption[] = [
     icon: <Crown className="w-5 h-5" />,
     title: 'Super Admin',
     description: 'Full system access - Owner level control',
-    email: 'superadmin@aventra.com',
-    password: 'Aventra2025!Super',
+    email: 'superadmin@swett.com',
+    password: 'Swett2025!Super',
     color: 'text-purple-600',
   },
   {
@@ -38,8 +38,8 @@ const roleOptions: RoleOption[] = [
     icon: <Shield className="w-5 h-5" />,
     title: 'Admin',
     description: 'Administrative access - Manage operations & users',
-    email: 'admin@aventra.com',
-    password: 'Aventra2025!Admin',
+    email: 'admin@swett.com',
+    password: 'Swett2025!Admin',
     color: 'text-blue-600',
   },
   {
@@ -47,8 +47,8 @@ const roleOptions: RoleOption[] = [
     icon: <Headphones className="w-5 h-5" />,
     title: 'Support',
     description: 'Customer support - Bookings & customer management',
-    email: 'support@aventra.com',
-    password: 'Aventra2025!Support',
+    email: 'support@swett.com',
+    password: 'Swett2025!Support',
     color: 'text-green-600',
   },
   {
@@ -56,8 +56,8 @@ const roleOptions: RoleOption[] = [
     icon: <Calculator className="w-5 h-5" />,
     title: 'Accountant',
     description: 'Finance access - Financial operations & reporting',
-    email: 'accountant@aventra.com',
-    password: 'Aventra2025!Finance',
+    email: 'accountant@swett.com',
+    password: 'Swett2025!Finance',
     color: 'text-amber-600',
   },
   {
@@ -65,8 +65,8 @@ const roleOptions: RoleOption[] = [
     icon: <Code className="w-5 h-5" />,
     title: 'Developer',
     description: 'Technical access - System logs & developer tools',
-    email: 'developer@aventra.com',
-    password: 'Aventra2025!Dev',
+    email: 'developer@swett.com',
+    password: 'Swett2025!Dev',
     color: 'text-slate-600',
   },
   {
@@ -74,8 +74,8 @@ const roleOptions: RoleOption[] = [
     icon: <User className="w-5 h-5" />,
     title: 'Guest / Customer',
     description: 'Customer view - Book tours & view bookings',
-    email: 'guest@aventra.com',
-    password: 'Aventra2025!Guest',
+    email: 'guest@swett.com',
+    password: 'Swett2025!Guest',
     color: 'text-gray-600',
   },
 ];
@@ -188,7 +188,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="user@aventra.com"
+                placeholder="user@swett.com"
                 required
               />
             </div>
@@ -225,7 +225,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
               <Shield className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-blue-700">
                 <strong>Demo Mode:</strong> Credentials auto-populate when you select a role. 
-                All passwords follow format: <code className="bg-blue-100 px-1 rounded">Aventra2025!{'{Role}'}</code>
+                All passwords follow format: <code className="bg-blue-100 px-1 rounded">Swett2025!{'{Role}'}</code>
               </p>
             </div>
           </div>

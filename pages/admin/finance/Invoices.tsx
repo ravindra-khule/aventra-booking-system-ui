@@ -54,7 +54,7 @@ export const Invoices: React.FC = () => {
     try {
       await InvoiceService.sendInvoice(invoice.id, {
         to: invoice.recipient.email,
-        subject: `Invoice ${invoice.invoiceNumber} from Aventra Tours`,
+        subject: `Invoice ${invoice.invoiceNumber} from Swett Tours`,
         message: 'Please find your invoice attached. Payment is due by ' + invoice.dueDate,
         attachPdf: true,
       });

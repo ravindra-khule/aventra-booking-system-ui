@@ -45,7 +45,7 @@ export const CompanyInformationSettings: React.FC = () => {
   // Initialize with default data
   const [data, setData] = useState<CompanyInformationData>({
     identity: {
-      companyName: 'Aventra Booking System',
+      companyName: 'Swett Booking System',
       logo: null,
     },
     contact: {
@@ -80,7 +80,7 @@ export const CompanyInformationSettings: React.FC = () => {
     languageContent: [
       {
         language: 'en',
-        companyName: 'Aventra Booking System',
+        companyName: 'Swett Booking System',
         aboutText: '',
         description: '',
       },
@@ -140,7 +140,7 @@ export const CompanyInformationSettings: React.FC = () => {
     if (window.confirm('Are you sure you want to discard all changes?')) {
       setData({
         identity: {
-          companyName: 'Aventra Booking System',
+          companyName: 'Swett Booking System',
           logo: null,
         },
         contact: {
@@ -175,7 +175,7 @@ export const CompanyInformationSettings: React.FC = () => {
         languageContent: [
           {
             language: 'en',
-            companyName: 'Aventra Booking System',
+            companyName: 'Swett Booking System',
             aboutText: '',
             description: '',
           },

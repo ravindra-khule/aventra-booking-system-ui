@@ -180,14 +180,14 @@ export const EMAIL_PLACEHOLDERS: TemplatePlaceholder[] = [
     key: PlaceholderType.COMPANY_NAME,
     label: 'Company Name',
     description: 'Name of the tour company',
-    example: 'Aventra Tours',
+    example: 'Swett Tours',
     category: 'company'
   },
   {
     key: PlaceholderType.COMPANY_EMAIL,
     label: 'Company Email',
     description: 'Company contact email',
-    example: 'info@aventra.com',
+    example: 'info@swett.com',
     category: 'company'
   },
   {
@@ -208,7 +208,7 @@ export const EMAIL_PLACEHOLDERS: TemplatePlaceholder[] = [
     key: PlaceholderType.COMPANY_WEBSITE,
     label: 'Company Website',
     description: 'Company website URL',
-    example: 'www.aventra.com',
+    example: 'www.swett.com',
     category: 'company'
   },
 
@@ -224,21 +224,21 @@ export const EMAIL_PLACEHOLDERS: TemplatePlaceholder[] = [
     key: PlaceholderType.UNSUBSCRIBE_LINK,
     label: 'Unsubscribe Link',
     description: 'Link to unsubscribe from emails',
-    example: 'https://aventra.com/unsubscribe',
+    example: 'https://swett.com/unsubscribe',
     category: 'system'
   },
   {
     key: PlaceholderType.VIEW_ONLINE_LINK,
     label: 'View Online Link',
     description: 'Link to view email in browser',
-    example: 'https://aventra.com/email/view',
+    example: 'https://swett.com/email/view',
     category: 'system'
   },
   {
     key: PlaceholderType.SUPPORT_LINK,
     label: 'Support Link',
     description: 'Link to customer support',
-    example: 'https://aventra.com/support',
+    example: 'https://swett.com/support',
     category: 'system'
   }
 ];
@@ -309,14 +309,14 @@ export const SAMPLE_TEMPLATE_DATA = {
   [PlaceholderType.PAYMENT_STATUS]: 'Completed',
   [PlaceholderType.INVOICE_NUMBER]: 'INV-2025-001',
   
-  [PlaceholderType.COMPANY_NAME]: 'Aventra Tours',
-  [PlaceholderType.COMPANY_EMAIL]: 'info@aventra.com',
+  [PlaceholderType.COMPANY_NAME]: 'Swett Tours',
+  [PlaceholderType.COMPANY_EMAIL]: 'info@swett.com',
   [PlaceholderType.COMPANY_PHONE]: '+46 8 123 4567',
   [PlaceholderType.COMPANY_ADDRESS]: 'Kungsgatan 1, 111 43 Stockholm',
-  [PlaceholderType.COMPANY_WEBSITE]: 'www.aventra.com',
+  [PlaceholderType.COMPANY_WEBSITE]: 'www.swett.com',
   
   [PlaceholderType.CURRENT_YEAR]: new Date().getFullYear().toString(),
-  [PlaceholderType.UNSUBSCRIBE_LINK]: 'https://aventra.com/unsubscribe',
-  [PlaceholderType.VIEW_ONLINE_LINK]: 'https://aventra.com/email/view',
-  [PlaceholderType.SUPPORT_LINK]: 'https://aventra.com/support'
+  [PlaceholderType.UNSUBSCRIBE_LINK]: 'https://swett.com/unsubscribe',
+  [PlaceholderType.VIEW_ONLINE_LINK]: 'https://swett.com/email/view',
+  [PlaceholderType.SUPPORT_LINK]: 'https://swett.com/support'
 };

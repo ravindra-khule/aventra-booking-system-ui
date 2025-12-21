@@ -125,7 +125,7 @@ let MOCK_TOURS: Tour[] = [
     title: 'Langtang & Tamang Heritage',
     slug: 'langtang-tamang-heritage',
     shortDescription: '14 DAGAR. Äkta kulturmöten och storslagna Himalayavyer.',
-    description: 'Följ med Aventra på en unik vandringsresa genom Tamang Heritage och Langtangdalen. Äkta kulturmöten, storslagna Himalayavyer och svensk guide.',
+    description: 'Följ med Swett på en unik vandringsresa genom Tamang Heritage och Langtangdalen. Äkta kulturmöten, storslagna Himalayavyer och svensk guide.',
     status: TourStatus.ACTIVE,
     price: 40900,
     depositPrice: 4000,

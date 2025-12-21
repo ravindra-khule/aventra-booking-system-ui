@@ -151,7 +151,7 @@ export const AddEditUserModal: React.FC<AddEditUserModalProps> = ({
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="john@aventra.com"
+                    placeholder="john@swett.com"
                     required
                     disabled={isEditMode}
                   />

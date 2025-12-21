@@ -32,7 +32,7 @@ export const SenderDetailsComponent: React.FC<SenderDetailsComponentProps> = ({
           <input
             id="from-name"
             type="text"
-            placeholder="e.g., Aventra Booking System"
+            placeholder="e.g., Swett Booking System"
             value={details.fromName}
             onChange={(e) => handleChange('fromName', e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -50,7 +50,7 @@ export const SenderDetailsComponent: React.FC<SenderDetailsComponentProps> = ({
           <input
             id="from-email"
             type="email"
-            placeholder="noreply@aventrabooking.com"
+            placeholder="noreply@swettbooking.com"
             value={details.fromEmail}
             onChange={(e) => handleChange('fromEmail', e.target.value)}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
@@ -75,7 +75,7 @@ export const SenderDetailsComponent: React.FC<SenderDetailsComponentProps> = ({
           <input
             id="reply-to-email"
             type="email"
-            placeholder="support@aventrabooking.com"
+            placeholder="support@swettbooking.com"
             value={details.replyToEmail}
             onChange={(e) => handleChange('replyToEmail', e.target.value)}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${

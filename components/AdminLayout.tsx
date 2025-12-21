@@ -60,7 +60,7 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                 
                 {/* Logo - visible on mobile when sidebar is hidden */}
                 <div className="lg:hidden">
-                  <span className="text-xl font-bold text-purple-600">Aventra</span>
+                  <span className="text-xl font-bold text-purple-600">Swett</span>
                 </div>
               </div>
 
@@ -114,7 +114,7 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
               <div className="mb-2 sm:mb-0">
-                &copy; {new Date().getFullYear()} Aventra AB. All rights reserved.
+                &copy; {new Date().getFullYear()} Swett AB. All rights reserved.
               </div>
               <div className="flex gap-4">
                 <a href="#" className="hover:text-gray-700 transition-colors">Support</a>

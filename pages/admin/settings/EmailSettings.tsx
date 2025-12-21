@@ -48,9 +48,9 @@ export const EmailSettings: React.FC = () => {
 
   // Sender Details
   const [senderDetails, setSenderDetails] = useState<SenderDetails>({
-    fromName: 'Aventra Booking System',
-    fromEmail: 'noreply@aventrabooking.com',
-    replyToEmail: 'support@aventrabooking.com',
+    fromName: 'Swett Booking System',
+    fromEmail: 'noreply@swettbooking.com',
+    replyToEmail: 'support@swettbooking.com',
   });
 
   // Email Signature
@@ -58,10 +58,10 @@ export const EmailSettings: React.FC = () => {
     enabled: true,
     content: `Best regards,
 
-Aventra Booking System
+Swett Booking System
 Adventure Tours & Experiences
-support@aventrabooking.com
-https://aventrabooking.com`,
+support@swettbooking.com
+https://swettbooking.com`,
   });
 
   // Email Templates
@@ -82,7 +82,7 @@ https://aventrabooking.com`,
     },
     unsubscribe: {
       enabled: true,
-      customUrl: 'https://aventrabooking.com/unsubscribe',
+      customUrl: 'https://swettbooking.com/unsubscribe',
     },
   });
 

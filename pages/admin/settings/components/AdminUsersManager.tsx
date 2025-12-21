@@ -31,7 +31,7 @@ const MOCK_USERS: AdminUser[] = [
   {
     id: 'user_superadmin',
     name: 'Super Admin',
-    email: 'superadmin@aventra.com',
+    email: 'superadmin@swett.com',
     phone: '+46 70 100 0001',
     profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPER_ADMIN',
     roles: ['Super Admin'],
@@ -47,7 +47,7 @@ const MOCK_USERS: AdminUser[] = [
   {
     id: 'user_admin',
     name: 'Admin User',
-    email: 'admin@aventra.com',
+    email: 'admin@swett.com',
     phone: '+46 70 100 0002',
     profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ADMIN',
     roles: ['Admin'],
@@ -63,7 +63,7 @@ const MOCK_USERS: AdminUser[] = [
   {
     id: 'user_support',
     name: 'Support Agent',
-    email: 'support@aventra.com',
+    email: 'support@swett.com',
     phone: '+46 70 100 0003',
     profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPPORT',
     roles: ['Support'],
@@ -79,7 +79,7 @@ const MOCK_USERS: AdminUser[] = [
   {
     id: 'user_accountant',
     name: 'Accountant',
-    email: 'accountant@aventra.com',
+    email: 'accountant@swett.com',
     phone: '+46 70 100 0004',
     profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ACCOUNTANT',
     roles: ['Accountant'],
@@ -95,7 +95,7 @@ const MOCK_USERS: AdminUser[] = [
   {
     id: 'user_developer',
     name: 'Developer',
-    email: 'developer@aventra.com',
+    email: 'developer@swett.com',
     phone: '+46 70 100 0005',
     profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DEVELOPER',
     roles: ['Developer'],

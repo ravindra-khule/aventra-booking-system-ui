@@ -88,7 +88,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
           <div className="max-w-3xl mx-auto bg-white">
             {/* Company Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-blue-600 mb-2">Aventra Tours</h1>
+              <h1 className="text-3xl font-bold text-blue-600 mb-2">Swett Tours</h1>
               <p className="text-gray-600">Your Adventure Awaits</p>
             </div>
 
@@ -256,9 +256,9 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
 
             {/* Footer */}
             <div className="mt-8 pt-6 border-t border-gray-200 text-center text-sm text-gray-600">
-              <p>Thank you for choosing Aventra Tours!</p>
+              <p>Thank you for choosing Swett Tours!</p>
               <p className="mt-2">
-                Questions about your invoice? Contact us at info@aventratours.com or +46 70 123 4567
+                Questions about your invoice? Contact us at info@swetttours.com or +46 70 123 4567
               </p>
             </div>
           </div>

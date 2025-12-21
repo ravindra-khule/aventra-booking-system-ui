@@ -103,7 +103,7 @@ export const EmailSignatureComponent: React.FC<EmailSignatureComponentProps> = (
                 id="signature-content"
                 value={signature.content}
                 onChange={(e) => handleContentChange(e.target.value)}
-                placeholder={`Best regards,\n\nAventra Booking System\nCompany Website: https://aventrabooking.com\n\nUse {{VARIABLE}} to add dynamic content.`}
+                placeholder={`Best regards,\n\nSwett Booking System\nCompany Website: https://swettbooking.com\n\nUse {{VARIABLE}} to add dynamic content.`}
                 rows={8}
                 className="w-full px-4 py-2 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
               />

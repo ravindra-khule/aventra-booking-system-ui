@@ -81,7 +81,7 @@ export const BounceUnsubscribeComponent: React.FC<BounceUnsubscribeComponentProp
                   <span className="font-semibold">Webhook Configuration:</span> Your email provider will send bounce notifications to our system.
                 </p>
                 <div className="bg-white rounded p-3 font-mono text-xs text-gray-700">
-                  https://api.aventrabooking.com/webhooks/email/bounce
+                  https://api.swettbooking.com/webhooks/email/bounce
                 </div>
               </div>
             )}
@@ -147,7 +147,7 @@ export const BounceUnsubscribeComponent: React.FC<BounceUnsubscribeComponentProp
                   <input
                     id="unsubscribe-url"
                     type="url"
-                    placeholder="https://aventrabooking.com/unsubscribe"
+                    placeholder="https://swettbooking.com/unsubscribe"
                     value={settings.unsubscribe.customUrl}
                     onChange={(e) => handleUnsubscribeChange('customUrl', e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

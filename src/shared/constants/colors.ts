@@ -1,5 +1,5 @@
 /**
- * AVENTRA BOOKING SYSTEM - COLOR CONSTANTS
+ * SWETT BOOKING SYSTEM - COLOR CONSTANTS
  * 
  * Centralized color definitions following design system guidelines
  * Ensures consistency across all components and modules

@@ -15,10 +15,10 @@ export const generateICal = (events: CalendarEvent[]): string => {
   
   let icalContent = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Aventra Booking System//EN
+PRODID:-//Swett Booking System//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Aventra Tours Calendar
+X-WR-CALNAME:Swett Tours Calendar
 X-WR-TIMEZONE:UTC
 X-WR-CALDESC:Tours and Bookings Calendar
 `;
@@ -30,7 +30,7 @@ X-WR-CALDESC:Tours and Bookings Calendar
     const description = `Booking: ${event.booking.id}\nCustomer: ${event.booking.customerName}\nStatus: ${event.booking.status}\nParticipants: ${event.booking.participants}`;
     
     icalContent += `BEGIN:VEVENT
-UID:${event.id}@aventra-booking.com
+UID:${event.id}@swett-booking.com
 DTSTAMP:${now}
 DTSTART:${startDate}
 DTEND:${endDate}

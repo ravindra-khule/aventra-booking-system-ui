@@ -10,7 +10,7 @@ let mockUsers: User[] = [
   {
     id: 'u_1',
     name: 'Super Admin',
-    email: 'superadmin@aventra.com',
+    email: 'superadmin@swett.com',
     role: UserRole.SUPER_ADMIN,
     phone: '+46 70 100 0001',
     status: UserStatus.ACTIVE,
@@ -24,7 +24,7 @@ let mockUsers: User[] = [
   {
     id: 'u_2',
     name: 'Admin User',
-    email: 'admin@aventra.com',
+    email: 'admin@swett.com',
     role: UserRole.ADMIN,
     phone: '+46 70 100 0002',
     status: UserStatus.ACTIVE,
@@ -38,7 +38,7 @@ let mockUsers: User[] = [
   {
     id: 'u_3',
     name: 'Support Agent',
-    email: 'support@aventra.com',
+    email: 'support@swett.com',
     role: UserRole.SUPPORT,
     phone: '+46 70 100 0003',
     status: UserStatus.ACTIVE,
@@ -52,7 +52,7 @@ let mockUsers: User[] = [
   {
     id: 'u_4',
     name: 'Accountant',
-    email: 'accountant@aventra.com',
+    email: 'accountant@swett.com',
     role: UserRole.ACCOUNTANT,
     phone: '+46 70 100 0004',
     status: UserStatus.ACTIVE,
@@ -66,7 +66,7 @@ let mockUsers: User[] = [
   {
     id: 'u_5',
     name: 'Developer',
-    email: 'developer@aventra.com',
+    email: 'developer@swett.com',
     role: UserRole.DEVELOPER,
     phone: '+46 70 100 0005',
     status: UserStatus.ACTIVE,
@@ -80,7 +80,7 @@ let mockUsers: User[] = [
   {
     id: 'u_6',
     name: 'Guest User',
-    email: 'guest@aventra.com',
+    email: 'guest@swett.com',
     role: UserRole.CUSTOMER,
     phone: '+46 70 100 0006',
     status: UserStatus.ACTIVE,
@@ -135,7 +135,7 @@ let mockActivities: UserActivity[] = [
 let mockInvitations: UserInvitation[] = [
   {
     id: 'inv_1',
-    email: 'newuser@aventra.com',
+    email: 'newuser@swett.com',
     role: UserRole.SUPPORT,
     invitedBy: 'u_1',
     invitedAt: new Date('2024-12-28'),
