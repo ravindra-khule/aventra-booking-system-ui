@@ -4,13 +4,14 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { useTranslation } from '../context/LanguageContext';
 import { Booking, BookingStatus, PaymentStatus } from '../types';
-import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download } from 'lucide-react';
+import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const MyPages = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedBookings, setExpandedBookings] = useState<Set<string | number>>(new Set());
 
   useEffect(() => {
     // Load bookings from localStorage
@@ -30,6 +31,18 @@ export const MyPages = () => {
 
     loadBookings();
   }, []);
+
+  const toggleBookingExpansion = (bookingId: string | number) => {
+    setExpandedBookings(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(bookingId)) {
+        newSet.delete(bookingId);
+      } else {
+        newSet.add(bookingId);
+      }
+      return newSet;
+    });
+  };
 
   const downloadBookingPDF = async (bookingId: string | number) => {
     const el = document.getElementById(`booking-${bookingId}`);
@@ -115,214 +128,248 @@ export const MyPages = () => {
             
             {bookings.map((booking) => {
               const remainingAmount = booking.totalAmount - booking.paidAmount;
+              const isExpanded = expandedBookings.has(booking.id);
               
               return (
                 <div id={`booking-${booking.id}`} key={booking.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
-                  {/* Header with Image */}
-                  <div className="relative h-48 bg-gradient-to-br from-blue-400 to-blue-600">
-                    {booking.tourImageUrl ? (
-                      <img 
-                        src={booking.tourImageUrl} 
-                        alt={booking.tourTitle}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <MapPin className="h-16 w-16 text-white opacity-50" />
-                      </div>
-                    )}
-                    <div className="absolute top-4 right-4 flex gap-2 items-center">
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(booking.status)}`}>
-                        {booking.status}
-                      </span>
-                      {booking.promoCode && (
-                        <span className="px-3 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-purple-600 text-white border border-purple-700 shadow-lg">
-                          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                          </svg>
-                          {booking.promoCode}
-                        </span>
+                  {/* Compact Header - Always Visible */}
+                  <div 
+                    onClick={() => toggleBookingExpansion(booking.id)}
+                    className="cursor-pointer hover:bg-gray-50 transition"
+                  >
+                    <div className="relative h-32 bg-gradient-to-br from-blue-400 to-blue-600">
+                      {booking.tourImageUrl ? (
+                        <img 
+                          src={booking.tourImageUrl} 
+                          alt={booking.tourTitle}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <MapPin className="h-12 w-12 text-white opacity-50" />
+                        </div>
                       )}
-                      {/* Download PDF button */}
-                      <button
-                        title="Download confirmation PDF"
-                        onClick={() => downloadBookingPDF(booking.id)}
-                        className="inline-flex items-center justify-center p-2 rounded-full bg-white/80 text-blue-600 hover:bg-white text-sm shadow"
-                      >
-                        <Download className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
-                      {/* Left Column - Trip Details */}
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{booking.tourTitle}</h3>
-                        
-                        {/* Promo Code Savings Badge */}
-                        {booking.promoCode && booking.discountAmount && (
-                          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full mb-4 shadow-md">
-                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <div className="absolute top-3 right-3 flex gap-2 items-center">
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(booking.status)}`}>
+                          {booking.status}
+                        </span>
+                        {booking.promoCode && (
+                          <span className="px-3 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-purple-600 text-white border border-purple-700 shadow-lg">
+                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                             </svg>
-                            <span className="font-bold text-sm">
-                              You saved {booking.discountAmount.toLocaleString()} SEK with {booking.promoCode}!
-                            </span>
-                          </div>
-                        )}
-                        
-                        <div className="space-y-2 mb-6">
-                          <div className="flex items-center text-gray-600">
-                            <Calendar className="h-4 w-4 mr-2" />
-                            <span className="text-sm">{t('myPages.departureDate')}: <span className="font-medium text-gray-900">{booking.tripDate}</span></span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <Users className="h-4 w-4 mr-2" />
-                            <span className="text-sm">{booking.participants} {booking.participants === 1 ? t('myPages.traveler') : t('myPages.travelers')}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <Clock className="h-4 w-4 mr-2" />
-                            <span className="text-sm">{t('myPages.bookedOn')}: {booking.bookingDate}</span>
-                          </div>
-                        </div>
-
-                        {/* Booking Reference */}
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-                          <p className="text-xs text-gray-500 mb-1">{t('myPages.bookingRef')}</p>
-                          <p className="text-lg font-mono font-bold text-gray-900">{booking.id}</p>
-                        </div>
-
-                        {/* Payer Information */}
-                        <div className="border-t border-gray-200 pt-4">
-                          <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center">
-                            <UserIcon className="h-4 w-4 mr-2" /> {t('myPages.contactPerson')}
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                            <div className="flex items-center text-gray-600">
-                              <UserIcon className="h-3 w-3 mr-2 text-gray-400" />
-                              <span>{booking.payer.firstName} {booking.payer.lastName}</span>
-                            </div>
-                            <div className="flex items-center text-gray-600">
-                              <Mail className="h-3 w-3 mr-2 text-gray-400" />
-                              <span>{booking.payer.email}</span>
-                            </div>
-                            <div className="flex items-center text-gray-600">
-                              <Phone className="h-3 w-3 mr-2 text-gray-400" />
-                              <span>{booking.payer.phone}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Travelers List */}
-                        {booking.travelers && booking.travelers.length > 0 && (
-                          <div className="border-t border-gray-200 pt-4 mt-4">
-                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">
-                              {t('myPages.travelers')} ({booking.travelers.length})
-                            </h4>
-                            <div className="space-y-2">
-                              {booking.travelers.map((traveler, idx) => (
-                                <div key={idx} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg text-sm">
-                                  <div className="flex items-center">
-                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                      <span className="text-blue-600 font-bold text-xs">{idx + 1}</span>
-                                    </div>
-                                    <div>
-                                      <p className="font-medium text-gray-900">{traveler.firstName} {traveler.lastName}</p>
-                                      <p className="text-xs text-gray-500">{traveler.email}</p>
-                                    </div>
-                                  </div>
-                                  {traveler.isPayer && (
-                                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">
-                                      {t('myPages.payer')}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                            {booking.promoCode}
+                          </span>
                         )}
                       </div>
+                    </div>
 
-                      {/* Right Column - Payment Info */}
-                      <div className="lg:w-80">
-                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 sticky top-24">
-                          <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center">
-                            <CreditCard className="h-4 w-4 mr-2" /> {t('myPages.paymentDetails')}
-                          </h4>
-                          
-                          <div className="space-y-3 mb-4">
-                            {/* Show promo code if applied */}
-                            {booking.promoCode && booking.discountAmount && (
-                              <div className="bg-purple-100 border border-purple-200 rounded-lg p-3 -mx-2 mb-3">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <svg className="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                  </svg>
-                                  <span className="text-xs font-bold text-purple-900 uppercase tracking-wide">Promo Applied</span>
-                                </div>
-                                <div className="space-y-1">
-                                  <div className="flex justify-between text-sm">
-                                    <span className="text-purple-700">Code:</span>
-                                    <span className="font-mono font-bold text-purple-900">{booking.promoCode}</span>
-                                  </div>
-                                  <div className="flex justify-between text-sm">
-                                    <span className="text-purple-700">You Saved:</span>
-                                    <span className="font-bold text-purple-900">{booking.discountAmount.toLocaleString()} SEK</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                            
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">{t('myPages.totalAmount')}</span>
-                              <span className="font-bold text-gray-900">{booking.totalAmount.toLocaleString()} SEK</span>
+                    {/* Compact Info */}
+                    <div className="p-4 bg-white">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-gray-900 mb-2">{booking.tourTitle}</h3>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1.5" />
+                              <span>{booking.tripDate}</span>
                             </div>
-                            <div className="flex justify-between text-sm text-green-600">
-                              <span>{t('myPages.paidAmount')}</span>
-                              <span className="font-bold">-{booking.paidAmount.toLocaleString()} SEK</span>
+                            <div className="flex items-center">
+                              <Users className="h-4 w-4 mr-1.5" />
+                              <span>{booking.participants} {booking.participants === 1 ? t('myPages.traveler') : t('myPages.travelers')}</span>
                             </div>
-                            {remainingAmount > 0 && (
-                              <div className="border-t border-blue-200 pt-3 flex justify-between text-sm">
-                                <span className="text-gray-700 font-medium">{t('myPages.remainingBalance')}</span>
-                                <span className="font-bold text-orange-600">{remainingAmount.toLocaleString()} SEK</span>
-                              </div>
+                            <div className="flex items-center">
+                              <CreditCard className="h-4 w-4 mr-1.5" />
+                              <span className="font-semibold">{booking.totalAmount.toLocaleString()} SEK</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 ml-4">
+                          {/* Download PDF button */}
+                          <button
+                            title="Download confirmation PDF"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadBookingPDF(booking.id);
+                            }}
+                            className="inline-flex items-center justify-center p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-sm transition"
+                          >
+                            <Download className="h-4 w-4" />
+                          </button>
+                          {/* Expand/Collapse Icon */}
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-600">
+                            {isExpanded ? (
+                              <ChevronUp className="h-5 w-5" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5" />
                             )}
                           </div>
-
-                          <div className="mb-4">
-                            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getPaymentColor(booking.paymentStatus)}`}>
-                              {booking.paymentStatus}
-                            </span>
-                          </div>
-
-                          {booking.paymentStatus === PaymentStatus.PARTIAL && (
-                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
-                              <p className="text-xs text-orange-800">
-                                <strong>{t('myPages.reminderTitle')}</strong><br />
-                                {t('myPages.reminderText')}
-                              </p>
-                            </div>
-                          )}
-
-                          {booking.paymentStatus === PaymentStatus.PAID && (
-                            <div className="flex items-center justify-center text-green-600 text-sm font-medium">
-                              <CheckCircle2 className="h-4 w-4 mr-1" />
-                              {t('myPages.fullyPaid')}
-                            </div>
-                          )}
-
-                          {booking.transactionId && (
-                            <div className="mt-4 pt-4 border-t border-blue-200">
-                              <p className="text-xs text-gray-500">{t('myPages.transactionId')}</p>
-                              <p className="font-mono text-xs text-gray-600 truncate">{booking.transactionId}</p>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Expanded Details - Conditionally Visible */}
+                  {isExpanded && (
+                    <div className="border-t border-gray-200 p-6 bg-gray-50">
+                      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
+                        {/* Left Column - Trip Details */}
+                        <div className="flex-1">
+                          {/* Promo Code Savings Badge */}
+                          {booking.promoCode && booking.discountAmount && (
+                            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full mb-4 shadow-md">
+                              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="font-bold text-sm">
+                                You saved {booking.discountAmount.toLocaleString()} SEK with {booking.promoCode}!
+                              </span>
+                            </div>
+                          )}
+                          
+                          <div className="space-y-2 mb-6">
+                            <div className="flex items-center text-gray-600">
+                              <Clock className="h-4 w-4 mr-2" />
+                              <span className="text-sm">{t('myPages.bookedOn')}: {booking.bookingDate}</span>
+                            </div>
+                          </div>
+
+                          {/* Booking Reference */}
+                          <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+                            <p className="text-xs text-gray-500 mb-1">{t('myPages.bookingRef')}</p>
+                            <p className="text-lg font-mono font-bold text-gray-900">{booking.id}</p>
+                          </div>
+
+                          {/* Payer Information */}
+                          <div className="border-t border-gray-200 pt-4">
+                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center">
+                              <UserIcon className="h-4 w-4 mr-2" /> {t('myPages.contactPerson')}
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                              <div className="flex items-center text-gray-600">
+                                <UserIcon className="h-3 w-3 mr-2 text-gray-400" />
+                                <span>{booking.payer.firstName} {booking.payer.lastName}</span>
+                              </div>
+                              <div className="flex items-center text-gray-600">
+                                <Mail className="h-3 w-3 mr-2 text-gray-400" />
+                                <span>{booking.payer.email}</span>
+                              </div>
+                              <div className="flex items-center text-gray-600">
+                                <Phone className="h-3 w-3 mr-2 text-gray-400" />
+                                <span>{booking.payer.phone}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Travelers List */}
+                          {booking.travelers && booking.travelers.length > 0 && (
+                            <div className="border-t border-gray-200 pt-4 mt-4">
+                              <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">
+                                {t('myPages.travelers')} ({booking.travelers.length})
+                              </h4>
+                              <div className="space-y-2">
+                                {booking.travelers.map((traveler, idx) => (
+                                  <div key={idx} className="flex items-center justify-between bg-white p-3 rounded-lg text-sm border border-gray-200">
+                                    <div className="flex items-center">
+                                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                        <span className="text-blue-600 font-bold text-xs">{idx + 1}</span>
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-gray-900">{traveler.firstName} {traveler.lastName}</p>
+                                        <p className="text-xs text-gray-500">{traveler.email}</p>
+                                      </div>
+                                    </div>
+                                    {traveler.isPayer && (
+                                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">
+                                        {t('myPages.payer')}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Right Column - Payment Info */}
+                        <div className="lg:w-80">
+                          <div className="bg-white border border-gray-200 rounded-xl p-6">
+                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center">
+                              <CreditCard className="h-4 w-4 mr-2" /> {t('myPages.paymentDetails')}
+                            </h4>
+                            
+                            <div className="space-y-3 mb-4">
+                              {/* Show promo code if applied */}
+                              {booking.promoCode && booking.discountAmount && (
+                                <div className="bg-purple-100 border border-purple-200 rounded-lg p-3 -mx-2 mb-3">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <svg className="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                    <span className="text-xs font-bold text-purple-900 uppercase tracking-wide">Promo Applied</span>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between text-sm">
+                                      <span className="text-purple-700">Code:</span>
+                                      <span className="font-mono font-bold text-purple-900">{booking.promoCode}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                      <span className="text-purple-700">You Saved:</span>
+                                      <span className="font-bold text-purple-900">{booking.discountAmount.toLocaleString()} SEK</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">{t('myPages.totalAmount')}</span>
+                                <span className="font-bold text-gray-900">{booking.totalAmount.toLocaleString()} SEK</span>
+                              </div>
+                              <div className="flex justify-between text-sm text-green-600">
+                                <span>{t('myPages.paidAmount')}</span>
+                                <span className="font-bold">-{booking.paidAmount.toLocaleString()} SEK</span>
+                              </div>
+                              {remainingAmount > 0 && (
+                                <div className="border-t border-gray-200 pt-3 flex justify-between text-sm">
+                                  <span className="text-gray-700 font-medium">{t('myPages.remainingBalance')}</span>
+                                  <span className="font-bold text-orange-600">{remainingAmount.toLocaleString()} SEK</span>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="mb-4">
+                              <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getPaymentColor(booking.paymentStatus)}`}>
+                                {booking.paymentStatus}
+                              </span>
+                            </div>
+
+                            {booking.paymentStatus === PaymentStatus.PARTIAL && (
+                              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                                <p className="text-xs text-orange-800">
+                                  <strong>{t('myPages.reminderTitle')}</strong><br />
+                                  {t('myPages.reminderText')}
+                                </p>
+                              </div>
+                            )}
+
+                            {booking.paymentStatus === PaymentStatus.PAID && (
+                              <div className="flex items-center justify-center text-green-600 text-sm font-medium">
+                                <CheckCircle2 className="h-4 w-4 mr-1" />
+                                {t('myPages.fullyPaid')}
+                              </div>
+                            )}
+
+                            {booking.transactionId && (
+                              <div className="mt-4 pt-4 border-t border-gray-200">
+                                <p className="text-xs text-gray-500">{t('myPages.transactionId')}</p>
+                                <p className="font-mono text-xs text-gray-600 truncate">{booking.transactionId}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

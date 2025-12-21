@@ -6,6 +6,18 @@ import { Booking, BookingStatus, PaymentStatus, PayerDetails, Waitlist } from '.
 import { DashboardStats } from '../../../shared/types/common.types';
 import { delay, generateId, generateTransactionId } from '../../../shared/utils/api.utils';
 
+/**
+ * Get current date in local timezone formatted as YYYY-MM-DD
+ */
+const getCurrentDate = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+};
+
 // Helper mock payer data
 const mockPayer: PayerDetails = {
   firstName: 'Alice',
@@ -188,7 +200,7 @@ export const BookingService = {
         ? `${bookingData.payer.firstName} ${bookingData.payer.lastName}`
         : 'Guest',
       payer: bookingData.payer || mockPayer,
-      bookingDate: new Date().toISOString().split('T')[0],
+      bookingDate: getCurrentDate(),
       tripDate: bookingData.tripDate || '',
       participants: bookingData.participants || 1,
       travelers: bookingData.travelers || [],
