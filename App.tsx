@@ -26,6 +26,7 @@ import { FinanceReports } from './pages/admin/finance/FinanceReports';
 import { FortnoxIntegration } from './pages/admin/finance/FortnoxIntegration';
 import { CompanySettings } from './pages/admin/settings/CompanySettings';
 import { UserManagement } from './pages/admin/settings/UserManagement';
+import { AdminUsersManager } from './pages/admin/settings/components/AdminUsersManager';
 import { RolesPermissions } from './pages/admin/settings/RolesPermissions';
 import { EmailSettings } from './pages/admin/settings/EmailSettings';
 import { Logs } from './pages/admin/settings/components/Logs';
@@ -37,7 +38,7 @@ import { UserRole } from './types';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, requiredRole }: { children?: React.ReactNode, requiredRole?: UserRole }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
   
   if (!isAuthenticated && requiredRole) {
       // In a real app, redirect to login
@@ -45,7 +46,13 @@ const ProtectedRoute = ({ children, requiredRole }: { children?: React.ReactNode
       return <Navigate to="/" />; 
   }
 
-  if (requiredRole && user?.role !== requiredRole && user?.role !== UserRole.SUPPORT) {
+  // Allow all admin-level roles to access admin routes
+  if (requiredRole === UserRole.ADMIN && !isAdmin) {
+      return <Navigate to="/" />;
+  }
+  
+  // For specific role requirements (non-admin routes)
+  if (requiredRole && requiredRole !== UserRole.ADMIN && user?.role !== requiredRole) {
       return <Navigate to="/" />;
   }
   
@@ -181,7 +188,7 @@ const AppRoutes = () => {
             } />
             <Route path="/admin/settings/users" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><UserManagement /></AdminLayout>
+                    <AdminLayout><AdminUsersManager /></AdminLayout>
                 </ProtectedRoute>
             } />
             <Route path="/admin/settings/roles" element={

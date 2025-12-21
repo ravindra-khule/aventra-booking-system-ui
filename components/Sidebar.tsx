@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { UserRole } from '../types';
 import {
   LayoutDashboard,
   Calendar,
@@ -41,11 +43,20 @@ interface MenuCategory {
   label: string;
   icon: React.ReactNode;
   items: MenuItem[];
+  allowedRoles?: UserRole[]; // Which roles can see this category
 }
+
+// Helper function to check if user has access to a category
+const hasAccessToCategory = (category: MenuCategory, userRole: UserRole | undefined): boolean => {
+  if (!userRole) return false;
+  if (!category.allowedRoles || category.allowedRoles.length === 0) return true; // If no restriction, allow all
+  return category.allowedRoles.includes(userRole);
+};
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
+  const { user } = useAuth(); // Get current user to check role
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     t('admin.bookings'),
     t('admin.marketing'),
@@ -73,6 +84,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin.bookings'),
       icon: <Calendar className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.SUPPORT], // Support can see bookings
       items: [
         {
           label: t('admin.allBookings'),
@@ -94,6 +106,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin.marketing'),
       icon: <TrendingUp className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Only Super Admin and Admin
       items: [
         {
           label: t('admin.promoCodes'),
@@ -120,6 +133,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin.customers'),
       icon: <Users className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.SUPPORT], // Support can see customers
       items: [
         {
           label: t('admin.customerList'),
@@ -141,6 +155,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin.tours'),
       icon: <Map className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DEVELOPER], // Admins and Developers
       items: [
         {
           label: t('admin.tourManagement'),
@@ -167,6 +182,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin.finance'),
       icon: <DollarSign className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Finance roles
       items: [
         {
           label: t('admin.paymentsRefunds'),
@@ -193,6 +209,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin.settings'),
       icon: <Settings className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DEVELOPER], // Settings access
       items: [
         {
           label: t('admin.companyInfo'),
@@ -246,13 +263,15 @@ const Sidebar: React.FC = () => {
           <span className="font-medium">{t('admin.dashboard')}</span>
         </Link>
 
-        {/* Categories with submenus */}
-        {menuCategories.map((category) => {
-          const isExpanded = expandedCategories.includes(category.label);
-          const hasActiveItem = isCategoryActive(category.items);
+        {/* Categories with submenus - filtered by user role */}
+        {menuCategories
+          .filter((category) => hasAccessToCategory(category, user?.role))
+          .map((category) => {
+            const isExpanded = expandedCategories.includes(category.label);
+            const hasActiveItem = isCategoryActive(category.items);
 
-          return (
-            <div key={category.label} className="mb-2">
+            return (
+              <div key={category.label} className="mb-2">
               {/* Category Header */}
               <button
                 onClick={() => toggleCategory(category.label)}

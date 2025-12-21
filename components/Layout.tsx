@@ -3,22 +3,42 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../context/LanguageContext';
 import { UserRole } from '../types';
-import { Menu, X, User as UserIcon, LogOut, LayoutDashboard, Calendar, Users, Map, Globe } from 'lucide-react';
+import { Menu, X, User as UserIcon, LogOut, Globe } from 'lucide-react';
+import { DemoLoginModal } from './DemoLoginModal';
 
 export const Layout = ({ children }: { children?: React.ReactNode }) => {
   const { user, logout, login } = useAuth();
   const { t, language, setLanguage } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showLoginModal, setShowLoginModal] = React.useState(false);
 
-  // Quick helper to switch roles for demo purposes
-  const handleRoleSwitch = async () => {
-    if (user?.role === UserRole.ADMIN) {
-      logout();
-    } else {
-      await login('admin@aventra.com', UserRole.ADMIN);
-      navigate('/admin');
+  const handleLogin = async (email: string, password: string, role: UserRole) => {
+    try {
+      await login(email, role, password);
+      
+      // Close the modal first
+      setShowLoginModal(false);
+      
+      // Navigate based on role after successful login
+      // Use setTimeout to ensure state updates complete before navigation
+      setTimeout(() => {
+        if (role === UserRole.CUSTOMER || role === UserRole.GUEST) {
+          navigate('/');
+        } else {
+          // Super Admin, Admin, Support, Accountant, Developer go to admin dashboard
+          navigate('/admin');
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error; // Re-throw to let DemoLoginModal handle the error
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const toggleLanguage = () => {
@@ -58,28 +78,23 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                  <span className="font-semibold">{language === 'en' ? 'EN' : 'SV'}</span>
                </button>
 
-               {/* Demo Toggle */}
-               <button 
-                onClick={handleRoleSwitch}
-                className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full transition"
-               >
-                 {user?.role === UserRole.ADMIN ? t('nav.switchGuest') : t('nav.switchAdmin')}
-               </button>
-
                {user ? (
                  <div className="flex items-center space-x-3">
                    <div className="flex flex-col text-right">
                       <span className="text-sm font-medium text-gray-900">{user.name}</span>
                       <span className="text-xs text-gray-500">{t('nav.loggedInAs')} {user.role}</span>
                    </div>
-                   <button onClick={() => { logout(); navigate('/'); }} className="p-2 rounded-full text-gray-400 hover:text-gray-500">
+                   <button onClick={handleLogout} className="p-2 rounded-full text-gray-400 hover:text-gray-500">
                      <LogOut className="h-5 w-5" />
                    </button>
                  </div>
                ) : (
-                 <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                 <button 
+                   onClick={() => setShowLoginModal(true)}
+                   className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+                 >
                    {t('nav.signIn')}
-                 </Link>
+                 </button>
                )}
             </div>
 
@@ -113,10 +128,35 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                 <Globe className="h-4 w-4" />
                 {language === 'en' ? 'Svenska (SV)' : 'English (EN)'}
               </button>
+              {!user && (
+                <button 
+                  onClick={() => setShowLoginModal(true)}
+                  className="w-full text-left border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center gap-2"
+                >
+                  <UserIcon className="h-4 w-4" />
+                  {t('nav.signIn')}
+                </button>
+              )}
+              {user && (
+                <button 
+                  onClick={handleLogout}
+                  className="w-full text-left border-transparent text-red-500 hover:bg-red-50 hover:border-red-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout ({user.name})
+                </button>
+              )}
             </div>
           </div>
         )}
       </nav>
+
+      {/* Demo Login Modal */}
+      <DemoLoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLogin}
+      />
 
       <main className="flex-1">
         {children}

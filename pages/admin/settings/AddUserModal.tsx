@@ -160,14 +160,18 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onS
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
+                  <option value={UserRole.SUPER_ADMIN}>Super Admin</option>
                   <option value={UserRole.ADMIN}>Admin</option>
                   <option value={UserRole.SUPPORT}>Support</option>
                   <option value={UserRole.ACCOUNTANT}>Accountant</option>
+                  <option value={UserRole.DEVELOPER}>Developer</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.role === UserRole.ADMIN && 'Full system access'}
-                  {formData.role === UserRole.SUPPORT && 'Booking and customer management'}
-                  {formData.role === UserRole.ACCOUNTANT && 'Financial operations only'}
+                  {formData.role === UserRole.SUPER_ADMIN && 'Full system access - Owner level control'}
+                  {formData.role === UserRole.ADMIN && 'Administrative access - Can create admins within organization'}
+                  {formData.role === UserRole.SUPPORT && 'Limited access - Booking and customer management'}
+                  {formData.role === UserRole.ACCOUNTANT && 'Finance access - Financial operations and reporting'}
+                  {formData.role === UserRole.DEVELOPER && 'Technical access - System logs and developer tools'}
                 </p>
               </div>
 

@@ -3,7 +3,7 @@
  * Defines all types for the user management module
  */
 
-export type UserRole = 'Super Admin' | 'Admin' | 'Manager' | 'Support';
+export type UserRole = 'Super Admin' | 'Admin' | 'Support' | 'Accountant' | 'Developer';
 export type UserStatus = 'active' | 'inactive' | 'pending';
 export type InvitationStatus = 'pending' | 'accepted' | 'expired';
 export type ActionType = 'login' | 'create_user' | 'edit_user' | 'delete_user' | 'change_password' | 'enable_2fa' | 'disable_2fa' | 'update_role' | 'logout';

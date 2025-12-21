@@ -110,9 +110,11 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClos
               onChange={(e) => setRole(e.target.value as UserRole)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value={UserRole.ADMIN}>Admin - Full system access</option>
+              <option value={UserRole.SUPER_ADMIN}>Super Admin - Full system access (Owner)</option>
+              <option value={UserRole.ADMIN}>Admin - Administrative access</option>
               <option value={UserRole.SUPPORT}>Support - Booking & customer management</option>
-              <option value={UserRole.ACCOUNTANT}>Accountant - Financial operations only</option>
+              <option value={UserRole.ACCOUNTANT}>Accountant - Financial operations</option>
+              <option value={UserRole.DEVELOPER}>Developer - Technical & system access</option>
             </select>
           </div>
 

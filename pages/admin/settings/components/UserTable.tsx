@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Square, CheckSquare, Edit2, Trash2, Eye, Lock, Unlock, Clock } from 'lucide-react';
+import { X, Square, CheckSquare, Edit2, Trash2, Eye, Lock, Unlock, Clock, Shield } from 'lucide-react';
 import { AdminUser, UserRole, UserStatus } from '../types/userManagementTypes';
 import { UserStatusIndicator } from './UserStatusIndicator';
 
@@ -15,6 +15,7 @@ interface UserTableProps {
   onViewSessions: (user: AdminUser) => void;
   onToggleStatus: (userId: string) => void;
   onToggle2FA: (userId: string) => void;
+  onManageModulePermissions?: (user: AdminUser) => void;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({
@@ -29,6 +30,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   onViewSessions,
   onToggleStatus,
   onToggle2FA,
+  onManageModulePermissions,
 }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null);
@@ -177,10 +179,22 @@ export const UserTable: React.FC<UserTableProps> = ({
                           setActionMenuOpen(null);
                         }}
                         className="p-2 hover:bg-purple-100 text-purple-600 rounded-lg transition"
-                        title="View permissions"
+                        title="View role permissions"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
+                      {onManageModulePermissions && (
+                        <button
+                          onClick={() => {
+                            onManageModulePermissions(user);
+                            setActionMenuOpen(null);
+                          }}
+                          className="p-2 hover:bg-green-100 text-green-600 rounded-lg transition"
+                          title="Manage module permissions"
+                        >
+                          <Shield className="h-4 w-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => onDeleteUser(user.id)}
                         className="p-2 hover:bg-red-100 text-red-600 rounded-lg transition"
@@ -295,6 +309,15 @@ export const UserTable: React.FC<UserTableProps> = ({
               >
                 Edit
               </button>
+              {onManageModulePermissions && (
+                <button
+                  onClick={() => onManageModulePermissions(user)}
+                  className="flex-1 px-3 py-2 bg-green-100 text-green-600 text-sm rounded hover:bg-green-200 transition font-medium flex items-center justify-center gap-1"
+                >
+                  <Shield className="w-3 h-3" />
+                  Modules
+                </button>
+              )}
               <button
                 onClick={() => onViewPermissions(user)}
                 className="flex-1 px-3 py-2 bg-purple-100 text-purple-600 text-sm rounded hover:bg-purple-200 transition font-medium"

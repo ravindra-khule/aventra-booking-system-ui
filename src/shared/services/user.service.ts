@@ -5,77 +5,91 @@
 import { User, UserRole, UserStatus, UserActivity, UserInvitation } from '../types/common.types';
 import { delay } from '../utils/api.utils';
 
-// Mock data for development
+// Mock data for development - matches DemoLoginModal users
 let mockUsers: User[] = [
   {
     id: 'u_1',
-    name: 'Admin User',
-    email: 'admin@aventra.com',
-    role: UserRole.ADMIN,
-    phone: '+46 70 123 4567',
+    name: 'Super Admin',
+    email: 'superadmin@aventra.com',
+    role: UserRole.SUPER_ADMIN,
+    phone: '+46 70 100 0001',
     status: UserStatus.ACTIVE,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
-    createdAt: new Date('2024-01-15'),
-    lastLogin: new Date('2024-12-30T10:30:00'),
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPER_ADMIN',
+    createdAt: new Date('2024-01-01'),
+    lastLogin: new Date('2025-12-21T14:30:00'),
     twoFactorEnabled: true,
     createdBy: 'system',
-    notes: 'Primary system administrator'
+    notes: 'System owner - Full access'
   },
   {
     id: 'u_2',
-    name: 'Sarah Johnson',
-    email: 'sarah@aventra.com',
-    role: UserRole.SUPPORT,
-    phone: '+46 70 234 5678',
+    name: 'Admin User',
+    email: 'admin@aventra.com',
+    role: UserRole.ADMIN,
+    phone: '+46 70 100 0002',
     status: UserStatus.ACTIVE,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sarah',
-    createdAt: new Date('2024-02-20'),
-    lastLogin: new Date('2024-12-29T15:20:00'),
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ADMIN',
+    createdAt: new Date('2024-01-15'),
+    lastLogin: new Date('2025-12-21T09:15:00'),
     twoFactorEnabled: true,
     createdBy: 'u_1',
-    notes: 'Customer support specialist'
+    notes: 'Primary administrator'
   },
   {
     id: 'u_3',
-    name: 'Michael Chen',
-    email: 'michael@aventra.com',
-    role: UserRole.ACCOUNTANT,
-    phone: '+46 70 345 6789',
+    name: 'Support Agent',
+    email: 'support@aventra.com',
+    role: UserRole.SUPPORT,
+    phone: '+46 70 100 0003',
     status: UserStatus.ACTIVE,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=michael',
-    createdAt: new Date('2024-03-10'),
-    lastLogin: new Date('2024-12-28T09:15:00'),
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPPORT',
+    createdAt: new Date('2024-02-20'),
+    lastLogin: new Date('2025-12-21T10:45:00'),
     twoFactorEnabled: false,
+    createdBy: 'u_2',
+    notes: 'Customer support specialist'
+  },
+  {
+    id: 'u_4',
+    name: 'Accountant',
+    email: 'accountant@aventra.com',
+    role: UserRole.ACCOUNTANT,
+    phone: '+46 70 100 0004',
+    status: UserStatus.ACTIVE,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ACCOUNTANT',
+    createdAt: new Date('2024-03-10'),
+    lastLogin: new Date('2025-12-20T15:20:00'),
+    twoFactorEnabled: true,
     createdBy: 'u_1',
     notes: 'Financial operations manager'
   },
   {
-    id: 'u_4',
-    name: 'Emma Peterson',
-    email: 'emma@aventra.com',
-    role: UserRole.SUPPORT,
-    phone: '+46 70 456 7890',
-    status: UserStatus.INACTIVE,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=emma',
-    createdAt: new Date('2024-04-05'),
-    lastLogin: new Date('2024-11-20T14:30:00'),
-    twoFactorEnabled: false,
-    createdBy: 'u_1',
-    notes: 'On leave'
-  },
-  {
     id: 'u_5',
-    name: 'David Anderson',
-    email: 'david@aventra.com',
-    role: UserRole.ADMIN,
-    phone: '+46 70 567 8901',
-    status: UserStatus.SUSPENDED,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=david',
-    createdAt: new Date('2024-05-15'),
-    lastLogin: new Date('2024-12-15T11:45:00'),
+    name: 'Developer',
+    email: 'developer@aventra.com',
+    role: UserRole.DEVELOPER,
+    phone: '+46 70 100 0005',
+    status: UserStatus.ACTIVE,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DEVELOPER',
+    createdAt: new Date('2024-04-05'),
+    lastLogin: new Date('2025-12-20T18:30:00'),
     twoFactorEnabled: true,
     createdBy: 'u_1',
-    notes: 'Account under review'
+    notes: 'System developer - Technical access'
+  },
+  {
+    id: 'u_6',
+    name: 'Guest User',
+    email: 'guest@aventra.com',
+    role: UserRole.CUSTOMER,
+    phone: '+46 70 100 0006',
+    status: UserStatus.ACTIVE,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=CUSTOMER',
+    createdAt: new Date('2024-05-15'),
+    lastLogin: new Date('2025-12-20T12:00:00'),
+    twoFactorEnabled: false,
+    createdBy: 'u_2',
+    notes: 'Customer account'
   }
 ];
 

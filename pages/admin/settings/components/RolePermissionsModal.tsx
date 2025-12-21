@@ -12,215 +12,237 @@ const ROLE_PERMISSIONS_DATA: Record<string, RolePermission> = {
   'Super Admin': {
     id: 'super-admin',
     name: 'Super Admin',
-    description: 'Full system access with all permissions',
+    description: 'Full system access - Owner level control with all permissions',
     permissions: [
-      {
-        id: 'user-create',
-        name: 'Create Users',
-        description: 'Create new admin user accounts',
-        category: 'User Management',
-      },
-      {
-        id: 'user-edit',
-        name: 'Edit Users',
-        description: 'Edit existing user accounts and information',
-        category: 'User Management',
-      },
-      {
-        id: 'user-delete',
-        name: 'Delete Users',
-        description: 'Delete user accounts permanently',
-        category: 'User Management',
-      },
-      {
-        id: 'role-assign',
-        name: 'Assign Roles',
-        description: 'Assign and modify user roles',
-        category: 'User Management',
-      },
-      {
-        id: 'booking-view',
-        name: 'View All Bookings',
-        description: 'View all system bookings',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-create',
-        name: 'Create Bookings',
-        description: 'Create new bookings on behalf of customers',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-edit',
-        name: 'Edit Bookings',
-        description: 'Modify existing bookings',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-cancel',
-        name: 'Cancel Bookings',
-        description: 'Cancel bookings with full refunds',
-        category: 'Bookings',
-      },
-      {
-        id: 'customer-view',
-        name: 'View Customers',
-        description: 'View all customer information',
-        category: 'Customers',
-      },
-      {
-        id: 'customer-edit',
-        name: 'Edit Customers',
-        description: 'Edit customer profiles and data',
-        category: 'Customers',
-      },
-      {
-        id: 'tour-manage',
-        name: 'Manage Tours',
-        description: 'Create, edit, and delete tours',
-        category: 'Tours',
-      },
-      {
-        id: 'promo-manage',
-        name: 'Manage Promotions',
-        description: 'Create and manage promotional codes',
-        category: 'Marketing',
-      },
-      {
-        id: 'reports-view',
-        name: 'View Reports',
-        description: 'Access all reports and analytics',
-        category: 'Reports',
-      },
-      {
-        id: 'settings-configure',
-        name: 'Configure Settings',
-        description: 'Modify system settings and configuration',
-        category: 'Settings',
-      },
+      // User Management
+      { id: 'user-create', name: 'Create Users', description: 'Create new admin user accounts', category: 'User Management' },
+      { id: 'user-edit', name: 'Edit Users', description: 'Edit existing user accounts and information', category: 'User Management' },
+      { id: 'user-delete', name: 'Delete Users', description: 'Delete user accounts permanently', category: 'User Management' },
+      { id: 'role-assign', name: 'Assign Roles', description: 'Assign and modify user roles (all roles)', category: 'User Management' },
+      { id: 'role-manage', name: 'Manage Roles', description: 'Create and modify role definitions', category: 'User Management' },
+      
+      // Bookings
+      { id: 'booking-view', name: 'View All Bookings', description: 'View all system bookings', category: 'Bookings' },
+      { id: 'booking-create', name: 'Create Bookings', description: 'Create new bookings', category: 'Bookings' },
+      { id: 'booking-edit', name: 'Edit Bookings', description: 'Modify existing bookings', category: 'Bookings' },
+      { id: 'booking-delete', name: 'Delete Bookings', description: 'Delete bookings permanently', category: 'Bookings' },
+      { id: 'booking-cancel', name: 'Cancel Bookings', description: 'Cancel bookings with refunds', category: 'Bookings' },
+      
+      // Customers
+      { id: 'customer-view', name: 'View Customers', description: 'View all customer information', category: 'Customers' },
+      { id: 'customer-create', name: 'Create Customers', description: 'Create new customer profiles', category: 'Customers' },
+      { id: 'customer-edit', name: 'Edit Customers', description: 'Edit customer profiles and data', category: 'Customers' },
+      { id: 'customer-delete', name: 'Delete Customers', description: 'Delete customer accounts', category: 'Customers' },
+      { id: 'customer-export', name: 'Export Customer Data', description: 'Export customer information', category: 'Customers' },
+      
+      // Tours & Packages
+      { id: 'tour-view', name: 'View Tours', description: 'View all tours and packages', category: 'Tours' },
+      { id: 'tour-create', name: 'Create Tours', description: 'Create new tours and packages', category: 'Tours' },
+      { id: 'tour-edit', name: 'Edit Tours', description: 'Modify tour details', category: 'Tours' },
+      { id: 'tour-delete', name: 'Delete Tours', description: 'Delete tours permanently', category: 'Tours' },
+      { id: 'tour-pricing', name: 'Manage Pricing', description: 'Set and modify tour pricing', category: 'Tours' },
+      
+      // Finance
+      { id: 'finance-view', name: 'View Financials', description: 'Access financial data', category: 'Finance' },
+      { id: 'finance-invoices', name: 'Manage Invoices', description: 'Create and manage invoices', category: 'Finance' },
+      { id: 'finance-payments', name: 'Process Payments', description: 'Handle payment processing', category: 'Finance' },
+      { id: 'finance-refunds', name: 'Process Refunds', description: 'Issue customer refunds', category: 'Finance' },
+      { id: 'finance-reports', name: 'Financial Reports', description: 'Access and export financial reports', category: 'Finance' },
+      
+      // Marketing
+      { id: 'marketing-campaigns', name: 'Manage Campaigns', description: 'Create and manage marketing campaigns', category: 'Marketing' },
+      { id: 'marketing-email', name: 'Send Email Campaigns', description: 'Send marketing emails', category: 'Marketing' },
+      { id: 'marketing-analytics', name: 'View Analytics', description: 'Access marketing analytics', category: 'Marketing' },
+      { id: 'promo-manage', name: 'Manage Promotions', description: 'Create and manage promotional codes', category: 'Marketing' },
+      
+      // Settings
+      { id: 'settings-company', name: 'Company Settings', description: 'Modify company information', category: 'Settings' },
+      { id: 'settings-system', name: 'System Settings', description: 'Configure system settings', category: 'Settings' },
+      { id: 'settings-email', name: 'Email Templates', description: 'Manage email templates', category: 'Settings' },
+      
+      // System & Logs
+      { id: 'logs-view', name: 'View System Logs', description: 'Access system activity logs', category: 'System & Logs' },
+      { id: 'logs-audit', name: 'Audit Trail', description: 'View complete audit trail', category: 'System & Logs' },
+      { id: 'logs-error', name: 'Error Logs', description: 'Access error and debug logs', category: 'System & Logs' },
+      { id: 'dev-tools', name: 'Developer Tools', description: 'Access developer tools and APIs', category: 'System & Logs' },
+      
+      // Reports
+      { id: 'reports-view', name: 'View Reports', description: 'Access all reports and analytics', category: 'Reports' },
+      { id: 'reports-export', name: 'Export Reports', description: 'Export reports in various formats', category: 'Reports' },
+      { id: 'reports-custom', name: 'Custom Reports', description: 'Create custom report templates', category: 'Reports' },
     ],
   },
   Admin: {
     id: 'admin',
     name: 'Admin',
-    description: 'Administrative access with limited restrictions',
+    description: 'Administrative access - Can manage operations and create users',
     permissions: [
-      {
-        id: 'booking-view',
-        name: 'View All Bookings',
-        description: 'View all system bookings',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-create',
-        name: 'Create Bookings',
-        description: 'Create new bookings on behalf of customers',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-edit',
-        name: 'Edit Bookings',
-        description: 'Modify existing bookings',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-cancel',
-        name: 'Cancel Bookings',
-        description: 'Cancel bookings with full refunds',
-        category: 'Bookings',
-      },
-      {
-        id: 'customer-view',
-        name: 'View Customers',
-        description: 'View all customer information',
-        category: 'Customers',
-      },
-      {
-        id: 'customer-edit',
-        name: 'Edit Customers',
-        description: 'Edit customer profiles and data',
-        category: 'Customers',
-      },
-      {
-        id: 'tour-manage',
-        name: 'Manage Tours',
-        description: 'Create, edit, and delete tours',
-        category: 'Tours',
-      },
-      {
-        id: 'promo-manage',
-        name: 'Manage Promotions',
-        description: 'Create and manage promotional codes',
-        category: 'Marketing',
-      },
-      {
-        id: 'reports-view',
-        name: 'View Reports',
-        description: 'Access all reports and analytics',
-        category: 'Reports',
-      },
-    ],
-  },
-  Manager: {
-    id: 'manager',
-    name: 'Manager',
-    description: 'Operational management access',
-    permissions: [
-      {
-        id: 'booking-view',
-        name: 'View All Bookings',
-        description: 'View all system bookings',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-create',
-        name: 'Create Bookings',
-        description: 'Create new bookings on behalf of customers',
-        category: 'Bookings',
-      },
-      {
-        id: 'booking-edit',
-        name: 'Edit Bookings',
-        description: 'Modify existing bookings',
-        category: 'Bookings',
-      },
-      {
-        id: 'customer-view',
-        name: 'View Customers',
-        description: 'View all customer information',
-        category: 'Customers',
-      },
-      {
-        id: 'reports-view',
-        name: 'View Reports',
-        description: 'Access all reports and analytics',
-        category: 'Reports',
-      },
+      // User Management (Limited)
+      { id: 'user-create', name: 'Create Users', description: 'Create Support and Accountant users', category: 'User Management' },
+      { id: 'user-edit', name: 'Edit Users', description: 'Edit user accounts', category: 'User Management' },
+      { id: 'role-assign', name: 'Assign Roles', description: 'Assign Support and Accountant roles', category: 'User Management' },
+      
+      // Bookings (Full)
+      { id: 'booking-view', name: 'View All Bookings', description: 'View all system bookings', category: 'Bookings' },
+      { id: 'booking-create', name: 'Create Bookings', description: 'Create new bookings', category: 'Bookings' },
+      { id: 'booking-edit', name: 'Edit Bookings', description: 'Modify existing bookings', category: 'Bookings' },
+      { id: 'booking-cancel', name: 'Cancel Bookings', description: 'Cancel bookings', category: 'Bookings' },
+      
+      // Customers (Full)
+      { id: 'customer-view', name: 'View Customers', description: 'View all customer information', category: 'Customers' },
+      { id: 'customer-create', name: 'Create Customers', description: 'Create new customer profiles', category: 'Customers' },
+      { id: 'customer-edit', name: 'Edit Customers', description: 'Edit customer data', category: 'Customers' },
+      { id: 'customer-export', name: 'Export Customer Data', description: 'Export customer information', category: 'Customers' },
+      
+      // Tours (Full)
+      { id: 'tour-view', name: 'View Tours', description: 'View all tours', category: 'Tours' },
+      { id: 'tour-create', name: 'Create Tours', description: 'Create new tours', category: 'Tours' },
+      { id: 'tour-edit', name: 'Edit Tours', description: 'Modify tour details', category: 'Tours' },
+      { id: 'tour-pricing', name: 'Manage Pricing', description: 'Set tour pricing', category: 'Tours' },
+      
+      // Finance (View & Limited)
+      { id: 'finance-view', name: 'View Financials', description: 'Access financial data', category: 'Finance' },
+      { id: 'finance-invoices', name: 'Manage Invoices', description: 'Create and edit invoices', category: 'Finance' },
+      { id: 'finance-payments', name: 'Process Payments', description: 'Handle payments', category: 'Finance' },
+      { id: 'finance-reports', name: 'Financial Reports', description: 'View financial reports', category: 'Finance' },
+      
+      // Marketing (Full)
+      { id: 'marketing-campaigns', name: 'Manage Campaigns', description: 'Create marketing campaigns', category: 'Marketing' },
+      { id: 'marketing-email', name: 'Send Email Campaigns', description: 'Send marketing emails', category: 'Marketing' },
+      { id: 'promo-manage', name: 'Manage Promotions', description: 'Manage promotional codes', category: 'Marketing' },
+      
+      // Settings (Limited)
+      { id: 'settings-company', name: 'Company Settings', description: 'View and edit company info', category: 'Settings' },
+      { id: 'settings-email', name: 'Email Templates', description: 'Manage email templates', category: 'Settings' },
+      
+      // Reports
+      { id: 'reports-view', name: 'View Reports', description: 'Access reports', category: 'Reports' },
+      { id: 'reports-export', name: 'Export Reports', description: 'Export reports', category: 'Reports' },
     ],
   },
   Support: {
     id: 'support',
     name: 'Support',
-    description: 'Customer support access',
+    description: 'Customer support access - Limited to bookings and customers',
     permissions: [
-      {
-        id: 'booking-view',
-        name: 'View Bookings',
-        description: 'View booking information for support purposes',
-        category: 'Bookings',
-      },
-      {
-        id: 'customer-view',
-        name: 'View Customers',
-        description: 'View customer information',
-        category: 'Customers',
-      },
-      {
-        id: 'support-ticket',
-        name: 'Manage Support Tickets',
-        description: 'Create and manage customer support tickets',
-        category: 'Support',
-      },
+      // Bookings (View & Edit)
+      { id: 'booking-view', name: 'View Bookings', description: 'View booking information', category: 'Bookings' },
+      { id: 'booking-create', name: 'Create Bookings', description: 'Create new bookings', category: 'Bookings' },
+      { id: 'booking-edit', name: 'Edit Bookings', description: 'Modify bookings', category: 'Bookings' },
+      { id: 'booking-cancel', name: 'Cancel Bookings', description: 'Cancel bookings', category: 'Bookings' },
+      
+      // Customers (View & Edit)
+      { id: 'customer-view', name: 'View Customers', description: 'View customer information', category: 'Customers' },
+      { id: 'customer-create', name: 'Create Customers', description: 'Create customer profiles', category: 'Customers' },
+      { id: 'customer-edit', name: 'Edit Customers', description: 'Update customer data', category: 'Customers' },
+      { id: 'customer-export', name: 'Export Customer Data', description: 'Export customer lists', category: 'Customers' },
+      
+      // Tours (View & Update Content)
+      { id: 'tour-view', name: 'View Tours', description: 'View tour information', category: 'Tours' },
+      { id: 'tour-edit', name: 'Update Tour Content', description: 'Update tour descriptions and itineraries', category: 'Tours' },
+      
+      // Finance (View Only)
+      { id: 'finance-view', name: 'View Invoice Status', description: 'View invoice and payment status', category: 'Finance' },
+      
+      // Marketing (View Only)
+      { id: 'marketing-view', name: 'View Campaigns', description: 'View marketing campaigns', category: 'Marketing' },
+      
+      // Settings (View Only)
+      { id: 'settings-view', name: 'View Company Info', description: 'View company settings', category: 'Settings' },
+      
+      // Reports (View Only)
+      { id: 'reports-view', name: 'View Reports', description: 'View basic reports', category: 'Reports' },
+    ],
+  },
+  Accountant: {
+    id: 'accountant',
+    name: 'Accountant',
+    description: 'Finance access - Full financial operations and reporting',
+    permissions: [
+      // Bookings (View Only)
+      { id: 'booking-view', name: 'View Bookings', description: 'View booking information for financial purposes', category: 'Bookings' },
+      
+      // Customers (View & Export)
+      { id: 'customer-view', name: 'View Customers', description: 'View customer information', category: 'Customers' },
+      { id: 'customer-export', name: 'Export Customer Data', description: 'Export customer data for financial records', category: 'Customers' },
+      
+      // Tours (View Pricing)
+      { id: 'tour-view', name: 'View Tours', description: 'View tour information', category: 'Tours' },
+      { id: 'tour-pricing', name: 'Manage Pricing', description: 'Set and update tour pricing', category: 'Tours' },
+      
+      // Finance (Full Access)
+      { id: 'finance-view', name: 'View Financials', description: 'Access all financial data', category: 'Finance' },
+      { id: 'finance-invoices', name: 'Manage Invoices', description: 'Create, edit, and delete invoices', category: 'Finance' },
+      { id: 'finance-payments', name: 'Process Payments', description: 'Handle payment processing', category: 'Finance' },
+      { id: 'finance-refunds', name: 'Process Refunds', description: 'Issue customer refunds', category: 'Finance' },
+      { id: 'finance-reports', name: 'Financial Reports', description: 'Access and export all financial reports', category: 'Finance' },
+      { id: 'finance-fortnox', name: 'Fortnox Integration', description: 'Manage Fortnox accounting integration', category: 'Finance' },
+      
+      // Marketing (View Analytics)
+      { id: 'marketing-analytics', name: 'View Analytics', description: 'View marketing ROI and analytics', category: 'Marketing' },
+      
+      // Settings (View Only)
+      { id: 'settings-view', name: 'View Company Settings', description: 'View company information', category: 'Settings' },
+      
+      // Reports (Full Financial)
+      { id: 'reports-view', name: 'View Reports', description: 'Access financial reports', category: 'Reports' },
+      { id: 'reports-export', name: 'Export Reports', description: 'Export financial reports', category: 'Reports' },
+      { id: 'reports-custom', name: 'Custom Financial Reports', description: 'Create custom financial reports', category: 'Reports' },
+    ],
+  },
+  Developer: {
+    id: 'developer',
+    name: 'Developer',
+    description: 'Technical access - Full system access plus developer tools and logs',
+    permissions: [
+      // User Management (View Only)
+      { id: 'user-view', name: 'View Users', description: 'View user information', category: 'User Management' },
+      { id: 'user-activity', name: 'View User Activity', description: 'Track user activity logs', category: 'User Management' },
+      
+      // Bookings (Full)
+      { id: 'booking-view', name: 'View All Bookings', description: 'View all bookings', category: 'Bookings' },
+      { id: 'booking-create', name: 'Create Bookings', description: 'Create bookings', category: 'Bookings' },
+      { id: 'booking-edit', name: 'Edit Bookings', description: 'Modify bookings', category: 'Bookings' },
+      { id: 'booking-delete', name: 'Delete Bookings', description: 'Delete bookings', category: 'Bookings' },
+      
+      // Customers (Full)
+      { id: 'customer-view', name: 'View Customers', description: 'View customer data', category: 'Customers' },
+      { id: 'customer-create', name: 'Create Customers', description: 'Create customers', category: 'Customers' },
+      { id: 'customer-edit', name: 'Edit Customers', description: 'Edit customer data', category: 'Customers' },
+      { id: 'customer-export', name: 'Export Customer Data', description: 'Export customer information', category: 'Customers' },
+      
+      // Tours (Full)
+      { id: 'tour-view', name: 'View Tours', description: 'View all tours', category: 'Tours' },
+      { id: 'tour-create', name: 'Create Tours', description: 'Create tours', category: 'Tours' },
+      { id: 'tour-edit', name: 'Edit Tours', description: 'Modify tours', category: 'Tours' },
+      { id: 'tour-pricing', name: 'Manage Pricing', description: 'Set pricing', category: 'Tours' },
+      
+      // Finance (Full)
+      { id: 'finance-view', name: 'View Financials', description: 'Access financial data', category: 'Finance' },
+      { id: 'finance-invoices', name: 'Manage Invoices', description: 'Manage invoices', category: 'Finance' },
+      { id: 'finance-payments', name: 'Process Payments', description: 'Handle payments', category: 'Finance' },
+      
+      // Marketing (Full)
+      { id: 'marketing-campaigns', name: 'Manage Campaigns', description: 'Manage campaigns', category: 'Marketing' },
+      { id: 'marketing-email', name: 'Send Email Campaigns', description: 'Send emails', category: 'Marketing' },
+      
+      // Settings (Full)
+      { id: 'settings-company', name: 'Company Settings', description: 'Configure company settings', category: 'Settings' },
+      { id: 'settings-system', name: 'System Settings', description: 'Configure system settings', category: 'Settings' },
+      { id: 'settings-email', name: 'Email Templates', description: 'Manage email templates', category: 'Settings' },
+      
+      // System & Logs (Full - Developer Specific)
+      { id: 'logs-view', name: 'View System Logs', description: 'Access all system logs', category: 'System & Logs' },
+      { id: 'logs-audit', name: 'Audit Trail', description: 'View complete audit trail', category: 'System & Logs' },
+      { id: 'logs-error', name: 'Error Logs', description: 'Access error and debug logs', category: 'System & Logs' },
+      { id: 'dev-tools', name: 'Developer Tools', description: 'Access developer tools, API, and debugging', category: 'System & Logs' },
+      { id: 'integrations', name: 'Manage Integrations', description: 'Configure third-party integrations', category: 'System & Logs' },
+      { id: 'system-health', name: 'System Health', description: 'Monitor system health and performance', category: 'System & Logs' },
+      
+      // Reports (Full)
+      { id: 'reports-view', name: 'View Reports', description: 'Access all reports', category: 'Reports' },
+      { id: 'reports-export', name: 'Export Reports', description: 'Export reports', category: 'Reports' },
+      { id: 'reports-custom', name: 'Custom Reports', description: 'Create custom reports', category: 'Reports' },
     ],
   },
 };

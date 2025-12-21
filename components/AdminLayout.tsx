@@ -6,21 +6,29 @@ import { UserRole } from '../types';
 import { LogOut, Globe, User as UserIcon } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { MobileSidebar, MenuButton } from './MobileSidebar';
+import { DemoLoginModal } from './DemoLoginModal';
 
 export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   const { user, logout, login } = useAuth();
   const { t, language, setLanguage } = useTranslation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const handleRoleSwitch = async () => {
-    if (user?.role === UserRole.ADMIN) {
-      logout();
+  const handleLogin = async (email: string, password: string, role: UserRole) => {
+    await login(email, role, password);
+    
+    // Navigate based on role
+    if (role === UserRole.CUSTOMER || role === UserRole.GUEST) {
       navigate('/');
     } else {
-      await login('admin@aventra.com', UserRole.ADMIN);
       navigate('/admin');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const toggleLanguage = () => {
@@ -68,14 +76,6 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                   <span className="hidden sm:inline">{language === 'en' ? 'EN' : 'SV'}</span>
                 </button>
 
-                {/* Demo Role Toggle */}
-                <button
-                  onClick={handleRoleSwitch}
-                  className="hidden sm:block text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-2 rounded-lg transition-colors"
-                >
-                  {user?.role === UserRole.ADMIN ? t('nav.switchGuest') : t('nav.switchAdmin')}
-                </button>
-
                 {/* User Info */}
                 {user && (
                   <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
@@ -91,10 +91,7 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
 
                     {/* Logout Button */}
                     <button
-                      onClick={() => {
-                        logout();
-                        navigate('/');
-                      }}
+                      onClick={handleLogout}
                       className="p-2 rounded-lg text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
                       title="Logout"
                     >

@@ -24,78 +24,89 @@ import { UserInvitationModal } from './UserInvitationModal';
 import { BulkActionsModal } from './BulkActionsModal';
 import { PasswordPoliciesPanel } from './PasswordPoliciesPanel';
 import { UserStatusIndicator } from './UserStatusIndicator';
+import { UserPermissionsModal, PermissionModule } from './UserPermissionsModal';
 
-// Mock data
+// Mock data - includes all demo login users from DemoLoginModal
 const MOCK_USERS: AdminUser[] = [
   {
-    id: '1',
-    name: 'Sarah Anderson',
-    email: 'sarah@aventra.com',
-    phone: '+46 70 123 4567',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    id: 'user_superadmin',
+    name: 'Super Admin',
+    email: 'superadmin@aventra.com',
+    phone: '+46 70 100 0001',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPER_ADMIN',
     roles: ['Super Admin'],
     status: 'active',
-    lastLogin: new Date('2025-12-12T14:30:00'),
+    lastLogin: new Date('2025-12-21T14:30:00'),
     lastLoginBrowser: 'Chrome 131',
     lastLoginIP: '192.168.1.100',
     lastLoginDevice: 'MacBook Pro',
     twoFactorEnabled: true,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2025-12-12'),
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2025-12-21'),
   },
   {
-    id: '2',
-    name: 'Marcus Johnson',
-    email: 'marcus@aventra.com',
-    phone: '+46 71 234 5678',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus',
-    roles: ['Admin', 'Manager'],
+    id: 'user_admin',
+    name: 'Admin User',
+    email: 'admin@aventra.com',
+    phone: '+46 70 100 0002',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ADMIN',
+    roles: ['Admin'],
     status: 'active',
-    lastLogin: new Date('2025-12-11T09:15:00'),
-    lastLoginBrowser: 'Firefox',
+    lastLogin: new Date('2025-12-21T09:15:00'),
+    lastLoginBrowser: 'Firefox 120',
     lastLoginIP: '192.168.1.101',
     lastLoginDevice: 'Windows PC',
     twoFactorEnabled: true,
-    createdAt: new Date('2024-03-20'),
-    updatedAt: new Date('2025-12-11'),
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2025-12-21'),
   },
   {
-    id: '3',
-    name: 'Emma Wilson',
-    email: 'emma@aventra.com',
-    phone: '+46 72 345 6789',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
-    roles: ['Manager', 'Support'],
+    id: 'user_support',
+    name: 'Support Agent',
+    email: 'support@aventra.com',
+    phone: '+46 70 100 0003',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPPORT',
+    roles: ['Support'],
     status: 'active',
-    lastLogin: new Date('2025-12-10T16:45:00'),
-    lastLoginBrowser: 'Safari',
+    lastLogin: new Date('2025-12-21T10:45:00'),
+    lastLoginBrowser: 'Safari 17',
     lastLoginIP: '192.168.1.102',
     lastLoginDevice: 'iPhone 14',
     twoFactorEnabled: false,
-    createdAt: new Date('2024-06-10'),
-    updatedAt: new Date('2025-12-10'),
+    createdAt: new Date('2024-02-20'),
+    updatedAt: new Date('2025-12-21'),
   },
   {
-    id: '4',
-    name: 'David Chen',
-    email: 'david@aventra.com',
-    roles: ['Support'],
-    status: 'inactive',
-    lastLogin: null,
-    twoFactorEnabled: false,
-    createdAt: new Date('2025-09-05'),
-    updatedAt: new Date('2025-12-01'),
+    id: 'user_accountant',
+    name: 'Accountant',
+    email: 'accountant@aventra.com',
+    phone: '+46 70 100 0004',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ACCOUNTANT',
+    roles: ['Accountant'],
+    status: 'active',
+    lastLogin: new Date('2025-12-20T15:20:00'),
+    lastLoginBrowser: 'Chrome 131',
+    lastLoginIP: '192.168.1.103',
+    lastLoginDevice: 'MacBook Air',
+    twoFactorEnabled: true,
+    createdAt: new Date('2024-03-10'),
+    updatedAt: new Date('2025-12-20'),
   },
   {
-    id: '5',
-    name: 'Lisa Bergström',
-    email: 'lisa@aventra.com',
-    roles: ['Manager'],
-    status: 'pending',
-    lastLogin: null,
-    twoFactorEnabled: false,
-    createdAt: new Date('2025-12-10'),
-    updatedAt: new Date('2025-12-10'),
+    id: 'user_developer',
+    name: 'Developer',
+    email: 'developer@aventra.com',
+    phone: '+46 70 100 0005',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DEVELOPER',
+    roles: ['Developer'],
+    status: 'active',
+    lastLogin: new Date('2025-12-20T18:30:00'),
+    lastLoginBrowser: 'Chrome 131',
+    lastLoginIP: '192.168.1.104',
+    lastLoginDevice: 'Ubuntu Desktop',
+    twoFactorEnabled: true,
+    createdAt: new Date('2024-04-05'),
+    updatedAt: new Date('2025-12-20'),
   },
 ];
 
@@ -129,6 +140,11 @@ export const AdminUsersManager: React.FC = () => {
   const [showBulkActionsModal, setShowBulkActionsModal] = useState(false);
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
   const [showPasswordPolicies, setShowPasswordPolicies] = useState(false);
+  const [showUserPermissionsModal, setShowUserPermissionsModal] = useState(false);
+  const [selectedUserForModulePermissions, setSelectedUserForModulePermissions] = useState<AdminUser | null>(null);
+  
+  // Store user permissions (in production, this would be in backend)
+  const [userPermissions, setUserPermissions] = useState<Record<string, PermissionModule[]>>({});
 
   // Filtered and paginated users
   const filteredUsers = useMemo(() => {
@@ -265,6 +281,16 @@ export const AdminUsersManager: React.FC = () => {
           : u
       )
     );
+  };
+  
+  const handleSaveUserPermissions = (userId: string, modules: PermissionModule[]) => {
+    setUserPermissions((prev) => ({
+      ...prev,
+      [userId]: modules,
+    }));
+    // In production, this would call an API:
+    // await permissionService.updateUserPermissions(userId, modules);
+    console.log(`Saved permissions for user ${userId}:`, modules);
   };
 
   return (
@@ -434,6 +460,10 @@ export const AdminUsersManager: React.FC = () => {
         }}
         onToggleStatus={handleToggleStatus}
         onToggle2FA={handleToggle2FA}
+        onManageModulePermissions={(user) => {
+          setSelectedUserForModulePermissions(user);
+          setShowUserPermissionsModal(true);
+        }}
       />
 
       {/* Pagination */}
@@ -534,6 +564,14 @@ export const AdminUsersManager: React.FC = () => {
           selectedCount={selectedUsers.size}
           onAction={handleBulkAction}
           onClose={() => setShowBulkActionsModal(false)}
+        />
+      )}
+
+      {showUserPermissionsModal && selectedUserForModulePermissions && (
+        <UserPermissionsModal
+          user={selectedUserForModulePermissions}
+          onSave={handleSaveUserPermissions}
+          onClose={() => setShowUserPermissionsModal(false)}
         />
       )}
     </div>
