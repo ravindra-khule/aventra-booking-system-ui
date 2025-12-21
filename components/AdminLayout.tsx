@@ -6,7 +6,6 @@ import { UserRole } from '../types';
 import { LogOut, Globe, User as UserIcon } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { MobileSidebar, MenuButton } from './MobileSidebar';
-import { DemoLoginModal } from './DemoLoginModal';
 
 export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   const { user, logout, login } = useAuth();
