@@ -1,11 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { ComingSoon } from '../../../components/ComingSoon';
+
+// TEMPORARY: Feature hidden - showing Coming Soon page
+// TODO: Restore when client requirements are finalized
+
+/* FUNCTIONAL CODE - KEPT FOR FUTURE USE
+import { useState, useEffect } from 'react';
 import { BookingCalendar as BookingCalendarComponent } from '../../../src/features/bookings/components';
 import { BookingService } from '../../../src/features/bookings/services/booking.service';
 import { TourService } from '../../../src/shared/services';
 import { Booking } from '../../../src/features/bookings/types/booking.types';
 import { Tour } from '../../../src/features/tours/types/tour.types';
+*/
 
 export const BookingCalendar: React.FC = () => {
+  return (
+    <ComingSoon
+      title="Booking Calendar"
+      description="The booking calendar feature is being refined based on client requirements and will be available soon."
+      features={[
+        'Visual calendar view of all bookings across tours',
+        'Drag-and-drop booking management',
+        'Quick booking creation from calendar',
+        'Color-coded booking status indicators',
+        'Filter bookings by tour, date range, and status',
+        'Capacity management and overbooking alerts',
+        'Multi-day tour visualization',
+        'Booking conflict detection'
+      ]}
+    />
+  );
+};
+
+/* ORIGINAL IMPLEMENTATION - PRESERVED FOR FUTURE USE
+
+export const BookingCalendar_Original: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,3 +102,5 @@ export const BookingCalendar: React.FC = () => {
     />
   );
 };
+
+*/
