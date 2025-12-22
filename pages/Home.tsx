@@ -36,7 +36,7 @@ export const Home = () => {
   return (
     <div className="animate-fade-in">
       {/* Hero Section */}
-      <div className="relative bg-gray-900 h-[500px]">
+      <div className="relative h-[500px]" style={{ backgroundColor: '#000' }}>
         <img 
           src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop" 
           alt="Hero" 
@@ -47,14 +47,13 @@ export const Home = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
               {t('home.heroTitle')}
             </h1>
-            <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto" style={{ color: '#fff' }}>
               {t('home.heroSubtitle')}
             </p>
             <Button 
               onClick={scrollToTours}
               variant="primary"
-              size="lg"
-              className="rounded-full transform hover:scale-105"
+              size="xl"
             >
               {t('home.exploreBtn')}
             </Button>
@@ -64,11 +63,11 @@ export const Home = () => {
 
       {/* Tour Grid */}
       <div id="tour-grid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">{t('home.upcomingTitle')}</h2>
+        <h2 className="text-3xl font-bold mb-8" style={{ color: '#000' }}>{t('home.upcomingTitle')}</h2>
         
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+            <Loader2 className="h-10 w-10 animate-spin" style={{ color: '#ff1b00' }} />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -86,7 +85,7 @@ export const Home = () => {
                     </div>
                   )}
                   <div className="absolute top-4 right-4">
-                    <Badge variant="default" size="sm" className="bg-white/90 backdrop-blur-sm text-gray-800 uppercase tracking-wide">
+                    <Badge variant="default" size="sm" className="uppercase tracking-wide" style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#000' }}>
                       {tour.difficulty}
                     </Badge>
                   </div>
@@ -94,32 +93,33 @@ export const Home = () => {
                 
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-gray-900">{tour.title}</h3>
+                    <h3 className="text-xl font-bold" style={{ color: '#000' }}>{tour.title}</h3>
                   </div>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{tour.shortDescription}</p>
+                  <p className="text-sm mb-4 line-clamp-2" style={{ color: '#6b7280' }}>{tour.shortDescription}</p>
                   
                   <div className="space-y-2 mb-6">
-                    <div className="flex items-center text-gray-500 text-sm">
+                    <div className="flex items-center text-sm" style={{ color: '#6b7280' }}>
                       <MapPin className="h-4 w-4 mr-2" />
                       {tour.location}
                     </div>
-                    <div className="flex items-center text-gray-500 text-sm">
+                    <div className="flex items-center text-sm" style={{ color: '#6b7280' }}>
                       <Calendar className="h-4 w-4 mr-2" />
                       {t('home.next')}: {formatDate(tour.nextDate)}
                     </div>
-                    <div className="flex items-center text-gray-500 text-sm">
+                    <div className="flex items-center text-sm" style={{ color: '#6b7280' }}>
                       <Clock className="h-4 w-4 mr-2" />
                       {tour.durationDays} {t('home.days')}
                     </div>
                   </div>
 
-                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="mt-auto flex items-center justify-between pt-4 border-t" style={{ borderColor: '#e5e7eb' }}>
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">{formatCurrency(tour.price, tour.currency)}</span>
+                      <span className="text-2xl font-bold" style={{ color: '#000' }}>{formatCurrency(tour.price, tour.currency)}</span>
                     </div>
                     <Link 
                       to={`/tour/${tour.id}`} 
-                      className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800"
+                      className="inline-flex items-center font-semibold"
+                      style={{ color: '#ff1b00' }}
                     >
                       {t('common.details')} <ArrowRight className="h-4 w-4 ml-1" />
                     </Link>
@@ -133,15 +133,15 @@ export const Home = () => {
       </div>
 
       {/* Trust Section */}
-      <div className="bg-gray-50 py-16 border-t border-gray-200">
+      <div className="py-16 border-t" style={{ backgroundColor: '#fff', borderColor: '#e5e7eb' }}>
          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h3 className="text-2xl font-bold text-gray-800 mb-12">{t('home.trustedBy')}</h3>
+            <h3 className="text-2xl font-bold mb-12" style={{ color: '#000' }}>{t('home.trustedBy')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-60 grayscale">
                {/* Placeholders for logos */}
-               <div className="h-12 bg-gray-300 rounded flex items-center justify-center font-bold text-gray-500">FORTNOX</div>
-               <div className="h-12 bg-gray-300 rounded flex items-center justify-center font-bold text-gray-500">STRIPE</div>
-               <div className="h-12 bg-gray-300 rounded flex items-center justify-center font-bold text-gray-500">VISITA</div>
-               <div className="h-12 bg-gray-300 rounded flex items-center justify-center font-bold text-gray-500">KAMMARKOLLEGIET</div>
+               <div className="h-12 rounded flex items-center justify-center font-bold" style={{ backgroundColor: '#e5e7eb', color: '#6b7280' }}>FORTNOX</div>
+               <div className="h-12 rounded flex items-center justify-center font-bold" style={{ backgroundColor: '#e5e7eb', color: '#6b7280' }}>STRIPE</div>
+               <div className="h-12 rounded flex items-center justify-center font-bold" style={{ backgroundColor: '#e5e7eb', color: '#6b7280' }}>VISITA</div>
+               <div className="h-12 rounded flex items-center justify-center font-bold" style={{ backgroundColor: '#e5e7eb', color: '#6b7280' }}>KAMMARKOLLEGIET</div>
             </div>
          </div>
       </div>

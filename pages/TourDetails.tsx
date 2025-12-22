@@ -33,19 +33,19 @@ export const TourDetails = () => {
   const isFullyBooked = tour.availableSpots === 0;
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen">
       {showWaitlistForm && <WaitlistForm tour={tour} onClose={() => setShowWaitlistForm(false)} />}
       {/* Hero Image */}
       <div className="relative h-[400px]">
         <img src={tour.imageUrl} alt={tour.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <Button 
+        <button
           onClick={() => navigate(-1)} 
-          variant="ghost"
-          className="absolute top-6 left-6 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white !p-2 rounded-full"
+          className="absolute top-6 left-6 backdrop-blur-md !p-2 rounded-full"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: '#fff' }}
         >
           <ArrowLeft className="h-6 w-6" />
-        </Button>
+        </button>
         <div className="absolute bottom-0 left-0 right-0 p-8 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
@@ -53,7 +53,7 @@ export const TourDetails = () => {
                 {tour.difficulty} {t('home.level')}
               </Badge>
               <h1 className="text-4xl font-bold text-white">{tour.title}</h1>
-              <div className="flex items-center text-gray-200 mt-2 space-x-4">
+              <div className="flex items-center mt-2 space-x-4" style={{ color: '#e5e7eb' }}>
                 <span className="flex items-center"><Calendar className="h-4 w-4 mr-1"/> {tour.durationDays} {t('home.days')}</span>
                 <span className="flex items-center"><Users className="h-4 w-4 mr-1"/> {t('tourDetails.maxPeople')}</span>
               </div>
@@ -70,16 +70,16 @@ export const TourDetails = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('tourDetails.about')}</h2>
-            <p className="text-gray-600 leading-relaxed text-lg">{tour.description}</p>
+            <h2 className="text-2xl font-bold mb-4" style={{ color: '#000' }}>{t('tourDetails.about')}</h2>
+            <p className="leading-relaxed text-lg" style={{ color: '#6b7280' }}>{tour.description}</p>
           </section>
 
           <section>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('tourDetails.highlights')}</h3>
+            <h3 className="text-xl font-bold mb-4" style={{ color: '#000' }}>{t('tourDetails.highlights')}</h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[1, 2, 3, 4].map((i) => (
-                <li key={i} className="flex items-center text-gray-700">
-                  <Check className="h-5 w-5 text-green-500 mr-2" />
+                <li key={i} className="flex items-center" style={{ color: '#374151' }}>
+                  <Check className="h-5 w-5 mr-2" style={{ color: '#16a34a' }} />
                   <span>{t('tourDetails.guideIncluded')}</span>
                 </li>
               ))}
@@ -87,16 +87,16 @@ export const TourDetails = () => {
           </section>
 
           <section>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('tourDetails.itinerary')}</h3>
-            <div className="border-l-2 border-blue-100 pl-8 space-y-8">
+            <h3 className="text-xl font-bold mb-4" style={{ color: '#000' }}>{t('tourDetails.itinerary')}</h3>
+            <div className="border-l-2 pl-8 space-y-8" style={{ borderColor: '#ffe5df' }}>
                {/* Mock Itinerary */}
                {[1, 2, 3].map((day) => (
                  <div key={day} className="relative">
-                   <div className="absolute -left-[41px] bg-blue-100 p-1.5 rounded-full border-4 border-white">
-                      <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                   <div className="absolute -left-[41px] p-1.5 rounded-full border-4 border-white" style={{ backgroundColor: '#ffe5df' }}>
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ff1b00' }}></div>
                    </div>
-                   <h4 className="font-bold text-gray-900">{t('tourDetails.day')} {day}</h4>
-                   <p className="text-gray-600 text-sm mt-1">Hiking through the valley, setting up camp, and dinner by the fire.</p>
+                   <h4 className="font-bold" style={{ color: '#000' }}>{t('tourDetails.day')} {day}</h4>
+                   <p className="text-sm mt-1" style={{ color: '#6b7280' }}>Hiking through the valley, setting up camp, and dinner by the fire.</p>
                  </div>
                ))}
             </div>
@@ -106,13 +106,13 @@ export const TourDetails = () => {
         {/* Sidebar / Booking Card */}
         <div className="lg:col-span-1">
           <Card shadow="xl" className="sticky top-24">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">{t('tourDetails.bookCardTitle')}</h3>
+            <h3 className="text-xl font-bold mb-6" style={{ color: '#000' }}>{t('tourDetails.bookCardTitle')}</h3>
             
             <div className="space-y-4 mb-6">
-               <div className={`p-4 rounded-lg border ${isFullyBooked ? 'bg-orange-50 border-orange-200' : 'bg-gray-50 border-gray-200'}`}>
-                 <p className="text-sm text-gray-500 mb-1">{t('tourDetails.nextDeparture')}</p>
+               <div className={`p-4 rounded-lg border ${isFullyBooked ? '' : ''}`} style={isFullyBooked ? { backgroundColor: '#fff7ed', borderColor: '#fed7aa' } : { backgroundColor: '#f9fafb', borderColor: '#e5e7eb' }}>
+                 <p className="text-sm mb-1" style={{ color: '#6b7280' }}>{t('tourDetails.nextDeparture')}</p>
                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-900">{formatDate(tour.nextDate)}</span>
+                    <span className="font-semibold" style={{ color: '#000' }}>{formatDate(tour.nextDate)}</span>
                     {isFullyBooked ? (
                       <Badge variant="warning" size="sm" className="uppercase">
                         <AlertCircle className="h-3 w-3 mr-1" />
@@ -127,8 +127,8 @@ export const TourDetails = () => {
 
             {isFullyBooked ? (
               <>
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-orange-800">
+                <div className="border rounded-lg p-4 mb-4" style={{ backgroundColor: '#fff7ed', borderColor: '#fed7aa' }}>
+                  <p className="text-sm" style={{ color: '#9a3412' }}>
                     <strong>{t('tourDetails.fullyBookedInfo')}</strong> {t('tourDetails.joinWaitlistInfo')}
                   </p>
                 </div>
@@ -137,7 +137,6 @@ export const TourDetails = () => {
                   variant="primary"
                   size="lg"
                   fullWidth
-                  className="bg-orange-600 hover:bg-orange-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   {t('tourDetails.joinWaitlist')}
                 </Button>
@@ -148,19 +147,18 @@ export const TourDetails = () => {
                 variant="primary"
                 size="lg"
                 fullWidth
-                className="shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {t('tourDetails.bookNow')}
               </Button>
             )}
 
             <div className="mt-6 space-y-3">
-              <div className="flex items-center text-sm text-gray-500">
-                <Shield className="h-4 w-4 mr-2 text-gray-400" />
+              <div className="flex items-center text-sm" style={{ color: '#6b7280' }}>
+                <Shield className="h-4 w-4 mr-2" style={{ color: '#9ca3af' }} />
                 <span>{t('tourDetails.securePayment')}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-500">
-                <Check className="h-4 w-4 mr-2 text-gray-400" />
+              <div className="flex items-center text-sm" style={{ color: '#6b7280' }}>
+                <Check className="h-4 w-4 mr-2" style={{ color: '#9ca3af' }} />
                 <span>{t('tourDetails.freeCancel')}</span>
               </div>
             </div>

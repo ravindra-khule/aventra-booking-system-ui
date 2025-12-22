@@ -241,11 +241,11 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col">
+    <aside className="w-64 bg-white border-r min-h-screen flex flex-col" style={{ borderColor: '#e5e7eb' }}>
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-purple-600">Swett Admin</h2>
-        <p className="text-sm text-gray-500 mt-1">{t('admin.managementPortal')}</p>
+      <div className="p-6 border-b" style={{ borderColor: '#e5e7eb' }}>
+        <h2 className="text-xl font-bold" style={{ color: '#ff1b00' }}>Swett Admin</h2>
+        <p className="text-sm mt-1" style={{ color: '#6b7280' }}>{t('admin.managementPortal')}</p>
       </div>
 
       {/* Navigation */}
@@ -255,9 +255,14 @@ const Sidebar: React.FC = () => {
           to="/admin"
           className={`flex items-center gap-3 px-6 py-3 mb-2 transition-colors ${
             isActive('/admin')
-              ? 'bg-purple-50 text-purple-700 border-r-4 border-purple-600'
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'border-r-4'
+              : ''
           }`}
+          style={
+            isActive('/admin')
+              ? { backgroundColor: '#fff1ed', color: '#ff1b00', borderColor: '#ff1b00' }
+              : { color: '#374151' }
+          }
         >
           <LayoutDashboard className="w-5 h-5" />
           <span className="font-medium">{t('admin.dashboard')}</span>
@@ -275,11 +280,12 @@ const Sidebar: React.FC = () => {
               {/* Category Header */}
               <button
                 onClick={() => toggleCategory(category.label)}
-                className={`w-full flex items-center justify-between px-6 py-3 transition-colors ${
+                className="w-full flex items-center justify-between px-6 py-3 transition-colors"
+                style={
                   hasActiveItem
-                    ? 'bg-purple-50 text-purple-700'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
+                    ? { backgroundColor: '#fff1ed', color: '#ff1b00' }
+                    : { color: '#374151' }
+                }
               >
                 <div className="flex items-center gap-3">
                   {category.icon}
@@ -294,21 +300,26 @@ const Sidebar: React.FC = () => {
 
               {/* Submenu Items */}
               {isExpanded && (
-                <div className="bg-gray-50">
+                <div style={{ backgroundColor: '#f9fafb' }}>
                   {category.items.map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
                       className={`flex items-center gap-3 px-6 py-2.5 pl-12 transition-colors ${
                         isActive(item.path)
-                          ? 'bg-purple-100 text-purple-700 border-r-4 border-purple-600'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          ? 'border-r-4'
+                          : ''
                       }`}
+                      style={
+                        isActive(item.path)
+                          ? { backgroundColor: '#ffe5df', color: '#ff1b00', borderColor: '#ff1b00' }
+                          : { color: '#6b7280' }
+                      }
                     >
                       {item.icon}
                       <span className="text-sm">{item.label}</span>
                       {item.badge && (
-                        <span className="ml-auto text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                        <span className="ml-auto text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}>
                           {item.badge}
                         </span>
                       )}
@@ -322,10 +333,10 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="bg-purple-50 rounded-lg p-3">
-          <p className="text-xs text-purple-700 font-medium">{t('admin.needHelp')}</p>
-          <p className="text-xs text-gray-600 mt-1">
+      <div className="p-4 border-t" style={{ borderColor: '#e5e7eb' }}>
+        <div className="rounded-lg p-3" style={{ backgroundColor: '#fff1ed' }}>
+          <p className="text-xs font-medium" style={{ color: '#ff1b00' }}>{t('admin.needHelp')}</p>
+          <p className="text-xs mt-1" style={{ color: '#6b7280' }}>
             {t('admin.helpText')}
           </p>
         </div>

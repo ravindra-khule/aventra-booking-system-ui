@@ -41,7 +41,7 @@ const StatCard = ({ title, value, change, icon: Icon, color, trend }: any) => (
     <div className="flex items-center justify-between mb-4">
       <p className="text-sm font-medium text-gray-600">{title}</p>
       <div className={`p-2.5 rounded-full ${color} bg-opacity-10`}>
-        <Icon className={`h-5 w-5 ${color.replace('bg-', 'text-')}`} />
+        <Icon className={`h-5 w-5`} style={{ color: color === 'bg-primary' ? '#ff1b00' : color === 'bg-success' ? '#16a34a' : color === 'bg-warning' ? '#f59e0b' : '#3b82f6' }} />
       </div>
     </div>
     <div>
@@ -60,23 +60,26 @@ const AlertWidget = ({ alert }: { alert: Alert }) => {
   const bgColor = {
     warning: 'bg-amber-50 border-amber-200',
     danger: 'bg-red-50 border-red-200',
-    info: 'bg-blue-50 border-blue-200',
+    info: 'border-blue-200',
     success: 'bg-green-50 border-green-200',
   }[alert.type];
 
   const iconColor = {
     warning: 'text-amber-600',
     danger: 'text-red-600',
-    info: 'text-blue-600',
+    info: '',
     success: 'text-green-600',
   }[alert.type];
 
   const Icon = alert.type === 'danger' || alert.type === 'warning' ? AlertCircle : CheckCircle;
 
   return (
-    <div className={`p-4 rounded-lg border ${bgColor} flex items-start justify-between group hover:shadow-sm transition-shadow`}>
+    <div 
+      className={`p-4 rounded-lg border ${bgColor} flex items-start justify-between group hover:shadow-sm transition-shadow`}
+      style={alert.type === 'info' ? { backgroundColor: '#eff6ff' } : {}}
+    >
       <div className="flex items-start gap-3">
-        <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${iconColor}`} />
+        <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${iconColor}`} style={alert.type === 'info' ? { color: '#3b82f6' } : {}} />
         <div>
           <p className="font-medium text-gray-900 text-sm">{alert.title}</p>
           <p className="text-xs text-gray-600 mt-1">{alert.message}</p>
@@ -234,7 +237,7 @@ export const AdminDashboard = () => {
             change={kpiData.revenueGrowth}
             trend="up"
             icon={DollarSign} 
-            color="bg-green-500" 
+            color="bg-success" 
           />
           <StatCard 
             title="Monthly Revenue" 
@@ -242,7 +245,7 @@ export const AdminDashboard = () => {
             change={5.8}
             trend="up"
             icon={TrendingUp} 
-            color="bg-blue-500" 
+            color="bg-primary" 
           />
           <StatCard 
             title="Active Bookings" 
@@ -250,7 +253,7 @@ export const AdminDashboard = () => {
             change={3.2}
             trend="up"
             icon={Briefcase} 
-            color="bg-indigo-500" 
+            color="bg-info" 
           />
           <StatCard 
             title="Customer Satisfaction" 
@@ -258,7 +261,7 @@ export const AdminDashboard = () => {
             change={2.1}
             trend="up"
             icon={Eye} 
-            color="bg-pink-500" 
+            color="bg-warning" 
           />
         </div>
       </div>
@@ -365,14 +368,14 @@ export const AdminDashboard = () => {
             value={`${kpiData.occupancyRate}%`}
             context="Tours at capacity. Growing demand indicates need for more tours."
             icon={MapPin}
-            color="bg-blue-500"
+            color="bg-info"
           />
           <InsightCard
             title="Conversion Rate"
             value={`${kpiData.conversionRate}%`}
             context="Visitor to booking conversion. Industry avg is 2-4%."
             icon={Target}
-            color="bg-green-500"
+            color="bg-success"
           />
           <InsightCard
             title="Avg Booking Value"
@@ -435,7 +438,7 @@ export const AdminDashboard = () => {
       {/* Actionable Widgets */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Zap className="h-5 w-5 text-blue-600" />
+          <Zap className="h-5 w-5" style={{ color: '#ff1b00' }} />
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -443,14 +446,14 @@ export const AdminDashboard = () => {
             title="Booking Management"
             description="Review and manage active bookings and reservations"
             icon={Calendar}
-            color="bg-blue-500"
+            color="bg-primary"
             actions={['View Bookings', 'New Booking', 'Calendar']}
           />
           <ActionWidget
             title="Customer Management"
             description="Manage customer profiles, communications, and groups"
             icon={Users}
-            color="bg-green-500"
+            color="bg-success"
             actions={['All Customers', 'Groups', 'Communications']}
           />
           <ActionWidget
@@ -500,7 +503,7 @@ export const AdminDashboard = () => {
           change={12.8}
           trend="up"
           icon={UserPlus} 
-          color="bg-teal-500" 
+          color="bg-info" 
         />
         <StatCard 
           title="Repeat Rate" 
@@ -508,7 +511,7 @@ export const AdminDashboard = () => {
           change={3.5}
           trend="up"
           icon={RefreshCw} 
-          color="bg-blue-500" 
+          color="bg-success" 
         />
         <StatCard 
           title="Avg Customer LTV" 
@@ -516,7 +519,7 @@ export const AdminDashboard = () => {
           change={6.3}
           trend="up"
           icon={TrendingUp} 
-          color="bg-violet-500" 
+          color="bg-warning" 
         />
       </div>
 

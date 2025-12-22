@@ -1,8 +1,8 @@
 import React, { ButtonHTMLAttributes, forwardRef } from 'react';
 import { Loader2 } from 'lucide-react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'secondary' | 'secondary-dark' | 'tertiary' | 'danger' | 'success';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -13,33 +13,23 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconPosition?: 'left' | 'right';
 }
 
-const buttonVariants: Record<ButtonVariant, string> = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-  secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
-  outline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
-  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
-};
-
-const buttonSizes: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
-};
-
 /**
- * Button Component
+ * Button Component - Updated for Client Theme
  * 
- * Reusable button component with multiple variants and sizes
+ * Styled to match client website with primary (red), secondary (white border), 
+ * and tertiary (black) button variants
  * 
  * @example
  * <Button variant="primary" size="md" onClick={handleClick}>
- *   Click Me
+ *   Book Now
  * </Button>
  * 
- * <Button variant="outline" icon={<Plus />} loading={isLoading}>
- *   Add Item
+ * <Button variant="secondary" icon={<ArrowRight />}>
+ *   Learn More
+ * </Button>
+ * 
+ * <Button variant="tertiary" loading={isLoading}>
+ *   Submit
  * </Button>
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -58,15 +48,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseClasses = 'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-    const variantClasses = buttonVariants[variant];
-    const sizeClasses = buttonSizes[size];
-    const widthClass = fullWidth ? 'w-full' : '';
+    // Build class names based on variant and size
+    const variantClass = `btn-${variant}`;
+    const sizeClass = `btn-${size}`;
+    const widthClass = fullWidth ? 'btn-block' : '';
+    
+    const classes = `btn ${variantClass} ${sizeClass} ${widthClass} ${className}`.trim();
 
     return (
       <button
         ref={ref}
-        className={`${baseClasses} ${variantClasses} ${sizeClasses} ${widthClass} ${className}`}
+        className={classes}
         disabled={disabled || loading}
         {...props}
       >
