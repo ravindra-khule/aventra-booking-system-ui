@@ -592,7 +592,7 @@ export const BookingWizard = () => {
                                 type="text"
                                 value={payer.address}
                                 onChange={e => handlePayerChange('address', e.target.value)}
-                                placeholder="Street and number"
+                                placeholder={t('booking.payer.streetAndNumber')}
                                 required
                                 fullWidth
                             />
@@ -701,7 +701,7 @@ export const BookingWizard = () => {
                                         value={traveler.address}
                                         onChange={(e) => handleTravelerChange(index, 'address', e.target.value)}
                                         disabled={traveler.isPayer}
-                                        placeholder="Street Address"
+                                        placeholder={t('booking.payer.address')}
                                         required
                                         fullWidth
                                     />
@@ -732,7 +732,7 @@ export const BookingWizard = () => {
                                         type="text"
                                         value={traveler.ssn}
                                         onChange={(e) => handleTravelerChange(index, 'ssn', e.target.value)}
-                                        placeholder="YYYYMMDD"
+                                        placeholder={t('booking.payer.yyyymmdd')}
                                         required
                                         fullWidth
                                     />
@@ -998,7 +998,7 @@ export const BookingWizard = () => {
                         <div className="flex gap-3">
                            <input 
                               type="text" 
-                              placeholder="Enter promo code"
+                              placeholder={t('booking.payer.enterPromoCode')}
                               value={promoCode}
                               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                               onKeyPress={(e) => e.key === 'Enter' && handleApplyPromoCode()}
@@ -1300,8 +1300,8 @@ export const BookingWizard = () => {
                                     2
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-gray-900">Prepare for Your Trip</p>
-                                    <p className="text-sm text-gray-600">Visit "My Pages" to access your trip preparation guide and packing list.</p>
+                                    <p className="font-semibold text-gray-900">{t('booking.confirmation.prepareForTrip')}</p>
+                                    <p className="text-sm text-gray-600">{t('booking.confirmation.visitMyPages')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">

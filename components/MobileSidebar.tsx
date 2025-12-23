@@ -343,11 +343,12 @@ export { MobileSidebar };
 
 // Export menu button for header
 export const MenuButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+  const { t } = useTranslation();
   return (
     <button
       onClick={onClick}
       className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-      aria-label="Open menu"
+      aria-label={t('admin.openMenu')}
     >
       <Menu className="w-6 h-6 text-gray-700" />
     </button>

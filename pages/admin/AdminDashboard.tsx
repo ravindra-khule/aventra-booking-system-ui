@@ -5,8 +5,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { 
   DollarSign, Users, Briefcase, TrendingUp, AlertCircle, CheckCircle, Clock, 
   Activity, Target, TrendingDown, Eye, MapPin, Mail, CreditCard, BarChart3, 
-  RefreshCw, ArrowRight, ChevronRight, Zap, Shield, Calendar
+  RefreshCw, ArrowRight, ChevronRight, Zap, Shield, Calendar, UserPlus
 } from 'lucide-react';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface KPIData {
   totalRevenue: number;
@@ -56,7 +57,7 @@ const StatCard = ({ title, value, change, icon: Icon, color, trend }: any) => (
   </div>
 );
 
-const AlertWidget = ({ alert }: { alert: Alert }) => {
+const AlertWidget: React.FC<{ alert: Alert }> = ({ alert }) => {
   const bgColor = {
     warning: 'bg-amber-50 border-amber-200',
     danger: 'bg-red-50 border-red-200',
@@ -130,6 +131,7 @@ const InsightCard = ({ title, value, context, icon: Icon, color }: any) => (
 );
 
 export const AdminDashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [kpiData, setKpiData] = useState<KPIData | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -228,11 +230,11 @@ export const AdminDashboard = () => {
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Target className="h-5 w-5 text-purple-600" />
-          Key Performance Indicators
+          {t('admin.kpiTitle')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard 
-            title="Total Revenue" 
+            title={t('admin.totalRevenue')}
             value={`${(kpiData.totalRevenue / 1000000).toFixed(1)}M SEK`} 
             change={kpiData.revenueGrowth}
             trend="up"
@@ -240,7 +242,7 @@ export const AdminDashboard = () => {
             color="bg-success" 
           />
           <StatCard 
-            title="Monthly Revenue" 
+            title={t('admin.monthlyRevenue')}
             value={`${(kpiData.monthlyRevenue / 1000).toFixed(0)}K SEK`} 
             change={5.8}
             trend="up"
@@ -248,7 +250,7 @@ export const AdminDashboard = () => {
             color="bg-primary" 
           />
           <StatCard 
-            title="Active Bookings" 
+            title={t('admin.activeBookings')}
             value={kpiData.activeBookings}
             change={3.2}
             trend="up"
@@ -256,7 +258,7 @@ export const AdminDashboard = () => {
             color="bg-info" 
           />
           <StatCard 
-            title="Customer Satisfaction" 
+            title={t('admin.customerSatisfaction')}
             value={`${kpiData.customerSatisfaction}%`}
             change={2.1}
             trend="up"
@@ -271,7 +273,7 @@ export const AdminDashboard = () => {
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-600" />
-            System Alerts & Notifications
+            {t('admin.systemAlertsTitle')}
           </h2>
           <div className="space-y-3">
             {alerts.map((alert) => (
@@ -364,14 +366,14 @@ export const AdminDashboard = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <InsightCard
-            title="Occupancy Rate"
+            title={t('admin.occupancyRate')}
             value={`${kpiData.occupancyRate}%`}
             context="Tours at capacity. Growing demand indicates need for more tours."
             icon={MapPin}
             color="bg-info"
           />
           <InsightCard
-            title="Conversion Rate"
+            title={t('admin.conversionRate')}
             value={`${kpiData.conversionRate}%`}
             context="Visitor to booking conversion. Industry avg is 2-4%."
             icon={Target}
@@ -443,42 +445,42 @@ export const AdminDashboard = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ActionWidget
-            title="Booking Management"
+            title={t('admin.bookingManagement')}
             description="Review and manage active bookings and reservations"
             icon={Calendar}
             color="bg-primary"
             actions={['View Bookings', 'New Booking', 'Calendar']}
           />
           <ActionWidget
-            title="Customer Management"
+            title={t('admin.customerManagement')}
             description="Manage customer profiles, communications, and groups"
             icon={Users}
             color="bg-success"
             actions={['All Customers', 'Groups', 'Communications']}
           />
           <ActionWidget
-            title="Financial Operations"
+            title={t('admin.financialOperations')}
             description="Track payments, invoices, and financial reporting"
             icon={CreditCard}
             color="bg-emerald-500"
             actions={['Invoices', 'Payments', 'Reports']}
           />
           <ActionWidget
-            title="Tour Management"
+            title={t('admin.tourManagement')}
             description="Create and manage tour offerings, pricing, and availability"
             icon={MapPin}
             color="bg-purple-500"
             actions={['View Tours', 'Add Tour', 'Availability']}
           />
           <ActionWidget
-            title="Marketing Campaigns"
+            title={t('admin.marketingCampaigns')}
             description="Create promotions, manage campaigns, and track analytics"
             icon={BarChart3}
             color="bg-orange-500"
             actions={['Campaigns', 'Promo Codes', 'Analytics']}
           />
           <ActionWidget
-            title="System Administration"
+            title={t('admin.systemAdministration')}
             description="Configure settings, manage users, and system health"
             icon={Shield}
             color="bg-red-500"
@@ -490,7 +492,7 @@ export const AdminDashboard = () => {
       {/* Customer Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard 
-          title="Total Customers" 
+          title={t('admin.totalCustomers')}
           value={kpiData.totalCustomers.toLocaleString()}
           change={9.2}
           trend="up"
@@ -506,7 +508,7 @@ export const AdminDashboard = () => {
           color="bg-info" 
         />
         <StatCard 
-          title="Repeat Rate" 
+          title={t('admin.repeatRate')}
           value={`${kpiData.repeatCustomerRate}%`}
           change={3.5}
           trend="up"
@@ -530,6 +532,3 @@ export const AdminDashboard = () => {
     </div>
   );
 };
-
-// Add missing icon import
-import { UserPlus } from 'lucide-react';

@@ -6,6 +6,7 @@ import { RoleManagementTab } from './components/RoleManagementTab';
 import { PermissionManagerTab } from './components/PermissionManagerTab';
 import { RoleTemplatesTab } from './components/RoleTemplatesTab';
 import { AuditLogsTab } from './components/AuditLogsTab';
+import { useTranslation } from '../../../context/LanguageContext';
 
 type TabType = 'roles' | 'permissions' | 'templates' | 'audit';
 
@@ -16,6 +17,7 @@ interface Tab {
 }
 
 export const RolesPermissions: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('roles');
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<PermissionCategoryGroup[]>([]);
@@ -130,7 +132,7 @@ export const RolesPermissions: React.FC = () => {
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <StatCard
-              label="Total Roles"
+              label={t('admin.totalRoles')}
               value={roles.length}
               icon={<Users className="h-6 w-6 text-purple-600" />}
             />
@@ -140,12 +142,12 @@ export const RolesPermissions: React.FC = () => {
               icon={<Lock className="h-6 w-6 text-blue-600" />}
             />
             <StatCard
-              label="Custom Roles"
+              label={t('admin.customRoles')}
               value={roles.filter((r) => !r.isBuiltIn).length}
               icon={<Settings className="h-6 w-6 text-green-600" />}
             />
             <StatCard
-              label="Total Permissions"
+              label={t('admin.totalPermissions')}
               value={permissions.reduce((acc, cat) => acc + cat.features.length, 0)}
               icon={<Lock className="h-6 w-6 text-orange-600" />}
             />
