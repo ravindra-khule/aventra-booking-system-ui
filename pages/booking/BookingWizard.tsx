@@ -517,7 +517,7 @@ export const BookingWizard = () => {
                         <div key={step} className="flex items-center">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-2 ${
                                 idx < currentStep ? 'bg-green-500 text-white' : 
-                                idx === currentStep ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'
+                                idx === currentStep ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400'
                             }`}>
                                 {idx < currentStep ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
                             </div>

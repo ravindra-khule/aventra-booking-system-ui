@@ -35,7 +35,7 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#f4e6d3' }}>
+    <div className="min-h-screen flex">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar />

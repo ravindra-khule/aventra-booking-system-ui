@@ -118,14 +118,14 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white rounded-t-2xl">
+        <div className="bg-black p-6 text-white rounded-t-2xl">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold flex items-center gap-2">
                 <Shield className="w-7 h-7" />
                 Demo Login
               </h2>
-              <p className="text-blue-100 mt-1 text-sm">
+              <p className="text-gray-300 mt-1 text-sm">
                 Select role and login to explore
               </p>
             </div>
@@ -149,7 +149,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
               <select
                 value={selectedRole.role}
                 onChange={(e) => handleRoleChange(e.target.value)}
-                className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white cursor-pointer"
+                className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent appearance-none bg-white cursor-pointer"
               >
                 {roleOptions.map((role) => (
                   <option key={role.role} value={role.role}>
@@ -187,7 +187,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="user@swett.com"
                 required
               />
@@ -205,7 +205,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="••••••••"
                 required
               />
@@ -220,12 +220,12 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
           </div>
 
           {/* Demo Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <Shield className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-700">
+              <Shield className="w-4 h-4 text-gray-600 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-gray-700">
                 <strong>Demo Mode:</strong> Credentials auto-populate when you select a role. 
-                All passwords follow format: <code className="bg-blue-100 px-1 rounded">Swett2025!{'{Role}'}</code>
+                All passwords follow format: <code className="bg-gray-100 px-1 rounded">Swett2025!{'{Role}'}</code>
               </p>
             </div>
           </div>
@@ -233,11 +233,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
           {/* Login Button */}
           <button
             type="submit"
-            className={`
-              w-full px-6 py-3 rounded-lg font-semibold text-white
-              ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'}
-              transition-all duration-200 shadow-lg hover:shadow-xl
-            `}
+            className={`btn btn-primary btn-lg btn-block ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
             {loading ? (

@@ -4,6 +4,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { useTranslation } from '../context/LanguageContext';
 import { Booking, BookingStatus, PaymentStatus } from '../types';
+import { getSampleBooking } from '../src/features/bookings/services/booking.service';
 import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const MyPages = () => {
@@ -20,7 +21,16 @@ export const MyPages = () => {
         const storedBookings = localStorage.getItem('userBookings');
         if (storedBookings) {
           const parsedBookings = JSON.parse(storedBookings);
-          setBookings(parsedBookings);
+          // Keep only the first booking for demo purposes
+          const sampleBooking = parsedBookings.length > 0 ? [parsedBookings[0]] : [];
+          setBookings(sampleBooking);
+          // Update localStorage to keep only one booking
+          localStorage.setItem('userBookings', JSON.stringify(sampleBooking));
+        } else {
+          // Initialize with one sample booking for demonstration
+          const sampleBooking = [getSampleBooking()];
+          setBookings(sampleBooking);
+          localStorage.setItem('userBookings', JSON.stringify(sampleBooking));
         }
       } catch (error) {
         console.error('Failed to load bookings from localStorage', error);
@@ -117,7 +127,7 @@ export const MyPages = () => {
             <p className="text-gray-500 mb-6">{t('myPages.exploreText')}</p>
             <button
               onClick={() => navigate('/')}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+              className="btn btn-primary btn-lg"
             >
               {t('myPages.browseBtn')}
             </button>
@@ -137,7 +147,7 @@ export const MyPages = () => {
                     onClick={() => toggleBookingExpansion(booking.id)}
                     className="cursor-pointer hover:bg-gray-50 transition"
                   >
-                    <div className="relative h-32 bg-gradient-to-br from-blue-400 to-blue-600">
+                    <div className="relative h-32 bg-gray-800">
                       {booking.tourImageUrl ? (
                         <img 
                           src={booking.tourImageUrl} 
@@ -154,7 +164,7 @@ export const MyPages = () => {
                           {booking.status}
                         </span>
                         {booking.promoCode && (
-                          <span className="px-3 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-purple-600 text-white border border-purple-700 shadow-lg">
+                          <span className="px-3 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-red-600 text-white border border-red-700 shadow-lg">
                             <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                             </svg>
@@ -192,7 +202,7 @@ export const MyPages = () => {
                               e.stopPropagation();
                               downloadBookingPDF(booking.id);
                             }}
-                            className="inline-flex items-center justify-center p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-sm transition"
+                            className="inline-flex items-center justify-center p-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm transition"
                           >
                             <Download className="h-4 w-4" />
                           </button>
@@ -217,7 +227,7 @@ export const MyPages = () => {
                         <div className="flex-1">
                           {/* Promo Code Savings Badge */}
                           {booking.promoCode && booking.discountAmount && (
-                            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full mb-4 shadow-md">
+                            <div className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-full mb-4 shadow-md">
                               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>

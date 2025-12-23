@@ -349,7 +349,7 @@ export const BookingManager = () => {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-            <h1 className="text-2xl font-bold text-gray-900">Bookings & CRM</h1>
+            <h1 className="text-2xl font-bold text-gray-900">All Bookings</h1>
             <p className="text-gray-500">Manage customers, payments, and trip rosters.</p>
         </div>
         <Button variant="outline" icon={<Download className="h-4 w-4" />}>

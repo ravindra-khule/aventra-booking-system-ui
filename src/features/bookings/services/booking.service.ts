@@ -181,6 +181,23 @@ const MOCK_BOOKINGS: Booking[] = [
 ];
 
 /**
+ * Get a sample booking for demo/initial display
+ * Returns the first mock booking with updated dates
+ */
+export const getSampleBooking = (): Booking => {
+  const sample = { ...MOCK_BOOKINGS[0] };
+  // Update to current date for bookingDate
+  sample.bookingDate = getCurrentDate();
+  // Set trip date to future
+  sample.tripDate = '2026-03-15';
+  // Update paidAmount to show partial payment
+  sample.paidAmount = Math.round(sample.totalAmount * 0.1); // 10% deposit
+  sample.paymentStatus = PaymentStatus.PARTIAL;
+  
+  return sample;
+};
+
+/**
  * Booking Service
  * Handles all booking-related operations
  */
