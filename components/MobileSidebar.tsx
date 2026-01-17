@@ -85,11 +85,6 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           icon: <ListOrdered className="w-4 h-4" />,
         },
         {
-          label: t('admin.bookingCalendar'),
-          path: '/admin/bookings/calendar',
-          icon: <CalendarClock className="w-4 h-4" />,
-        },
-        {
           label: t('admin.waitlist'),
           path: '/admin/waitlist',
           icon: <Clock className="w-4 h-4" />,
@@ -109,16 +104,6 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           label: t('admin.emailTemplates'),
           path: '/admin/marketing/email-templates',
           icon: <Mail className="w-4 h-4" />,
-        },
-        {
-          label: t('admin.campaignManager'),
-          path: '/admin/marketing/campaigns',
-          icon: <TrendingUp className="w-4 h-4" />,
-        },
-        {
-          label: t('admin.analytics'),
-          path: '/admin/marketing/analytics',
-          icon: <BarChart3 className="w-4 h-4" />,
         },
       ],
     },
@@ -153,16 +138,6 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           icon: <MapPin className="w-4 h-4" />,
         },
         {
-          label: t('admin.pricingAvailability'),
-          path: '/admin/tours/pricing',
-          icon: <DollarSign className="w-4 h-4" />,
-        },
-        {
-          label: t('admin.itineraries'),
-          path: '/admin/tours/itineraries',
-          icon: <Map className="w-4 h-4" />,
-        },
-        {
           label: t('admin.addons'),
           path: '/admin/tours/addons',
           icon: <Package className="w-4 h-4" />,
@@ -173,11 +148,6 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
       label: t('admin.finance'),
       icon: <DollarSign className="w-5 h-5" />,
       items: [
-        {
-          label: t('admin.paymentsRefunds'),
-          path: '/admin/finance/payments',
-          icon: <DollarSign className="w-4 h-4" />,
-        },
         {
           label: t('admin.invoices'),
           path: '/admin/finance/invoices',
