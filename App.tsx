@@ -11,9 +11,6 @@ import { CustomerManager } from './pages/admin/CustomerManager';
 import { WaitlistManager } from './pages/admin/WaitlistManager';
 import { PromoCodeManager } from './pages/admin/PromoCodeManager';
 import { EmailTemplates } from './pages/admin/marketing/EmailTemplates';
-import { CampaignManager } from './pages/admin/marketing/CampaignManager';
-import { MarketingAnalytics } from './pages/admin/marketing/MarketingAnalytics';
-import { BookingCalendar } from './pages/admin/bookings/BookingCalendar';
 import { CustomerGroups } from './pages/admin/customers/CustomerGroups';
 import { CommunicationLogs } from './pages/admin/customers/CommunicationLogs';
 import { TourManagement } from './pages/admin/tours/TourManagement';
@@ -94,13 +91,6 @@ const AppRoutes = () => {
                     <AdminLayout><PromoCodeManager /></AdminLayout>
                 </ProtectedRoute>
             } />
-            
-            {/* Booking Routes */}
-            <Route path="/admin/bookings/calendar" element={
-                <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><BookingCalendar /></AdminLayout>
-                </ProtectedRoute>
-            } />
 
             {/* Marketing Routes */}
             <Route path="/admin/marketing/promo-codes" element={
@@ -111,16 +101,6 @@ const AppRoutes = () => {
             <Route path="/admin/marketing/email-templates" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><EmailTemplates /></AdminLayout>
-                </ProtectedRoute>
-            } />
-            <Route path="/admin/marketing/campaigns" element={
-                <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><CampaignManager /></AdminLayout>
-                </ProtectedRoute>
-            } />
-            <Route path="/admin/marketing/analytics" element={
-                <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><MarketingAnalytics /></AdminLayout>
                 </ProtectedRoute>
             } />
 
@@ -142,16 +122,6 @@ const AppRoutes = () => {
                     <AdminLayout><TourManagement /></AdminLayout>
                 </ProtectedRoute>
             } />
-            <Route path="/admin/tours/pricing" element={
-                <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><PricingAvailability /></AdminLayout>
-                </ProtectedRoute>
-            } />
-            <Route path="/admin/tours/itineraries" element={
-                <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><Itineraries /></AdminLayout>
-                </ProtectedRoute>
-            } />
             <Route path="/admin/tours/addons" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><TourAddons /></AdminLayout>
@@ -159,11 +129,6 @@ const AppRoutes = () => {
             } />
 
             {/* Finance Routes */}
-            <Route path="/admin/finance/payments" element={
-                <ProtectedRoute requiredRole={UserRole.ADMIN}>
-                    <AdminLayout><PaymentsRefunds /></AdminLayout>
-                </ProtectedRoute>
-            } />
             <Route path="/admin/finance/invoices" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><Invoices /></AdminLayout>
