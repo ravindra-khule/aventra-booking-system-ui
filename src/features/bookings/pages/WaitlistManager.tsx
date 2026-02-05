@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Waitlist } from '../types/booking.types';
 import { WaitlistService } from '../services/booking.service';
-import { Users, Mail, Phone, MessageSquare, X, Edit2, Save, Search, ListFilter } from 'lucide-react';
+import { Users, Mail, Phone, MessageSquare, X, Edit2, Save, Search, ListFilter, CheckSquare, Square } from 'lucide-react';
 import { Button, Badge, Input, Select } from '../../../shared/components/ui';
+import { BulkActionsToolbar } from '../../../shared/components/BulkActionsToolbar';
+import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
 import { formatDate } from '../../../shared/utils';
 
 export const WaitlistManager = () => {
@@ -12,6 +14,9 @@ export const WaitlistManager = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [selectedEntry, setSelectedEntry] = useState<Waitlist | null>(null);
   const [search, setSearch] = useState('');
+  
+  // Bulk selection hook
+  const bulkSelection = useBulkSelection(filteredWaitlist);
 
   useEffect(() => {
     loadWaitlist();
@@ -291,7 +296,7 @@ export const WaitlistManager = () => {
 
       <div className="mb-6 space-y-4">
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <div className="relative">
+          <div className="relative mb-4">
             <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
             <input
               type="text"
@@ -301,6 +306,30 @@ export const WaitlistManager = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
+          
+          {/* Bulk Actions Toolbar */}
+          {bulkSelection.selectedCount > 0 && (
+            <BulkActionsToolbar
+              selectedCount={bulkSelection.selectedCount}
+              actions={[
+                {
+                  id: 'send-email',
+                  label: 'Send Email',
+                  icon: <Mail className="h-4 w-4" />,
+                  variant: 'primary',
+                  onClick: () => console.log('Send email to selected waitlist entries')
+                },
+                {
+                  id: 'mark-contacted',
+                  label: 'Mark as Contacted',
+                  icon: <MessageSquare className="h-4 w-4" />,
+                  variant: 'outline',
+                  onClick: () => console.log('Mark selected as contacted')
+                }
+              ]}
+              onClearSelection={() => bulkSelection.clearSelection()}
+            />
+          )}
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow-sm border flex flex-col md:flex-row gap-4">
@@ -357,6 +386,19 @@ export const WaitlistManager = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                  <button
+                    onClick={() => bulkSelection.selectAll()}
+                    className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
+                    title={bulkSelection.isAllSelected ? 'Deselect all' : 'Select all'}
+                  >
+                    {bulkSelection.isAllSelected ? (
+                      <CheckSquare className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <Square className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
@@ -369,9 +411,24 @@ export const WaitlistManager = () => {
               {filteredWaitlist.length > 0 ? filteredWaitlist.map((entry) => (
                 <tr 
                   key={entry.id} 
-                  className="hover:bg-gray-50 transition cursor-pointer" 
+                  className={`hover:bg-gray-50 transition cursor-pointer ${bulkSelection.isSelected(entry.id) ? 'bg-blue-50' : ''}`}
                   onClick={() => setSelectedEntry(entry)}
                 >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        bulkSelection.toggleSelection(entry.id);
+                      }}
+                      className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
+                    >
+                      {bulkSelection.isSelected(entry.id) ? (
+                        <CheckSquare className="h-5 w-5 text-blue-600" />
+                      ) : (
+                        <Square className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-orange-600">
                     {entry.id}
                   </td>

@@ -10,3 +10,4 @@ export { useFetch } from './useFetch';
 export type { UseFetchResult } from './useFetch';
 export { useToggle } from './useToggle';
 export type { UseToggleResult } from './useToggle';
+export { useBulkSelection } from './useBulkSelection';
