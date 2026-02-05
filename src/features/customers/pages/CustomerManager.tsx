@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Customer } from '../types/customer.types';
 import { Booking } from '../../bookings/types/booking.types';
 import { CustomerService } from '../services/customer.service';
-import { Search, User, Mail, Phone, MapPin, DollarSign, ShoppingBag, Calendar, Edit2, Save, X, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, User, Mail, Phone, MapPin, DollarSign, ShoppingBag, Calendar, Edit2, Save, X, Eye, ChevronDown, ChevronUp, CheckSquare, Square } from 'lucide-react';
 import { Button, Badge, Card, Input } from '../../../shared/components/ui';
+import { BulkActionsToolbar } from '../../../shared/components/BulkActionsToolbar';
+import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
 import { formatCurrency, formatDate } from '../../../shared/utils';
 
 export const CustomerManager = () => {
@@ -13,6 +15,9 @@ export const CustomerManager = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customerBookings, setCustomerBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Bulk selection hook
+  const bulkSelection = useBulkSelection(filteredCustomers);
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -413,7 +418,7 @@ export const CustomerManager = () => {
 
       {/* Search Bar */}
       <div className="mb-6 bg-white p-4 rounded-xl shadow-sm border">
-        <div className="relative">
+        <div className="relative mb-4">
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             type="text"
@@ -423,6 +428,30 @@ export const CustomerManager = () => {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        
+        {/* Bulk Actions Toolbar */}
+        {bulkSelection.selectedCount > 0 && (
+          <BulkActionsToolbar
+            selectedCount={bulkSelection.selectedCount}
+            actions={[
+              {
+                id: 'send-email',
+                label: 'Send Email',
+                icon: <Mail className="h-4 w-4" />,
+                variant: 'primary',
+                onClick: () => console.log('Send email to selected customers')
+              },
+              {
+                id: 'export',
+                label: 'Export',
+                icon: <ShoppingBag className="h-4 w-4" />,
+                variant: 'outline',
+                onClick: () => console.log('Export selected customers')
+              }
+            ]}
+            onClearSelection={() => bulkSelection.clearSelection()}
+          />
+        )}
       </div>
 
       {/* Stats Summary */}
@@ -466,6 +495,19 @@ export const CustomerManager = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                  <button
+                    onClick={() => bulkSelection.selectAll()}
+                    className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
+                    title={bulkSelection.isAllSelected ? 'Deselect all' : 'Select all'}
+                  >
+                    {bulkSelection.isAllSelected ? (
+                      <CheckSquare className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <Square className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Customer
                 </th>
@@ -492,13 +534,28 @@ export const CustomerManager = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                     No customers found
                   </td>
                 </tr>
               ) : (
                 filteredCustomers.map(customer => (
-                  <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                  <tr 
+                    key={customer.id} 
+                    className={`hover:bg-gray-50 transition-colors ${bulkSelection.isSelected(customer.id) ? 'bg-blue-50' : ''}`}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => bulkSelection.toggleSelection(customer.id)}
+                        className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
+                      >
+                        {bulkSelection.isSelected(customer.id) ? (
+                          <CheckSquare className="h-5 w-5 text-blue-600" />
+                        ) : (
+                          <Square className="h-5 w-5 text-gray-400" />
+                        )}
+                      </button>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="font-medium text-gray-900">
