@@ -3,6 +3,8 @@ export { TourStatusBadge } from './TourStatusBadge';
 export { TourCard } from './TourCard';
 export { TourFilters } from './TourFilters';
 export { TourDetailPanel } from './TourDetailPanel';
+export { TourForm } from './TourForm';
+export { TourCreateModal } from './TourCreateModal';
 
 // Itinerary Components
 export { ItineraryBuilder } from './ItineraryBuilder';

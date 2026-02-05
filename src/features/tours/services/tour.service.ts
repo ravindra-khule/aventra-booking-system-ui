@@ -304,6 +304,384 @@ let MOCK_TOURS: Tour[] = [
     updatedAt: '2024-11-28T00:00:00Z',
     totalBookings: 0,
     revenue: 0
+  },
+  {
+    id: '5',
+    title: 'Everest Base Camp',
+    slug: 'everest-base-camp',
+    shortDescription: '14 DAGAR. Vandra den unika Gokyo-rutten fram till Everest BC.',
+    description: 'Vandra den unika Gokyo-rutten fram till Everest BC. Från Base Camp tar vi helikopter tillbaka ned. En expedition med svensk guide.',
+    status: TourStatus.ACTIVE,
+    price: 45900,
+    depositPrice: 4500,
+    currency: 'SEK',
+    durationDays: 14,
+    difficulty: TourDifficulty.HARD,
+    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-5', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop', alt: 'Everest Base Camp', isPrimary: true, order: 1 }
+    ],
+    location: 'Everest Region',
+    country: 'Nepal',
+    region: 'Himalayas',
+    maxCapacity: 10,
+    minCapacity: 6,
+    availableSpots: 3,
+    nextDate: '2026-03-23',
+    categories: ['cat-1', 'cat-4'],
+    tags: ['tag-1', 'tag-7', 'tag-3'],
+    highlights: [
+      'Trek to Everest Base Camp',
+      'Gokyo Lakes circuit',
+      'Helicopter return from Base Camp',
+      'Incredible mountain views'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Experienced guide',
+      'Lodge accommodation',
+      'All meals during trek',
+      'Helicopter flight',
+      'Permits and fees'
+    ],
+    excludedItems: [
+      'International flights',
+      'Personal porter',
+      'Travel insurance',
+      'Tips'
+    ],
+    requirements: [
+      'Very good fitness level',
+      'High altitude experience',
+      'Medical clearance recommended'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: true,
+    allowWaitlist: true,
+    autoConfirm: false,
+    requireApproval: true,
+    createdAt: '2024-04-01T00:00:00Z',
+    updatedAt: '2024-11-20T00:00:00Z',
+    totalBookings: 52,
+    revenue: 2386800,
+    averageRating: 4.9,
+    reviewCount: 48
+  },
+  {
+    id: '6',
+    title: 'Jordanien & Petra',
+    slug: 'jordanien-petra',
+    shortDescription: '9 DAGAR. Fantastisk ökenvandring till Petra.',
+    description: 'Fantastisk ökenvandring hela vägen fram till underverket "Klippstaden Petra". Vi avslutar med härligt bad i Döda havet.',
+    status: TourStatus.ACTIVE,
+    price: 35900,
+    depositPrice: 3500,
+    currency: 'SEK',
+    durationDays: 9,
+    difficulty: TourDifficulty.MEDIUM,
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-6', url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000&auto=format&fit=crop', alt: 'Petra', isPrimary: true, order: 1 }
+    ],
+    location: 'Petra',
+    country: 'Jordan',
+    region: 'Middle East',
+    maxCapacity: 12,
+    minCapacity: 6,
+    availableSpots: 5,
+    nextDate: '2026-03-29',
+    categories: ['cat-2', 'cat-5'],
+    tags: ['tag-2', 'tag-3'],
+    highlights: [
+      'Visit ancient Petra',
+      'Desert trekking',
+      'Dead Sea floating',
+      'Wadi Rum exploration'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Swedish guide',
+      'Hotels and camps',
+      'Breakfast and dinner',
+      'Entry fees',
+      'Transportation'
+    ],
+    excludedItems: [
+      'International flights',
+      'Lunch (except some days)',
+      'Travel insurance',
+      'Personal expenses'
+    ],
+    requirements: [
+      'Moderate fitness',
+      'Desert hiking experience helpful',
+      'Good heat tolerance'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: true,
+    allowWaitlist: true,
+    autoConfirm: false,
+    requireApproval: false,
+    createdAt: '2024-05-01T00:00:00Z',
+    updatedAt: '2024-11-22T00:00:00Z',
+    totalBookings: 31,
+    revenue: 1112900,
+    averageRating: 4.6,
+    reviewCount: 28
+  },
+  {
+    id: '7',
+    title: 'Sydafrika - Drakensberg',
+    slug: 'sydafrika-drakensberg',
+    shortDescription: '9 DAGAR. Vandra genom Drakensberg med kedjestegar och grottnätter.',
+    description: 'Följ med Swett på en unik vandringsresa genom Drakensberg. Kedjestegar, grottnätter och Afrikas vildmark – kombinerat med kultur och komfort.',
+    status: TourStatus.ACTIVE,
+    price: 49900,
+    depositPrice: 4900,
+    currency: 'SEK',
+    durationDays: 9,
+    difficulty: TourDifficulty.HARD,
+    imageUrl: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-7', url: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1000&auto=format&fit=crop', alt: 'Drakensberg', isPrimary: true, order: 1 }
+    ],
+    location: 'Drakensberg',
+    country: 'South Africa',
+    region: 'Southern Africa',
+    maxCapacity: 10,
+    minCapacity: 6,
+    availableSpots: 4,
+    nextDate: '2026-04-09',
+    categories: ['cat-1', 'cat-5'],
+    tags: ['tag-4', 'tag-7', 'tag-5'],
+    highlights: [
+      'Chain ladders',
+      'Wildflower season',
+      'Mountain pools',
+      'Local San culture'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Expert mountain guide',
+      'Accommodation in lodges',
+      'All meals',
+      'Park fees',
+      'Equipment'
+    ],
+    excludedItems: [
+      'International flights',
+      'Travel insurance',
+      'Beverages',
+      'Tips'
+    ],
+    requirements: [
+      'Good fitness',
+      'Not suitable for acrophobia',
+      'Multi-day hiking experience'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: false,
+    allowWaitlist: true,
+    autoConfirm: false,
+    requireApproval: true,
+    createdAt: '2024-06-01T00:00:00Z',
+    updatedAt: '2024-11-20T00:00:00Z',
+    totalBookings: 24,
+    revenue: 1197600,
+    averageRating: 4.7,
+    reviewCount: 22
+  },
+  {
+    id: '8',
+    title: 'Vandra Inkaleden',
+    slug: 'vandra-inkaleden',
+    shortDescription: '12 DAGAR. Vi vandrar på vår obefolkade rutt av Inkaleden.',
+    description: 'Vi vandrar på vår obefolkade rutt av Inkaleden, utan trängsel, fram till slutmålet – Machu Picchu! En klassisk expedition.',
+    status: TourStatus.ACTIVE,
+    price: 45900,
+    depositPrice: 4500,
+    currency: 'SEK',
+    durationDays: 12,
+    difficulty: TourDifficulty.HARD,
+    imageUrl: 'https://images.unsplash.com/photo-1483389127117-b6a2102724ae?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-8', url: 'https://images.unsplash.com/photo-1483389127117-b6a2102724ae?q=80&w=1000&auto=format&fit=crop', alt: 'Inca Trail', isPrimary: true, order: 1 }
+    ],
+    location: 'Machu Picchu',
+    country: 'Peru',
+    region: 'South America',
+    maxCapacity: 12,
+    minCapacity: 8,
+    availableSpots: 6,
+    nextDate: '2026-04-30',
+    categories: ['cat-1', 'cat-2'],
+    tags: ['tag-3', 'tag-7'],
+    highlights: [
+      'Inca Trail trek',
+      'Machu Picchu sunrise',
+      'Lesser-known route',
+      'Archaeological sites'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Professional guide',
+      'All accommodation',
+      'All meals',
+      'Permits and fees',
+      'Porter service'
+    ],
+    excludedItems: [
+      'International flights',
+      'Travel insurance',
+      'Hot springs',
+      'Tips'
+    ],
+    requirements: [
+      'Good fitness level',
+      'Altitude experience helpful',
+      'Acclimatization recommended'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: true,
+    allowWaitlist: true,
+    autoConfirm: false,
+    requireApproval: true,
+    createdAt: '2024-07-01T00:00:00Z',
+    updatedAt: '2024-11-25T00:00:00Z',
+    totalBookings: 67,
+    revenue: 3075300,
+    averageRating: 4.9,
+    reviewCount: 64
+  },
+  {
+    id: '9',
+    title: 'Camino de Santiago',
+    slug: 'camino-de-santiago',
+    shortDescription: '8 DAGAR. Cykling på den mytomspunna pilgrimsleden.',
+    description: 'Cykling på den fantastiskt vackra mytomspunna pilgrimsleden Camino de Santiago med oss! En unik cykelupplevelse.',
+    status: TourStatus.ACTIVE,
+    price: 21900,
+    depositPrice: 2200,
+    currency: 'SEK',
+    durationDays: 8,
+    difficulty: TourDifficulty.MEDIUM,
+    imageUrl: 'https://images.unsplash.com/photo-1511575661531-b34d7da5d0bb?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-9', url: 'https://images.unsplash.com/photo-1511575661531-b34d7da5d0bb?q=80&w=1000&auto=format&fit=crop', alt: 'Camino Trail', isPrimary: true, order: 1 }
+    ],
+    location: 'Galicia',
+    country: 'Spain',
+    region: 'Europe',
+    maxCapacity: 14,
+    minCapacity: 8,
+    availableSpots: 8,
+    nextDate: '2026-05-10',
+    categories: ['cat-5'],
+    tags: ['tag-4', 'tag-7'],
+    highlights: [
+      'Historic pilgrimage route',
+      'Spanish countryside',
+      'Cultural towns',
+      'Companionship with others'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Cycling guide',
+      'Hotels with breakfast',
+      'Some dinners',
+      'Bike rental',
+      'Luggage transport'
+    ],
+    excludedItems: [
+      'International flights',
+      'Travel insurance',
+      'Some meals',
+      'Personal expenses'
+    ],
+    requirements: [
+      'Basic cycling fitness',
+      'Cycling experience required',
+      'No extreme fitness needed'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: false,
+    allowWaitlist: true,
+    autoConfirm: false,
+    requireApproval: false,
+    createdAt: '2024-08-01T00:00:00Z',
+    updatedAt: '2024-11-20T00:00:00Z',
+    totalBookings: 44,
+    revenue: 963600,
+    averageRating: 4.5,
+    reviewCount: 41
+  },
+  {
+    id: '10',
+    title: 'Upplev Cinque Terre',
+    slug: 'upplev-cinque-terre',
+    shortDescription: '5 DAGAR. Mat- och vandringsresa i Toscana och Ligurien.',
+    description: 'En härlig mat- och vandringsresa i Toscana och Ligurien. Till fots upplever vi vingårdar och marmorberg. Perfekt för mat- och naturälskare.',
+    status: TourStatus.ACTIVE,
+    price: 19900,
+    depositPrice: 2000,
+    currency: 'SEK',
+    durationDays: 5,
+    difficulty: TourDifficulty.EASY,
+    imageUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-10', url: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop', alt: 'Cinque Terre', isPrimary: true, order: 1 }
+    ],
+    location: 'Cinque Terre',
+    country: 'Italy',
+    region: 'Europe',
+    maxCapacity: 12,
+    minCapacity: 6,
+    availableSpots: 9,
+    nextDate: '2026-05-12',
+    categories: ['cat-2', 'cat-5'],
+    tags: ['tag-5', 'tag-4'],
+    highlights: [
+      'Coastal villages',
+      'Italian cuisine',
+      'Vineyard walks',
+      'Seaside relaxation'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Local guide',
+      'Hotels in villages',
+      'Most meals',
+      'Wine tastings',
+      'Local transportation'
+    ],
+    excludedItems: [
+      'International flights',
+      'Travel insurance',
+      'Some meals',
+      'Personal expenses'
+    ],
+    requirements: [
+      'Minimal fitness',
+      'Enjoy walking at own pace',
+      'Love of food and wine'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: false,
+    allowWaitlist: true,
+    autoConfirm: true,
+    requireApproval: false,
+    createdAt: '2024-09-01T00:00:00Z',
+    updatedAt: '2024-11-22T00:00:00Z',
+    totalBookings: 29,
+    revenue: 577100,
+    averageRating: 4.8,
+    reviewCount: 27
   }
 ];
 
