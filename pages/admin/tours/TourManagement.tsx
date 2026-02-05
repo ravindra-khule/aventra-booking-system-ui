@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Tour, TourStatus, TourDifficulty, TourCategory, TourTag } from '../../../src/features/tours/types/tour.types';
 import { TourService } from '../../../src/features/tours/services/tour.service';
-import { TourCard, TourFilters, TourStatusBadge, TourDetailPanel } from '../../../src/features/tours/components';
+import { TourCard, TourFilters, TourStatusBadge, TourDetailPanel, TourCreateModal } from '../../../src/features/tours/components';
 import { 
   Search, Plus, Grid, List, Download, Upload, Settings, 
   Eye, Edit2, Copy, Trash2, MoreVertical, MapPin, Calendar,
@@ -23,6 +23,7 @@ export const TourManagement: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedTour, setSelectedTour] = useState<Tour | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -151,8 +152,19 @@ export const TourManagement: React.FC = () => {
   };
 
   const handleCreateNew = () => {
-    // This would open a create modal - for now just show toast
-    toast.info('Create New Tour - Modal to be implemented');
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateSubmit = async (newTour: Tour) => {
+    try {
+      const createdTour = await TourService.create(newTour);
+      setTours(prev => [createdTour, ...prev]);
+      setIsCreateModalOpen(false);
+      toast.success(`Tour "${newTour.title}" created successfully!`);
+    } catch (error) {
+      console.error('Failed to create tour:', error);
+      toast.error('Failed to create tour. Please try again.');
+    }
   };
 
   const clearFilters = () => {
@@ -453,6 +465,15 @@ export const TourManagement: React.FC = () => {
           tags={tags}
         />
       )}
+
+      {/* Tour Create Modal */}
+      <TourCreateModal
+        isOpen={isCreateModalOpen}
+        categories={categories}
+        tags={tags}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateSubmit}
+      />
     </div>
   );
 };
