@@ -7,6 +7,56 @@ import { formatCurrency, formatDate } from '../../../shared/utils';
 import { useToast } from '../../../shared/context/ToastContext';
 
 export const BookingManager = () => {
+    // CSV Export Handler
+    const handleExportCSV = () => {
+      if (!filteredBookings.length) {
+        toast.error('No bookings to export.');
+        return;
+      }
+      // Define CSV headers
+      const headers = [
+        'Booking ID',
+        'Customer Name',
+        'Customer Email',
+        'Tour',
+        'Trip Date',
+        'Status',
+        'Payment Status',
+        'Paid Amount',
+        'Total Amount',
+        'Promo Code',
+        'Discount Amount'
+      ];
+      // Map bookings to CSV rows
+      const rows = filteredBookings.map(b => [
+        b.id,
+        b.customerName,
+        b.payer?.email || '',
+        b.tourTitle,
+        b.tripDate,
+        b.status,
+        b.paymentStatus,
+        b.paidAmount,
+        b.totalAmount,
+        b.promoCode || '',
+        b.discountAmount || ''
+      ]);
+      // Build CSV string
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+        .join('\r\n');
+      // Create blob and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'bookings.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success('CSV exported!');
+    };
   const toast = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
@@ -352,10 +402,11 @@ export const BookingManager = () => {
             <h1 className="text-2xl font-bold text-gray-900">All Bookings</h1>
             <p className="text-gray-500">Manage customers, payments, and trip rosters.</p>
         </div>
-        <Button variant="outline" icon={<Download className="h-4 w-4" />}>
+        <Button variant="outline" icon={<Download className="h-4 w-4" />} onClick={handleExportCSV}>
           Export CSV
         </Button>
       </div>
+
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {/* Toolbar */}

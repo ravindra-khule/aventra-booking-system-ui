@@ -22,6 +22,7 @@ export const TourManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedTour, setSelectedTour] = useState<Tour | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
@@ -109,14 +110,15 @@ export const TourManagement: React.FC = () => {
 
   const handleEdit = (tour: Tour) => {
     setSelectedTour(tour);
+    setIsEditModalOpen(true);
   };
 
   const handleUpdate = async (updatedTour: Tour) => {
     try {
       await TourService.update(updatedTour.id, updatedTour);
-      // Update local state
       setTours(prev => prev.map(t => t.id === updatedTour.id ? updatedTour : t));
-      setSelectedTour(updatedTour);
+      setIsEditModalOpen(false);
+      setSelectedTour(null);
       toast.success('Tour updated successfully!');
     } catch (error) {
       console.error('Failed to update tour:', error);
@@ -455,14 +457,26 @@ export const TourManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Tour Detail Panel */}
-      {selectedTour && (
+      {/* Tour Detail Panel (view only) */}
+      {selectedTour && !isEditModalOpen && (
         <TourDetailPanel
           tour={selectedTour}
           onClose={() => setSelectedTour(null)}
-          onUpdate={handleUpdate}
+          onUpdate={() => {}}
           categories={categories}
           tags={tags}
+        />
+      )}
+
+      {/* Edit Tour Modal (same as Create Tour) */}
+      {isEditModalOpen && selectedTour && (
+        <TourCreateModal
+          isOpen={isEditModalOpen}
+          categories={categories}
+          tags={tags}
+          onClose={() => { setIsEditModalOpen(false); setSelectedTour(null); }}
+          onSubmit={handleUpdate}
+          initialTour={selectedTour}
         />
       )}
 

@@ -8,6 +8,7 @@ interface TourCreateModalProps {
   tags: TourTag[];
   onClose: () => void;
   onSubmit: (tour: Tour) => Promise<void>;
+  initialTour?: Tour;
 }
 
 export const TourCreateModal: React.FC<TourCreateModalProps> = ({
@@ -15,12 +16,14 @@ export const TourCreateModal: React.FC<TourCreateModalProps> = ({
   categories,
   tags,
   onClose,
-  onSubmit
+  onSubmit,
+  initialTour
 }) => {
   if (!isOpen) return null;
 
   return (
     <TourForm
+      initialTour={initialTour}
       categories={categories}
       tags={tags}
       onSubmit={onSubmit}

@@ -27,56 +27,6 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
   tags
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<Tour>(tour);
-
-  const handleSave = () => {
-    onUpdate(formData);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setFormData(tour);
-    setIsEditing(false);
-  };
-
-  const handleChange = (field: keyof Tour, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleArrayChange = (field: keyof Tour, value: string[]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const addToArray = (field: 'highlights' | 'includedItems' | 'excludedItems' | 'requirements', value: string) => {
-    if (value.trim()) {
-      const current = formData[field] as string[];
-      handleChange(field, [...current, value.trim()]);
-    }
-  };
-
-  const removeFromArray = (field: 'highlights' | 'includedItems' | 'excludedItems' | 'requirements', index: number) => {
-    const current = formData[field] as string[];
-    handleChange(field, current.filter((_, i) => i !== index));
-  };
-
-  const toggleCategory = (categoryId: string) => {
-    const current = formData.categories;
-    if (current.includes(categoryId)) {
-      handleArrayChange('categories', current.filter(id => id !== categoryId));
-    } else {
-      handleArrayChange('categories', [...current, categoryId]);
-    }
-  };
-
-  const toggleTag = (tagId: string) => {
-    const current = formData.tags;
-    if (current.includes(tagId)) {
-      handleArrayChange('tags', current.filter(id => id !== tagId));
-    } else {
-      handleArrayChange('tags', [...current, tagId]);
-    }
-  };
 
   const tabs: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
     { id: 'overview', label: 'Overview', icon: <FileText className="h-4 w-4" /> },
@@ -99,17 +49,17 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-2xl font-bold">{formData.title}</h2>
-                    <TourStatusBadge status={formData.status} />
-                    {formData.isFeatured && (
+                    <h2 className="text-2xl font-bold">{tour.title}</h2>
+                    <TourStatusBadge status={tour.status} />
+                    {tour.isFeatured && (
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-400 text-yellow-900">
                         <Star className="h-3 w-3 mr-1" />
                         Featured
                       </span>
                     )}
                   </div>
-                  <p className="text-purple-100 text-sm">{formData.location}, {formData.country}</p>
-                  <p className="text-purple-200 text-xs mt-1">ID: {formData.id} · Slug: {formData.slug}</p>
+                  <p className="text-purple-100 text-sm">{tour.location}, {tour.country}</p>
+                  <p className="text-purple-200 text-xs mt-1">ID: {tour.id} · Slug: {tour.slug}</p>
                 </div>
                 <Button onClick={onClose} variant="ghost" className="text-purple-100 hover:text-white !p-2">
                   <X className="h-6 w-6" />
@@ -163,60 +113,42 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-blue-50 rounded-lg p-4">
                       <div className="text-xs text-blue-600 font-medium mb-1">Duration</div>
-                      <div className="text-2xl font-bold text-blue-900">{formData.durationDays}</div>
+                      <div className="text-2xl font-bold text-blue-900">{tour.durationDays}</div>
                       <div className="text-xs text-blue-600">days</div>
                     </div>
                     <div className="bg-green-50 rounded-lg p-4">
                       <div className="text-xs text-green-600 font-medium mb-1">Bookings</div>
-                      <div className="text-2xl font-bold text-green-900">{formData.totalBookings || 0}</div>
+                      <div className="text-2xl font-bold text-green-900">{tour.totalBookings || 0}</div>
                       <div className="text-xs text-green-600">total</div>
                     </div>
                     <div className="bg-purple-50 rounded-lg p-4">
                       <div className="text-xs text-purple-600 font-medium mb-1">Capacity</div>
-                      <div className="text-2xl font-bold text-purple-900">{formData.availableSpots}</div>
-                      <div className="text-xs text-purple-600">/ {formData.maxCapacity} spots</div>
+                      <div className="text-2xl font-bold text-purple-900">{tour.availableSpots}</div>
+                      <div className="text-xs text-purple-600">/ {tour.maxCapacity} spots</div>
                     </div>
                     <div className="bg-yellow-50 rounded-lg p-4">
                       <div className="text-xs text-yellow-600 font-medium mb-1">Revenue</div>
-                      <div className="text-lg font-bold text-yellow-900">{formatCurrency(formData.revenue || 0)}</div>
+                      <div className="text-lg font-bold text-yellow-900">{formatCurrency(tour.revenue || 0)}</div>
                     </div>
                   </div>
 
                   {/* Description */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    {isEditing ? (
-                      <textarea
-                        className="w-full border border-gray-300 rounded-lg p-3 text-sm"
-                        rows={4}
-                        value={formData.description}
-                        onChange={e => handleChange('description', e.target.value)}
-                      />
-                    ) : (
-                      <p className="text-gray-700 text-sm leading-relaxed">{formData.description}</p>
-                    )}
+                    <p className="text-gray-700 text-sm leading-relaxed">{tour.description}</p>
                   </div>
 
                   {/* Short Description */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
-                    {isEditing ? (
-                      <textarea
-                        className="w-full border border-gray-300 rounded-lg p-3 text-sm"
-                        rows={2}
-                        value={formData.shortDescription}
-                        onChange={e => handleChange('shortDescription', e.target.value)}
-                      />
-                    ) : (
-                      <p className="text-gray-600 text-sm">{formData.shortDescription}</p>
-                    )}
+                    <p className="text-gray-600 text-sm">{tour.shortDescription}</p>
                   </div>
 
                   {/* Highlights */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Highlights</label>
                     <ul className="space-y-2">
-                      {formData.highlights.map((highlight, idx) => (
+                      {tour.highlights.map((highlight, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
                           <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                           <span className="flex-1">{highlight}</span>
