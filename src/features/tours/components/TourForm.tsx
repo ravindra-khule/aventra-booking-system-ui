@@ -61,7 +61,7 @@ export const TourForm: React.FC<TourFormProps> = ({
     }
   );
 
-  const [activeTab, setActiveTab] = useState<'basic' | 'content' | 'pricing' | 'settings'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'pricing' | 'settings'>('basic');
   const [isLoading, setIsLoading] = useState(false);
   const [newHighlight, setNewHighlight] = useState('');
   const [newIncluded, setNewIncluded] = useState('');
@@ -204,12 +204,6 @@ export const TourForm: React.FC<TourFormProps> = ({
             className={`tab ${activeTab === 'basic' ? 'active' : ''}`}
           >
             Basic Info
-          </button>
-          <button
-            onClick={() => setActiveTab('content')}
-            className={`tab ${activeTab === 'content' ? 'active' : ''}`}
-          >
-            Content & Details
           </button>
           <button
             onClick={() => setActiveTab('pricing')}
@@ -401,176 +395,7 @@ export const TourForm: React.FC<TourFormProps> = ({
             </div>
           )}
 
-          {/* CONTENT & DETAILS TAB */}
-          {activeTab === 'content' && (
-            <div className="tab-content">
-              <div className="form-section">
-                <h3>Highlights</h3>
-                <div className="list-input">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      value={newHighlight}
-                      onChange={(e) => setNewHighlight(e.target.value)}
-                      placeholder="Add a highlight..."
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddHighlight())}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddHighlight}
-                      className="add-btn"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="list-items">
-                    {(formData.highlights || []).map((highlight, idx) => (
-                      <div key={idx} className="list-item">
-                        <span>{highlight}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveHighlight(idx)}
-                          className="delete-btn"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>Included Items</h3>
-                <div className="list-input">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      value={newIncluded}
-                      onChange={(e) => setNewIncluded(e.target.value)}
-                      placeholder="Add included item..."
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddIncluded())}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddIncluded}
-                      className="add-btn"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="list-items">
-                    {(formData.includedItems || []).map((item, idx) => (
-                      <div key={idx} className="list-item">
-                        <span>{item}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveIncluded(idx)}
-                          className="delete-btn"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>Excluded Items</h3>
-                <div className="list-input">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      value={newExcluded}
-                      onChange={(e) => setNewExcluded(e.target.value)}
-                      placeholder="Add excluded item..."
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddExcluded())}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddExcluded}
-                      className="add-btn"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="list-items">
-                    {(formData.excludedItems || []).map((item, idx) => (
-                      <div key={idx} className="list-item">
-                        <span>{item}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveExcluded(idx)}
-                          className="delete-btn"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>Requirements</h3>
-                <div className="list-input">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      value={newRequirement}
-                      onChange={(e) => setNewRequirement(e.target.value)}
-                      placeholder="Add requirement..."
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddRequirement())}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddRequirement}
-                      className="add-btn"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="list-items">
-                    {(formData.requirements || []).map((req, idx) => (
-                      <div key={idx} className="list-item">
-                        <span>{req}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveRequirement(idx)}
-                          className="delete-btn"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3>SEO</h3>
-                <div className="form-group">
-                  <label>SEO Title</label>
-                  <input
-                    type="text"
-                    value={formData.seoTitle || ''}
-                    onChange={(e) => handleInputChange('seoTitle', e.target.value)}
-                    placeholder="Page title for search engines"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>SEO Description</label>
-                  <textarea
-                    value={formData.seoDescription || ''}
-                    onChange={(e) => handleInputChange('seoDescription', e.target.value)}
-                    placeholder="Meta description (160 chars)"
-                    rows={2}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+          {/* You may add other sections here if needed. */}
 
           {/* PRICING & CAPACITY TAB */}
           {activeTab === 'pricing' && (
