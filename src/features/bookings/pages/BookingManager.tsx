@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Booking, BookingStatus, PaymentStatus, PayerDetails, Traveler } from '../types/booking.types';
 import { BookingService } from '../services/booking.service';
-import { Search, Filter, MoreHorizontal, Download, Eye, X, CreditCard, User, Users, Calendar, Edit2, Save, Trash } from 'lucide-react';
+import { Search, Filter, MoreHorizontal, Download, Eye, X, CreditCard, User, Users, Calendar, Edit2, Save, Trash, Mail, CheckSquare, Square } from 'lucide-react';
 import { Button, Badge, Input, Select } from '../../../shared/components/ui';
+import { BulkActionsToolbar, BulkAction } from '../../../shared/components/BulkActionsToolbar';
+import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
 import { formatCurrency, formatDate } from '../../../shared/utils';
 import { useToast } from '../../../shared/context/ToastContext';
 
@@ -62,10 +64,20 @@ export const BookingManager = () => {
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState('');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  
+  // Bulk selection hook
+  const bulkSelection = useBulkSelection(filteredBookings);
   
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
+  const [tourFilter, setTourFilter] = useState<string>('ALL');
+  const [dateFromFilter, setDateFromFilter] = useState<string>('');
+  const [dateToFilter, setDateToFilter] = useState<string>('');
 
   const fetchBookings = () => {
     BookingService.getAll().then((data) => {
@@ -99,8 +111,23 @@ export const BookingManager = () => {
       result = result.filter(b => b.paymentStatus === paymentFilter);
     }
 
+    if (tourFilter !== 'ALL') {
+      result = result.filter(b => b.tourTitle === tourFilter);
+    }
+
+    if (dateFromFilter) {
+      result = result.filter(b => b.tripDate >= dateFromFilter);
+    }
+
+    if (dateToFilter) {
+      result = result.filter(b => b.tripDate <= dateToFilter);
+    }
+
     setFilteredBookings(result);
-  }, [search, statusFilter, paymentFilter, bookings]);
+  }, [search, statusFilter, paymentFilter, tourFilter, dateFromFilter, dateToFilter, bookings]);
+
+  // Get unique tour titles for filter dropdown
+  const uniqueTours = Array.from(new Set(bookings.map(b => b.tourTitle))).sort();
 
   const handleBookingUpdate = async (updatedBooking: Booking) => {
      // Update local state immediately for responsiveness
@@ -114,6 +141,59 @@ export const BookingManager = () => {
        console.error("Failed to update booking", e);
        toast.error('Failed to save changes. Please try again.');
      }
+  };
+
+  const handleToggleBookingSelection = (bookingId: string) => {
+    bulkSelection.toggleSelection(bookingId);
+  };
+
+  const handleSelectAll = () => {
+    bulkSelection.selectAll();
+  };
+
+  const handleSendEmails = async () => {
+    if (bulkSelection.selectedCount === 0) {
+      toast.error('Please select at least one booking');
+      return;
+    }
+
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      toast.error('Please enter both subject and message');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      // Get selected bookings
+      const selectedBookingsData = bulkSelection.getSelectedItems();
+      
+      // Collect unique emails
+      const emailsSet = new Set<string>();
+      selectedBookingsData.forEach(booking => {
+        emailsSet.add(booking.payer.email);
+      });
+
+      // Call API to send emails
+      for (const email of emailsSet) {
+        await BookingService.sendBulkEmail({
+          email,
+          subject: emailSubject,
+          message: emailMessage,
+          bookingCount: selectedBookingsData.filter(b => b.payer.email === email).length
+        });
+      }
+
+      toast.success(`Email sent to ${emailsSet.size} customer(s)`);
+      setShowEmailModal(false);
+      setEmailSubject('');
+      setEmailMessage('');
+      bulkSelection.clearSelection();
+    } catch (e) {
+      console.error("Failed to send emails", e);
+      toast.error('Failed to send emails. Please try again.');
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const getStatusVariant = (status: BookingStatus): 'success' | 'warning' | 'danger' | 'info' | 'default' => {
@@ -134,6 +214,96 @@ export const BookingManager = () => {
         case PaymentStatus.REFUNDED: return 'default';
         default: return 'default';
     }
+  };
+
+  // Email Modal
+  const EmailModal = () => {
+    if (!showEmailModal) return null;
+
+    const selectedCount = bulkSelection.selectedCount;
+    const customerCount = new Set(
+      bulkSelection.getSelectedItems()
+        .map(b => b.payer.email)
+    ).size;
+
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowEmailModal(false)}></div>
+          
+          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="sm:flex sm:items-start mb-4">
+                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <Mail className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    Send Email to {customerCount} Customer(s)
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {selectedCount} booking(s) selected
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mt-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    placeholder="e.g., Important Update About Your Tour"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Message
+                  </label>
+                  <textarea
+                    value={emailMessage}
+                    onChange={(e) => setEmailMessage(e.target.value)}
+                    placeholder="Enter your message here..."
+                    rows={6}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-800">
+                  <p>
+                    <strong>Recipients:</strong> {customerCount} unique customer(s) will receive this email.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+              <Button
+                onClick={handleSendEmails}
+                variant="primary"
+                disabled={sendingEmail}
+                className="w-full sm:w-auto"
+              >
+                {sendingEmail ? 'Sending...' : 'Send Email'}
+              </Button>
+              <Button
+                onClick={() => setShowEmailModal(false)}
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={sendingEmail}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Sidebar / Modal for details
@@ -410,35 +580,100 @@ export const BookingManager = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {/* Toolbar */}
-        <div className="p-4 border-b border-gray-200 flex flex-col md:flex-row gap-4 justify-between">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input 
-              type="text"
-              placeholder="Search by name, ID, or tour..."
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-2">
-            <select 
+        <div className="p-4 border-b border-gray-200">
+          {/* Search Bar */}
+          <div className="flex flex-col gap-4 mb-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search by name, ID, or tour..."
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            {/* Filters Row 1 */}
+            <div className="flex flex-wrap gap-2">
+              <select 
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-            >
+              >
                 <option value="ALL">All Status</option>
                 {Object.values(BookingStatus).map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <select 
+              </select>
+              <select 
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value)}
-            >
+              >
                 <option value="ALL">All Payments</option>
                 {Object.values(PaymentStatus).map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
+              </select>
+              <select 
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                value={tourFilter}
+                onChange={(e) => setTourFilter(e.target.value)}
+              >
+                <option value="ALL">All Tours</option>
+                {uniqueTours.map(tour => <option key={tour} value={tour}>{tour}</option>)}
+              </select>
+            </div>
+
+            {/* Filters Row 2 - Date Range */}
+            <div className="flex flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 font-medium">Trip Date Range:</label>
+              </div>
+              <input
+                type="date"
+                value={dateFromFilter}
+                onChange={(e) => setDateFromFilter(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                placeholder="From"
+              />
+              <span className="text-gray-400">to</span>
+              <input
+                type="date"
+                value={dateToFilter}
+                onChange={(e) => setDateToFilter(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                placeholder="To"
+              />
+              {(dateFromFilter || dateToFilter) && (
+                <Button
+                  onClick={() => {
+                    setDateFromFilter('');
+                    setDateToFilter('');
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                >
+                  Clear Dates
+                </Button>
+              )}
+            </div>
           </div>
+
+          {/* Bulk Actions Toolbar */}
+          {bulkSelection.selectedCount > 0 && (
+            <BulkActionsToolbar
+              selectedCount={bulkSelection.selectedCount}
+              actions={[
+                {
+                  id: 'send-email',
+                  label: 'Send Email',
+                  icon: <Mail className="h-4 w-4" />,
+                  variant: 'primary',
+                  onClick: () => setShowEmailModal(true)
+                }
+              ]}
+              onClearSelection={() => bulkSelection.clearSelection()}
+            />
+          )}
         </div>
 
         {/* Table */}
@@ -446,9 +681,23 @@ export const BookingManager = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                  <button
+                    onClick={handleSelectAll}
+                    className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
+                    title={bulkSelection.isAllSelected ? 'Deselect all' : 'Select all'}
+                  >
+                    {bulkSelection.isAllSelected ? (
+                      <CheckSquare className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <Square className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trip Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid / Total</th>
@@ -457,15 +706,30 @@ export const BookingManager = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredBookings.length > 0 ? filteredBookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-gray-50 transition cursor-pointer" onClick={() => setSelectedBooking(booking)}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                <tr 
+                  key={booking.id} 
+                  className={`hover:bg-gray-50 transition ${bulkSelection.isSelected(booking.id) ? 'bg-blue-50' : ''}`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => handleToggleBookingSelection(booking.id)}
+                      className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
+                    >
+                      {bulkSelection.isSelected(booking.id) ? (
+                        <CheckSquare className="h-5 w-5 text-blue-600" />
+                      ) : (
+                        <Square className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 cursor-pointer" onClick={() => setSelectedBooking(booking)}>
                     {booking.id}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedBooking(booking)}>
                     <div className="text-sm font-medium text-gray-900">{booking.customerName}</div>
                     <div className="text-sm text-gray-500">{booking.payer.email}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedBooking(booking)}>
                     <div className="flex items-center gap-2">
                       <div className="text-sm text-gray-900">{booking.tourTitle}</div>
                       {booking.promoCode && (
@@ -477,10 +741,12 @@ export const BookingManager = () => {
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500">{booking.tripDate}</div>
                     {booking.discountAmount && (
                       <div className="text-xs text-purple-600 font-medium">Saved: {formatCurrency(booking.discountAmount)}</div>
                     )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm cursor-pointer" onClick={() => setSelectedBooking(booking)}>
+                    {booking.tripDate}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Badge variant={getStatusVariant(booking.status)} size="sm">
@@ -506,7 +772,7 @@ export const BookingManager = () => {
                 </tr>
               )) : (
                 <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                         No bookings found matching your filters.
                     </td>
                 </tr>
@@ -521,6 +787,9 @@ export const BookingManager = () => {
 
       {/* Slide-over Modal */}
       {selectedBooking && <BookingDetailsPanel booking={selectedBooking} onClose={() => setSelectedBooking(null)} onUpdate={handleBookingUpdate} />}
+      
+      {/* Email Modal */}
+      <EmailModal />
     </div>
   );
 };

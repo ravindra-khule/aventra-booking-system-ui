@@ -274,6 +274,26 @@ export const BookingService = {
       pendingInquiries: 12,
       occupancyRate: 85
     };
+  },
+
+  /**
+   * Send bulk email to customers
+   */
+  sendBulkEmail: async (emailData: {
+    email: string;
+    subject: string;
+    message: string;
+    bookingCount: number;
+  }): Promise<void> => {
+    await delay(800);
+    // Simulate email sending
+    console.log('Email sent:', {
+      to: emailData.email,
+      subject: emailData.subject,
+      message: emailData.message,
+      bookingsAffected: emailData.bookingCount
+    });
+    // In a real implementation, this would call an email API
   }
 };
 
