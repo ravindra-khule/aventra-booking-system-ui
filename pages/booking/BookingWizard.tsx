@@ -4,12 +4,8 @@ import { Tour, Traveler, PayerDetails } from '../../types';
 import { TourAddOn, SelectedAddOn, AddOnType } from '../../src/features/tours/types/tour.types';
 import { TourService, BookingService, PromoCodeService } from '../../services/api';
 import { AddOnService } from '../../src/features/tours/services/addon.service';
-<<<<<<< Updated upstream
-import { useTranslation } from 'react-i18next';
-=======
 import { useTranslation } from '../../context/LanguageContext';
 import { PaymentSection } from '../../src/features/bookings/components/PaymentSection';
->>>>>>> Stashed changes
 import { 
   CheckCircle2, 
   ChevronRight, 
@@ -402,9 +398,6 @@ export const BookingWizard: React.FC<{ isDevelopmentMode?: boolean }> = ({ isDev
     }
   };
 
-<<<<<<< Updated upstream
-  if (!tour) return <div className="min-h-screen flex justify-center items-center">{t('common:loading')}</div>;
-=======
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-purple-50">
@@ -461,7 +454,6 @@ export const BookingWizard: React.FC<{ isDevelopmentMode?: boolean }> = ({ isDev
       </div>
     );
   }
->>>>>>> Stashed changes
 
   const baseAmount = (tour.price * participants);
   const addOnsTotal = calculateAddOnsTotal();
@@ -1241,49 +1233,6 @@ export const BookingWizard: React.FC<{ isDevelopmentMode?: boolean }> = ({ isDev
                      )}
                   </div>
 
-<<<<<<< Updated upstream
-                  <div className="bg-white border border-gray-300 rounded-xl p-6 mb-6">
-                     <div className="flex items-center space-x-3 mb-6">
-                        <input type="radio" checked className="w-5 h-5 text-blue-600" readOnly />
-                        <span className="font-bold text-gray-800">{t('booking:payment.cardDetails')}</span>
-                        <div className="flex space-x-2 ml-4">
-                            {/* Icons */}
-                            <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                            <div className="w-8 h-5 bg-gray-200 rounded"></div>
-                        </div>
-                     </div>
-                     
-                     <div className="space-y-4 max-w-md">
-                        <Input
-                            type="text"
-                            placeholder={t('booking:payment.cardNumber')}
-                            fullWidth
-                        />
-                        <div className="grid grid-cols-2 gap-4">
-                            <Input
-                                type="text"
-                                placeholder={t('booking:payment.expiry')}
-                                fullWidth
-                            />
-                            <Input
-                                type="text"
-                                placeholder={t('booking:payment.cvc')}
-                                fullWidth
-                            />
-                        </div>
-                        <Input
-                            type="text"
-                            placeholder={t('booking:payment.holderName')}
-                            fullWidth
-                        />
-                     </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
-                      <input type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
-                      <span>{t('booking:payment.agree')} <a href="#" className="text-blue-600 underline">{t('booking:payment.terms')}</a> och <a href="#" className="text-blue-600 underline">{t('booking:payment.privacy')}</a>.</span>
-                  </div>
-=======
                   {/* New Payment Form Component */}
                   <PaymentSection
                      booking={{
@@ -1297,7 +1246,6 @@ export const BookingWizard: React.FC<{ isDevelopmentMode?: boolean }> = ({ isDev
                         window.scrollTo(0, 0);
                      }}
                   />
->>>>>>> Stashed changes
                </div>
             )}
 

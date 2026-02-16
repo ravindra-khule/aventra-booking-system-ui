@@ -356,14 +356,6 @@ export const MyPages = () => {
                             </div>
 
                             {booking.paymentStatus === PaymentStatus.PARTIAL && (
-<<<<<<< Updated upstream
-                              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
-                                <p className="text-xs text-orange-800">
-                                  <strong>{t('myPages:reminderTitle')}</strong><br />
-                                  {t('myPages:reminderText')}
-                                </p>
-                              </div>
-=======
                               <>
                                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
                                   <p className="text-xs text-orange-800">
@@ -379,7 +371,6 @@ export const MyPages = () => {
                                   Pay Remaining Balance
                                 </button>
                               </>
->>>>>>> Stashed changes
                             )}
 
                             {booking.paymentStatus === PaymentStatus.PAID && (
