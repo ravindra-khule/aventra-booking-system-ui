@@ -4,7 +4,8 @@ import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { Home } from './pages/Home';
 import { TourDetails } from './pages/TourDetails';
-import { BookingWizard } from './pages/booking/BookingWizard';
+import { BookingWizardWithStripe } from './pages/booking/BookingWizardWithStripe';
+import { TestPage } from './pages/TestPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { BookingManager } from './pages/admin/BookingManager';
 import { CustomerManager } from './pages/admin/CustomerManager';
@@ -61,7 +62,8 @@ const AppRoutes = () => {
             {/* Public Routes with regular Layout */}
             <Route path="/" element={<Layout><Home /></Layout>} />
             <Route path="/tour/:id" element={<Layout><TourDetails /></Layout>} />
-            <Route path="/book/:tourId" element={<Layout><BookingWizard /></Layout>} />
+            <Route path="/test" element={<Layout><TestPage /></Layout>} />
+            <Route path="/book/:tourId" element={<Layout><BookingWizardWithStripe /></Layout>} />
             <Route path="/my-bookings" element={<Layout><MyPages /></Layout>} />
 
             {/* Admin Routes with AdminLayout */}

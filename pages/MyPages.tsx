@@ -5,6 +5,7 @@ import { jsPDF } from 'jspdf';
 import { useTranslation } from 'react-i18next';
 import { Booking, BookingStatus, PaymentStatus } from '../types';
 import { getSampleBooking } from '../src/features/bookings/services/booking.service';
+import { RemainingPaymentWithStripe } from '../src/features/bookings/components/RemainingPaymentWithStripe';
 import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const MyPages = () => {
@@ -13,6 +14,7 @@ export const MyPages = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedBookings, setExpandedBookings] = useState<Set<string | number>>(new Set());
+  const [paymentModalOpen, setPaymentModalOpen] = useState<string | number | null>(null);
 
   useEffect(() => {
     // Load bookings from localStorage
@@ -354,12 +356,30 @@ export const MyPages = () => {
                             </div>
 
                             {booking.paymentStatus === PaymentStatus.PARTIAL && (
+<<<<<<< Updated upstream
                               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
                                 <p className="text-xs text-orange-800">
                                   <strong>{t('myPages:reminderTitle')}</strong><br />
                                   {t('myPages:reminderText')}
                                 </p>
                               </div>
+=======
+                              <>
+                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                                  <p className="text-xs text-orange-800">
+                                    <strong>{t('myPages.reminderTitle')}</strong><br />
+                                    {t('myPages.reminderText')}
+                                  </p>
+                                </div>
+                                
+                                <button
+                                  onClick={() => setPaymentModalOpen(booking.id)}
+                                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg transition shadow-md mb-4"
+                                >
+                                  Pay Remaining Balance
+                                </button>
+                              </>
+>>>>>>> Stashed changes
                             )}
 
                             {booking.paymentStatus === PaymentStatus.PAID && (
@@ -386,6 +406,36 @@ export const MyPages = () => {
           </div>
         )}
       </div>
+
+      {/* Remaining Payment Modal */}
+      {paymentModalOpen && bookings.length > 0 && (
+        (() => {
+          const booking = bookings.find(b => b.id === paymentModalOpen);
+          if (!booking) return null;
+          
+          const remainingAmount = booking.totalAmount - booking.paidAmount;
+          if (remainingAmount <= 0) return null;
+          
+          return (
+            <RemainingPaymentWithStripe
+              booking={booking}
+              remainingAmount={remainingAmount}
+              onClose={() => setPaymentModalOpen(null)}
+              onSuccess={() => {
+                // Update booking status to fully paid
+                const updatedBookings = bookings.map(b => 
+                  b.id === paymentModalOpen 
+                    ? { ...b, paymentStatus: PaymentStatus.PAID, paidAmount: b.totalAmount }
+                    : b
+                );
+                setBookings(updatedBookings);
+                localStorage.setItem('userBookings', JSON.stringify(updatedBookings));
+                setPaymentModalOpen(null);
+              }}
+            />
+          );
+        })()
+      )}
     </div>
   );
 };
