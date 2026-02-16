@@ -72,9 +72,9 @@ export const AddEditUserModal: React.FC<AddEditUserModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[95vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0 bg-white">
           <h2 className="text-2xl font-bold text-gray-900">
             {isEditMode ? 'Edit Admin User' : 'Add New Admin User'}
           </h2>
@@ -86,7 +86,7 @@ export const AddEditUserModal: React.FC<AddEditUserModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} id="user-form" className="p-6 space-y-6 overflow-y-auto flex-1">
           {/* Profile Image Section */}
           <div className="flex items-center gap-6">
             <div className="flex-shrink-0">
@@ -197,7 +197,7 @@ export const AddEditUserModal: React.FC<AddEditUserModalProps> = ({
           {/* Roles Assignment */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-4">Assign Roles</h3>
-            <div className="relative">
+            <div className="relative z-20">
               <button
                 type="button"
                 onClick={() => setShowRolesDropdown(!showRolesDropdown)}
@@ -212,7 +212,7 @@ export const AddEditUserModal: React.FC<AddEditUserModalProps> = ({
               </button>
 
               {showRolesDropdown && (
-                <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10">
+                <div className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-xl p-4 z-50 max-h-64 overflow-y-auto">
                   {availableRoles.map((role: UserRole) => (
                     <label
                       key={role}
@@ -314,23 +314,25 @@ export const AddEditUserModal: React.FC<AddEditUserModalProps> = ({
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
-            >
-              {isEditMode ? 'Save Changes' : 'Create User'}
-            </button>
-          </div>
         </form>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 flex-shrink-0 bg-gray-50">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="user-form"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+          >
+            {isEditMode ? 'Save Changes' : 'Create User'}
+          </button>
+        </div>
       </div>
     </div>
   );
