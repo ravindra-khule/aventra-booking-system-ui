@@ -11,3 +11,4 @@ export { FiltersPanel } from './FiltersPanel';
 export { AvailabilityOverview } from './AvailabilityOverview';
 export { EventDetailModal } from './EventDetailModal';
 export { QuickBookingModal } from './QuickBookingModal';
+export { RemainingPaymentWithStripe } from './RemainingPaymentWithStripe';
