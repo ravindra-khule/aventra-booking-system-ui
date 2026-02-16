@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
+import { UserRole } from '../types';
 import {
   Menu,
   X,
@@ -43,7 +45,15 @@ interface MenuCategory {
   label: string;
   icon: React.ReactNode;
   items: MenuItem[];
+  allowedRoles?: UserRole[]; // Which roles can see this category
 }
+
+// Helper function to check if user has access to a category
+const hasAccessToCategory = (category: MenuCategory, userRole: UserRole | undefined): boolean => {
+  if (!userRole) return false;
+  if (!category.allowedRoles || category.allowedRoles.length === 0) return true; // If no restriction, allow all
+  return category.allowedRoles.includes(userRole);
+};
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -53,6 +63,7 @@ interface MobileSidebarProps {
 const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { t } = useTranslation();
+  const { user } = useAuth(); // Get current user to check role
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     t('admin:bookings'),
     t('admin:marketing'),
@@ -74,10 +85,17 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     return items.some((item) => location.pathname === item.path);
   };
 
+  // Menu structure with categories - with role-based access control
+  // Role-based tab visibility:
+  // - Super Admin: All tabs
+  // - Admin: All tabs (Bookings, Marketing, Customers, Tours, Finance, Settings)
+  // - Manager (Accountant): Bookings, Customers, Finance, Tours
+  // - Support: Bookings, Customers only
   const menuCategories: MenuCategory[] = [
     {
       label: t('admin:bookings'),
       icon: <Calendar className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.SUPPORT],
       items: [
         {
           label: t('admin:allBookings'),
@@ -94,6 +112,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     {
       label: t('admin:marketing'),
       icon: <TrendingUp className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Admin only
       items: [
         {
           label: t('admin:promoCodes'),
@@ -110,6 +129,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     {
       label: t('admin:customers'),
       icon: <Users className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.SUPPORT],
       items: [
         {
           label: t('admin:customerList'),
@@ -131,6 +151,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     {
       label: t('admin:tours'),
       icon: <Map className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Admin and Manager only
       items: [
         {
           label: t('admin:tourManagement'),
@@ -147,6 +168,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     {
       label: t('admin:finance'),
       icon: <DollarSign className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Admin and Manager only
       items: [
         {
           label: t('admin:invoices'),
@@ -168,6 +190,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     {
       label: t('admin:settings'),
       icon: <Settings className="w-5 h-5" />,
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Admin only
       items: [
         {
           label: t('admin:companyInfo'),
@@ -240,59 +263,61 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
             <span className="font-medium">{t('admin:dashboard')}</span>
           </Link>
 
-          {/* Categories */}
-          {menuCategories.map((category) => {
-            const isExpanded = expandedCategories.includes(category.label);
-            const hasActiveItem = isCategoryActive(category.items);
+          {/* Categories - filtered by user role */}
+          {menuCategories
+            .filter((category) => hasAccessToCategory(category, user?.role))
+            .map((category) => {
+              const isExpanded = expandedCategories.includes(category.label);
+              const hasActiveItem = isCategoryActive(category.items);
 
-            return (
-              <div key={category.label} className="mb-2">
-                <button
-                  onClick={() => toggleCategory(category.label)}
-                  className={`w-full flex items-center justify-between px-6 py-3 transition-colors ${
-                    hasActiveItem
-                      ? 'bg-purple-50 text-purple-700'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {category.icon}
-                    <span className="font-medium">{category.label}</span>
-                  </div>
-                  {isExpanded ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
+              return (
+                <div key={category.label} className="mb-2">
+                  <button
+                    onClick={() => toggleCategory(category.label)}
+                    className={`w-full flex items-center justify-between px-6 py-3 transition-colors ${
+                      hasActiveItem
+                        ? 'bg-purple-50 text-purple-700'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {category.icon}
+                      <span className="font-medium">{category.label}</span>
+                    </div>
+                    {isExpanded ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {isExpanded && (
+                    <div className="bg-gray-50">
+                      {category.items.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={onClose}
+                          className={`flex items-center gap-3 px-6 py-2.5 pl-12 transition-colors ${
+                            isActive(item.path)
+                              ? 'bg-purple-100 text-purple-700 border-r-4 border-purple-600'
+                              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          }`}
+                        >
+                          {item.icon}
+                          <span className="text-sm">{item.label}</span>
+                          {item.badge && (
+                            <span className="ml-auto text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
                   )}
-                </button>
-
-                {isExpanded && (
-                  <div className="bg-gray-50">
-                    {category.items.map((item) => (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        onClick={onClose}
-                        className={`flex items-center gap-3 px-6 py-2.5 pl-12 transition-colors ${
-                          isActive(item.path)
-                            ? 'bg-purple-100 text-purple-700 border-r-4 border-purple-600'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                        }`}
-                      >
-                        {item.icon}
-                        <span className="text-sm">{item.label}</span>
-                        {item.badge && (
-                          <span className="ml-auto text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
-                            {item.badge}
-                          </span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
         </nav>
 
         {/* Footer */}

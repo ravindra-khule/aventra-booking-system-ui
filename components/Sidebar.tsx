@@ -80,11 +80,16 @@ const Sidebar: React.FC = () => {
 
   // Menu structure with categories - now using translations
   // This is recreated on every render to ensure translations are updated
+  // Role-based tab visibility:
+  // - Super Admin: All tabs
+  // - Admin: All tabs (Bookings, Marketing, Customers, Tours, Finance, Settings)
+  // - Manager (Accountant): Bookings, Customers, Finance, Tours
+  // - Support: Bookings, Customers only
   const menuCategories: MenuCategory[] = [
     {
       label: t('admin:bookings'),
       icon: <Calendar className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.SUPPORT], // Support can see bookings
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.SUPPORT],
       items: [
         {
           label: t('admin:allBookings'),
@@ -101,7 +106,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin:marketing'),
       icon: <TrendingUp className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Only Super Admin and Admin
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Admin only
       items: [
         {
           label: t('admin:promoCodes'),
@@ -118,7 +123,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin:customers'),
       icon: <Users className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.SUPPORT], // Support can see customers
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.SUPPORT],
       items: [
         {
           label: t('admin:customerList'),
@@ -140,7 +145,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin:tours'),
       icon: <Map className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DEVELOPER], // Admins and Developers
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Admin and Manager only
       items: [
         {
           label: t('admin:tourManagement'),
@@ -157,7 +162,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin:finance'),
       icon: <DollarSign className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Finance roles
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Admin and Manager only
       items: [
         {
           label: t('admin:invoices'),
@@ -179,7 +184,7 @@ const Sidebar: React.FC = () => {
     {
       label: t('admin:settings'),
       icon: <Settings className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DEVELOPER], // Settings access
+      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Admin only
       items: [
         {
           label: t('admin:companyInfo'),
