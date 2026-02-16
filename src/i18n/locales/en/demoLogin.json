@@ -1,0 +1,26 @@
+{
+  "title": "Demo Login",
+  "subtitle": "Select role and login to explore",
+  "selectRole": "Select Role",
+  "emailAddress": "Email Address",
+  "password": "Password",
+  "demoMode": "Demo Mode",
+  "demoModeText": "Credentials auto-populate when you select a role. All passwords follow format:",
+  "loginAs": "Login as",
+  "loggingIn": "Logging in...",
+  "loginFailed": "Login failed. Please try again.",
+  "roles": {
+    "superAdmin": "Super Admin",
+    "superAdminDesc": "Full system access - Owner level control",
+    "admin": "Admin",
+    "adminDesc": "Administrative access - Manage operations & users",
+    "support": "Support",
+    "supportDesc": "Customer support - Bookings & customer management",
+    "accountant": "Accountant",
+    "accountantDesc": "Finance access - Financial operations & reporting",
+    "developer": "Developer",
+    "developerDesc": "Technical access - System logs & developer tools",
+    "customer": "Guest / Customer",
+    "customerDesc": "Customer view - Book tours & view bookings"
+  }
+}

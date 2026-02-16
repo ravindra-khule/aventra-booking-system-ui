@@ -1,0 +1,19 @@
+{
+  "about": "About this adventure",
+  "highlights": "Highlights",
+  "itinerary": "Itinerary",
+  "day": "Day",
+  "bookCardTitle": "Book this tour",
+  "nextDeparture": "Next Departure",
+  "securePayment": "Secure payment via Stripe",
+  "freeCancel": "Free cancellation up to 30 days",
+  "bookNow": "Book Now",
+  "startingFrom": "Starting from",
+  "maxPeople": "Max 12 People",
+  "guideIncluded": "Professional guide included",
+  "fullyBooked": "Fully Booked",
+  "fullyBookedInfo": "This tour is currently full.",
+  "joinWaitlistInfo": "Join our waitlist to be notified if a spot becomes available.",
+  "joinWaitlist": "Join Waitlist",
+  "tourNotFound": "Tour not found"
+}

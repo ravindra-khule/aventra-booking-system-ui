@@ -1,0 +1,13 @@
+{
+  "loading": "Laddar...",
+  "next": "Nästa",
+  "back": "Tillbaka",
+  "submit": "Skicka",
+  "cancel": "Avbryt",
+  "pay": "Betala",
+  "details": "Detaljer",
+  "close": "Stäng",
+  "processing": "Bearbetar...",
+  "error": "Fel",
+  "logout": "Logga ut"
+}

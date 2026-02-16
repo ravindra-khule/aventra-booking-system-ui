@@ -6,8 +6,10 @@ import { Button, Badge, Input, Select } from '../../../shared/components/ui';
 import { BulkActionsToolbar } from '../../../shared/components/BulkActionsToolbar';
 import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
 import { formatDate } from '../../../shared/utils';
+import { useTranslation } from 'react-i18next';
 
 export const WaitlistManager = () => {
+  const { t } = useTranslation();
   const [waitlist, setWaitlist] = useState<Waitlist[]>([]);
   const [filteredWaitlist, setFilteredWaitlist] = useState<Waitlist[]>([]);
   const [selectedTour, setSelectedTour] = useState<string>('ALL');
@@ -74,7 +76,7 @@ export const WaitlistManager = () => {
       await loadWaitlist();
     } catch (error) {
       console.error('Failed to update entry', error);
-      alert('Failed to update waitlist entry');
+      alert(t('admin:waitlistUpdateFailed'));
     }
   };
 
@@ -86,7 +88,7 @@ export const WaitlistManager = () => {
       await handleUpdateEntry(entry.id, formData);
       setSelectedEntry(formData);
       setIsEditing(false);
-      alert('Waitlist entry updated successfully!');
+      alert(t('admin:waitlistUpdated'));
     };
 
     const handleCancel = () => {
@@ -103,7 +105,7 @@ export const WaitlistManager = () => {
               <div className="px-6 py-6 bg-orange-900 text-white flex justify-between items-start sticky top-0 z-10">
                 <div>
                   <h2 className="text-xl font-bold">{formData.tourTitle}</h2>
-                  <p className="text-orange-200 text-sm mt-1">Waitlist ID: {entry.id}</p>
+                  <p className="text-orange-200 text-sm mt-1">{t('admin:waitlistId')}: {entry.id}</p>
                 </div>
                 <button onClick={onClose} className="text-orange-200 hover:text-white">
                   <X className="h-6 w-6" />
@@ -117,12 +119,12 @@ export const WaitlistManager = () => {
                     className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
                   >
                     <Edit2 className="h-4 w-4" />
-                    Edit Details
+                    {t('admin:editDetails')}
                   </button>
                 )}
 
                 <div className="border rounded-xl p-4 bg-white shadow-sm">
-                  <label className="text-xs uppercase text-gray-500 font-bold tracking-wide block mb-2">Status</label>
+                  <label className="text-xs uppercase text-gray-500 font-bold tracking-wide block mb-2">{t('admin:status')}</label>
                   <select
                     value={formData.status}
                     onChange={(e) => {
@@ -134,20 +136,20 @@ export const WaitlistManager = () => {
                     }}
                     className="w-full border border-gray-300 rounded-lg p-3 bg-white"
                   >
-                    <option value="PENDING">Pending</option>
-                    <option value="CONTACTED">Contacted</option>
-                    <option value="CONVERTED">Converted to Booking</option>
-                    <option value="CANCELLED">Cancelled</option>
+                    <option value="PENDING">{t('admin:waitlistPending')}</option>
+                    <option value="CONTACTED">{t('admin:waitlistContacted')}</option>
+                    <option value="CONVERTED">{t('admin:waitlistConverted')}</option>
+                    <option value="CANCELLED">{t('admin:waitlistCancelled')}</option>
                   </select>
                 </div>
 
                 <div className="border rounded-xl p-4 bg-gray-50">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center">
-                    <Users className="h-4 w-4 mr-2" /> Contact Details
+                    <Users className="h-4 w-4 mr-2" /> {t('admin:contactDetails')}
                   </h3>
                   <div className="space-y-3 text-sm">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">First Name</label>
+                      <label className="text-xs text-gray-500 block mb-1">{t('admin:firstName')}</label>
                       {isEditing ? (
                         <input
                           type="text"
@@ -160,7 +162,7 @@ export const WaitlistManager = () => {
                       )}
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Last Name</label>
+                      <label className="text-xs text-gray-500 block mb-1">{t('admin:lastName')}</label>
                       {isEditing ? (
                         <input
                           type="text"
@@ -175,7 +177,7 @@ export const WaitlistManager = () => {
                     <div>
                       <label className="text-xs text-gray-500 block mb-1">
                         <Mail className="h-3 w-3 inline mr-1" />
-                        Email
+                        {t('admin:email')}
                       </label>
                       {isEditing ? (
                         <input
@@ -191,7 +193,7 @@ export const WaitlistManager = () => {
                     <div>
                       <label className="text-xs text-gray-500 block mb-1">
                         <Phone className="h-3 w-3 inline mr-1" />
-                        Phone
+                        {t('admin:phone')}
                       </label>
                       {isEditing ? (
                         <input
@@ -208,10 +210,10 @@ export const WaitlistManager = () => {
                 </div>
 
                 <div className="border rounded-xl p-4 bg-gray-50">
-                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">Request Details</h3>
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">{t('admin:requestDetails')}</h3>
                   <div className="space-y-3 text-sm">
                     <div>
-                      <span className="text-gray-500 block text-xs mb-1">Participants</span>
+                      <span className="text-gray-500 block text-xs mb-1">{t('admin:participants')}</span>
                       {isEditing ? (
                         <input
                           type="number"
@@ -221,25 +223,25 @@ export const WaitlistManager = () => {
                           className="w-full border border-gray-300 rounded px-2 py-1"
                         />
                       ) : (
-                        <span className="font-medium text-gray-900">{formData.participants} {formData.participants === 1 ? 'person' : 'people'}</span>
+                        <span className="font-medium text-gray-900">{formData.participants} {formData.participants === 1 ? t('admin:person') : t('admin:people')}</span>
                       )}
                     </div>
                     <div>
-                      <span className="text-gray-500 block text-xs mb-1">Preferred Date</span>
+                      <span className="text-gray-500 block text-xs mb-1">{t('admin:preferredDate')}</span>
                       {isEditing ? (
                         <input
                           type="text"
                           value={formData.preferredDate || ''}
                           onChange={(e) => setFormData({...formData, preferredDate: e.target.value})}
                           className="w-full border border-gray-300 rounded px-2 py-1"
-                          placeholder="Optional"
+                          placeholder={t('admin:optional')}
                         />
                       ) : (
-                        <span className="font-medium text-gray-900">{formData.preferredDate || 'No preference'}</span>
+                        <span className="font-medium text-gray-900">{formData.preferredDate || t('admin:noPreference')}</span>
                       )}
                     </div>
                     <div>
-                      <span className="text-gray-500 block text-xs">Submitted</span>
+                      <span className="text-gray-500 block text-xs">{t('admin:submitted')}</span>
                       <span className="font-medium text-gray-900">{new Date(formData.submittedDate).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -247,17 +249,17 @@ export const WaitlistManager = () => {
 
                 <div className="border rounded-xl p-4 bg-gray-50">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center">
-                    <MessageSquare className="h-4 w-4 mr-2" /> Message
+                    <MessageSquare className="h-4 w-4 mr-2" /> {t('admin:message')}
                   </h3>
                   {isEditing ? (
                     <textarea
                       value={formData.message || ''}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                       className="w-full border border-gray-300 rounded px-3 py-2 min-h-[80px]"
-                      placeholder="Customer message..."
+                      placeholder={t('admin:customerMessage')}
                     />
                   ) : (
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{formData.message || 'No message provided'}</p>
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{formData.message || t('admin:noMessageProvided')}</p>
                   )}
                 </div>
 
@@ -268,14 +270,14 @@ export const WaitlistManager = () => {
                       className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                     >
                       <Save className="h-4 w-4" />
-                      Save Changes
+                      {t('admin:saveChanges')}
                     </button>
                     <button
                       onClick={handleCancel}
                       className="flex-1 flex items-center justify-center gap-2 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
                     >
                       <X className="h-4 w-4" />
-                      Cancel
+                      {t('admin:cancelEdit')}
                     </button>
                   </div>
                 )}
@@ -290,8 +292,8 @@ export const WaitlistManager = () => {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Waitlist Management</h1>
-        <p className="text-gray-600">Manage customer waitlist requests for fully booked tours</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:waitlistManagement')}</h1>
+        <p className="text-gray-600">{t('admin:manageWaitlistRequests')}</p>
       </div>
 
       <div className="mb-6 space-y-4">
@@ -300,7 +302,7 @@ export const WaitlistManager = () => {
             <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by name, email, phone, or ID..."
+              placeholder={t('admin:searchWaitlist')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -314,14 +316,14 @@ export const WaitlistManager = () => {
               actions={[
                 {
                   id: 'send-email',
-                  label: 'Send Email',
+                  label: t('admin:sendEmail'),
                   icon: <Mail className="h-4 w-4" />,
                   variant: 'primary',
                   onClick: () => console.log('Send email to selected waitlist entries')
                 },
                 {
                   id: 'mark-contacted',
-                  label: 'Mark as Contacted',
+                  label: t('admin:markAsContacted'),
                   icon: <MessageSquare className="h-4 w-4" />,
                   variant: 'outline',
                   onClick: () => console.log('Mark selected as contacted')
@@ -340,7 +342,7 @@ export const WaitlistManager = () => {
               value={selectedTour}
               onChange={(e) => setSelectedTour(e.target.value)}
             >
-              <option value="ALL">All Tours</option>
+              <option value="ALL">{t('admin:allTours')}</option>
               {uniqueTours.map((tour) => (
                 <option key={tour.id} value={tour.id}>{tour.title}</option>
               ))}
@@ -352,11 +354,11 @@ export const WaitlistManager = () => {
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
             >
-              <option value="ALL">All Status</option>
-              <option value="PENDING">Pending</option>
-              <option value="CONTACTED">Contacted</option>
-              <option value="CONVERTED">Converted</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="ALL">{t('admin:allStatus')}</option>
+              <option value="PENDING">{t('admin:waitlistPending')}</option>
+              <option value="CONTACTED">{t('admin:waitlistContacted')}</option>
+              <option value="CONVERTED">{t('admin:convertedShort')}</option>
+              <option value="CANCELLED">{t('admin:waitlistCancelled')}</option>
             </select>
           </div>
         </div>
@@ -364,19 +366,19 @@ export const WaitlistManager = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-xs text-gray-500 uppercase font-medium mb-1">Total Entries</p>
+          <p className="text-xs text-gray-500 uppercase font-medium mb-1">{t('admin:totalEntries')}</p>
           <p className="text-2xl font-bold text-gray-900">{waitlist.length}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-xs text-gray-500 uppercase font-medium mb-1">Pending</p>
+          <p className="text-xs text-gray-500 uppercase font-medium mb-1">{t('admin:waitlistPending')}</p>
           <p className="text-2xl font-bold text-yellow-600">{waitlist.filter(w => w.status === 'PENDING').length}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-xs text-gray-500 uppercase font-medium mb-1">Contacted</p>
+          <p className="text-xs text-gray-500 uppercase font-medium mb-1">{t('admin:waitlistContacted')}</p>
           <p className="text-2xl font-bold text-blue-600">{waitlist.filter(w => w.status === 'CONTACTED').length}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border">
-          <p className="text-xs text-gray-500 uppercase font-medium mb-1">Converted</p>
+          <p className="text-xs text-gray-500 uppercase font-medium mb-1">{t('admin:convertedShort')}</p>
           <p className="text-2xl font-bold text-green-600">{waitlist.filter(w => w.status === 'CONVERTED').length}</p>
         </div>
       </div>
@@ -390,7 +392,7 @@ export const WaitlistManager = () => {
                   <button
                     onClick={() => bulkSelection.selectAll()}
                     className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
-                    title={bulkSelection.isAllSelected ? 'Deselect all' : 'Select all'}
+                    title={bulkSelection.isAllSelected ? t('admin:deselectAllWaitlist') : t('admin:selectAllWaitlist')}
                   >
                     {bulkSelection.isAllSelected ? (
                       <CheckSquare className="h-5 w-5 text-blue-600" />
@@ -399,12 +401,12 @@ export const WaitlistManager = () => {
                     )}
                   </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:id')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:customer')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:tour')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:participants')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:submitted')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:status')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -441,7 +443,7 @@ export const WaitlistManager = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900">{entry.tourTitle}</div>
-                    <div className="text-xs text-gray-500">{entry.preferredDate || 'No preference'}</div>
+                    <div className="text-xs text-gray-500">{entry.preferredDate || t('admin:noPreference')}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center">
@@ -461,7 +463,7 @@ export const WaitlistManager = () => {
               )) : (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    No waitlist entries found.
+                    {t('admin:noWaitlistEntries')}
                   </td>
                 </tr>
               )}
@@ -469,7 +471,7 @@ export const WaitlistManager = () => {
           </table>
         </div>
         <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
-          <p className="text-xs text-gray-500">Showing {filteredWaitlist.length} of {waitlist.length} entries</p>
+          <p className="text-xs text-gray-500">{t('admin:showingEntries').replace('{count}', filteredWaitlist.length.toString()).replace('{total}', waitlist.length.toString())}</p>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tour } from '../types';
 import { WaitlistService } from '../services/api';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2 } from 'lucide-react';
 import { Modal, Button, Input } from '../src/shared/components/ui';
 
@@ -50,7 +50,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
         navigate('/');
       }, 2000);
     } catch (error) {
-      alert('Failed to submit waitlist request. Please try again.');
+      alert(t('common:error') || 'Failed to submit waitlist request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -63,8 +63,8 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="h-10 w-10 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('waitlist.successTitle')}</h2>
-          <p className="text-gray-600">{t('waitlist.successMessage')}</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('waitlist:successTitle')}</h2>
+          <p className="text-gray-600">{t('waitlist:successMessage')}</p>
         </div>
       </Modal>
     );
@@ -74,7 +74,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
     <Modal 
       isOpen={true} 
       onClose={onClose} 
-      title={t('waitlist.title')}
+      title={t('waitlist:title')}
       size="lg"
     >
       {/* Tour Info */}
@@ -85,7 +85,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
       {/* Info Banner */}
       <div className="bg-orange-50 border border-orange-100 rounded-lg px-4 py-3 mb-6">
         <p className="text-sm text-orange-800">
-          <strong>{t('waitlist.infoTitle')}</strong> {t('waitlist.infoText')}
+          <strong>{t('waitlist:infoTitle')}</strong> {t('waitlist:infoText')}
         </p>
       </div>
 
@@ -93,7 +93,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
       <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
-              label={t('booking.payer.firstName')}
+              label={t('booking:payer.firstName')}
               type="text"
               required
               value={formData.firstName}
@@ -102,7 +102,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
             />
 
             <Input
-              label={t('booking.payer.lastName')}
+              label={t('booking:payer.lastName')}
               type="text"
               required
               value={formData.lastName}
@@ -113,7 +113,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
-              label={t('booking.payer.email')}
+              label={t('booking:payer.email')}
               type="email"
               required
               value={formData.email}
@@ -122,7 +122,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
             />
 
             <Input
-              label={t('booking.payer.phone')}
+              label={t('booking:payer.phone')}
               type="tel"
               required
               value={formData.phone}
@@ -133,7 +133,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
-              label={t('waitlist.participants')}
+              label={t('waitlist:participants')}
               type="number"
               min={1}
               max={20}
@@ -144,7 +144,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
             />
 
             <Input
-              label={t('waitlist.preferredDate')}
+              label={t('waitlist:preferredDate')}
               type="date"
               value={formData.preferredDate}
               onChange={(e) => handleChange('preferredDate', e.target.value)}
@@ -154,13 +154,13 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('waitlist.message')}
+              {t('waitlist:message')}
             </label>
             <textarea
               rows={4}
               value={formData.message}
               onChange={(e) => handleChange('message', e.target.value)}
-              placeholder={t('waitlist.messagePlaceholder')}
+              placeholder={t('waitlist:messagePlaceholder')}
               className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -172,7 +172,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
               onClick={onClose}
               variant="outline"
             >
-              {t('common.cancel')}
+              {t('common:cancel')}
             </Button>
             <Button
               type="submit"
@@ -181,7 +181,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
               disabled={isSubmitting}
               className="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
             >
-              {t('waitlist.submitBtn')}
+              {t('waitlist:submitBtn')}
             </Button>
           </div>
         </form>

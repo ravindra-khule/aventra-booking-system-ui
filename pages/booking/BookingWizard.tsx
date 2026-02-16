@@ -4,7 +4,7 @@ import { Tour, Traveler, PayerDetails } from '../../types';
 import { TourAddOn, SelectedAddOn, AddOnType } from '../../src/features/tours/types/tour.types';
 import { TourService, BookingService, PromoCodeService } from '../../services/api';
 import { AddOnService } from '../../src/features/tours/services/addon.service';
-import { useTranslation } from '../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { 
   CheckCircle2, 
   ChevronRight, 
@@ -91,10 +91,10 @@ export const BookingWizard = () => {
   const [isLoadingAddOns, setIsLoadingAddOns] = useState(false);
   
   const steps = [
-    'Travelers & Add-ons',
-    'Details', 
-    'Payment', 
-    'Confirmation'
+    t('booking:steps.travelersAddons'),
+    t('booking:steps.details'), 
+    t('booking:steps.payment'), 
+    t('booking:steps.done')
   ];
 
   // Initial Load
@@ -193,7 +193,7 @@ export const BookingWizard = () => {
   // Promo Code Handlers
   const handleApplyPromoCode = async () => {
     if (!promoCode.trim()) {
-      setPromoError('Please enter a promo code');
+      setPromoError(t('booking:promo.enterCode') || 'Please enter a promo code');
       return;
     }
 
@@ -220,7 +220,7 @@ export const BookingWizard = () => {
         setDiscountAmount(0);
       }
     } catch (error) {
-      setPromoError('Failed to validate promo code');
+      setPromoError(t('booking:promo.validationFailed') || 'Failed to validate promo code');
       console.error('Promo code validation error:', error);
     } finally {
       setIsValidatingPromo(false);
@@ -310,7 +310,7 @@ export const BookingWizard = () => {
         
         setCurrentStep(3); 
       } catch (e) {
-        alert('Booking failed. Please try again.');
+        alert(t('common:error') || 'Booking failed. Please try again.');
       } finally {
         setIsProcessing(false);
       }
@@ -320,7 +320,7 @@ export const BookingWizard = () => {
     }
   };
 
-  if (!tour) return <div className="min-h-screen flex justify-center items-center">{t('common.loading')}</div>;
+  if (!tour) return <div className="min-h-screen flex justify-center items-center">{t('common:loading')}</div>;
 
   const baseAmount = (tour.price * participants);
   const addOnsTotal = calculateAddOnsTotal();
@@ -337,40 +337,40 @@ export const BookingWizard = () => {
           <CheckCircle2 className="h-7 w-7 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-gray-900">Booking Confirmed</h3>
-          <p className="text-xs text-gray-600">Your adventure is secured</p>
+          <h3 className="text-lg font-bold text-gray-900">{t('booking:confirmation.bookingConfirmed')}</h3>
+          <p className="text-xs text-gray-600">{t('booking:confirmation.yourAdventureSecured')}</p>
         </div>
       </div>
 
       <div className="bg-white rounded-lg p-4 mb-4 border border-green-100">
-        <p className="text-xs text-gray-500 mb-1">Reference Number</p>
+        <p className="text-xs text-gray-500 mb-1">{t('booking:confirmation.referenceNumber')}</p>
         <p className="text-xl font-mono font-bold text-gray-900">#BK-{Math.floor(Math.random() * 100000)}</p>
       </div>
 
       <div className="space-y-3 mb-4">
         <div className="bg-white rounded-lg p-3 border border-green-100">
-          <p className="text-xs text-gray-500 mb-1">Tour</p>
+          <p className="text-xs text-gray-500 mb-1">{t('booking:confirmation.tour')}</p>
           <p className="font-semibold text-gray-900 text-sm">{tour.title}</p>
         </div>
         
         <div className="bg-white rounded-lg p-3 border border-green-100">
-          <p className="text-xs text-gray-500 mb-1">Departure</p>
+          <p className="text-xs text-gray-500 mb-1">{t('booking:confirmation.departure')}</p>
           <p className="font-semibold text-gray-900 text-sm">{date}</p>
         </div>
 
         <div className="bg-white rounded-lg p-3 border border-green-100">
-          <p className="text-xs text-gray-500 mb-1">Travelers</p>
-          <p className="font-semibold text-gray-900 text-sm">{participants} {participants === 1 ? 'person' : 'people'}</p>
+          <p className="text-xs text-gray-500 mb-1">{t('booking:customize.travelers')}</p>
+          <p className="font-semibold text-gray-900 text-sm">{participants} {participants === 1 ? t('booking:customize.person') : t('booking:customize.people')}</p>
         </div>
       </div>
 
       <div className="bg-green-600 text-white rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">Amount Paid</span>
+          <span className="text-sm font-medium">{t('booking:confirmation.amountPaid')}</span>
           <span className="text-2xl font-bold">{formatCurrency(depositTotal, tour.currency)}</span>
         </div>
         <div className="flex justify-between items-center text-green-100 text-xs">
-          <span>Remaining Balance</span>
+          <span>{t('booking:payment.payLater')}</span>
           <span className="font-semibold">{formatCurrency(remainingAmount, tour.currency)}</span>
         </div>
       </div>
@@ -379,13 +379,13 @@ export const BookingWizard = () => {
         <div className="flex items-start gap-2 mb-3">
           <Info className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-700">
-            Confirmation email sent to <span className="font-semibold">{payer.email}</span>
+            {t('booking:confirmation.confirmationEmailSentTo')} <span className="font-semibold">{payer.email}</span>
           </p>
         </div>
         <div className="flex items-start gap-2">
           <Shield className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-700">
-            Your booking is protected and secure
+            {t('booking:confirmation.bookingProtected')}
           </p>
         </div>
       </div>
@@ -397,14 +397,14 @@ export const BookingWizard = () => {
           fullWidth
           className="mb-2"
         >
-          View My Bookings
+          {t('booking:confirmation.viewMyBookings')}
         </Button>
         <Button 
           onClick={() => navigate('/')} 
           variant="outline" 
           fullWidth
         >
-          Browse More Tours
+          {t('booking:confirmation.browseMoreTours')}
         </Button>
       </div>
     </div>
@@ -413,26 +413,26 @@ export const BookingWizard = () => {
   // Reusable Order Summary Component
   const OrderSummary = () => (
     <div className="bg-orange-50/50 p-6 rounded-xl border border-orange-100 sticky top-24">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking.summary.title')}</h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking:summary.title')}</h3>
       
       <div className="space-y-3 mb-6">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">{t('booking.summary.product')}</span>
+          <span className="text-gray-600">{t('booking:summary.product')}</span>
           <span className="font-medium text-gray-900">{tour.title}</span>
         </div>
         <div className="flex justify-between text-sm">
-           <span className="text-gray-600">{t('booking.summary.date')}</span>
+           <span className="text-gray-600">{t('booking:summary.date')}</span>
            <span className="font-medium text-gray-900">{date}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">{t('booking.summary.travelers')}</span>
-          <span className="font-medium text-gray-900">{participants} {t('booking.customize.people')}</span>
+          <span className="text-gray-600">{t('booking:summary.travelers')}</span>
+          <span className="font-medium text-gray-900">{participants} {t('booking:customize.people')}</span>
         </div>
       </div>
 
       <div className="border-t border-orange-200 py-4 space-y-2">
         <div className="flex justify-between text-sm">
-           <span className="text-gray-600">Base Price</span>
+           <span className="text-gray-600">{t('booking:summary.basePrice')}</span>
            <span className="text-gray-900">{baseAmount.toLocaleString()} {tour.currency}</span>
         </div>
         
@@ -440,7 +440,7 @@ export const BookingWizard = () => {
         {selectedAddOns.size > 0 && (
           <>
             <div className="pt-2 pb-1 border-t border-orange-100">
-              <span className="text-xs font-semibold text-gray-600 uppercase">Add-ons</span>
+              <span className="text-xs font-semibold text-gray-600 uppercase">{t('booking:summary.addons')}</span>
             </div>
             {Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => {
               const itemTotal = addOn.pricePerPerson 
@@ -457,7 +457,7 @@ export const BookingWizard = () => {
               );
             })}
             <div className="flex justify-between text-sm font-medium pt-2 border-t border-orange-100">
-               <span className="text-gray-700">Subtotal</span>
+               <span className="text-gray-700">{t('booking:summary.subtotal')}</span>
                <span className="text-gray-900">{subtotal.toLocaleString()} {tour.currency}</span>
             </div>
           </>
@@ -468,37 +468,37 @@ export const BookingWizard = () => {
           <>
             <div className="flex justify-between text-sm text-green-600 font-medium">
                <span className="flex items-center gap-1">
-                 <Tag className="h-3 w-3" /> Discount ({appliedPromoCode})
+                 <Tag className="h-3 w-3" /> {t('booking:summary.discount')} ({appliedPromoCode})
                </span>
                <span>-{discountAmount.toLocaleString()} {tour.currency}</span>
             </div>
             <div className="flex justify-between text-sm font-bold text-blue-600">
-               <span>Discounted Total</span>
+               <span>{t('booking:summary.discountedTotal')}</span>
                <span>{finalAmount.toLocaleString()} {tour.currency}</span>
             </div>
           </>
         )}
         
         <div className="flex justify-between text-sm font-semibold text-gray-900 pt-2 border-t border-orange-200">
-           <span>{t('booking.payment.payNow')}</span>
+           <span>{t('booking:payment.payNow')}</span>
            <span>{depositTotal.toLocaleString()} {tour.currency}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-500">
-           <span>{t('booking.payment.payLater')}</span>
+           <span>{t('booking:payment.payLater')}</span>
            <span>{remainingAmount.toLocaleString()} {tour.currency}</span>
         </div>
       </div>
 
       <div className="border-t border-orange-200 pt-4 mb-2">
          <div className="flex justify-between items-end">
-            <span className="font-bold text-lg text-gray-900">{t('booking.summary.toPay')}</span>
+            <span className="font-bold text-lg text-gray-900">{t('booking:summary.toPay')}</span>
             <span className="font-bold text-2xl text-blue-600">{depositTotal.toLocaleString()} {tour.currency}</span>
          </div>
-         <p className="text-xs text-gray-500 mt-2">{t('booking.summary.vatMsg')}</p>
+         <p className="text-xs text-gray-500 mt-2">{t('booking:summary.vatMsg')}</p>
       </div>
       
       <div className="mt-6 flex items-center justify-center text-xs text-gray-400 gap-2">
-         <Shield className="h-4 w-4" /> {t('booking.summary.secureMsg')}
+         <Shield className="h-4 w-4" /> {t('booking:summary.secureMsg')}
       </div>
     </div>
   );
@@ -510,7 +510,7 @@ export const BookingWizard = () => {
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
                     <ArrowLeft className="h-5 w-5 text-gray-500 mr-2" />
-                    <span className="font-bold text-gray-900">{t('common.cancel')}</span>
+                    <span className="font-bold text-gray-900">{t('common:cancel')}</span>
                 </div>
                 <div className="flex items-center space-x-2 md:space-x-8">
                     {steps.map((step, idx) => (
@@ -544,18 +544,18 @@ export const BookingWizard = () => {
                 {/* Payer Section */}
                 <section>
                     <div className="flex items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900 mr-3">{t('booking.payer.title')}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mr-3">{t('booking:payer.title')}</h2>
                         <div className="group relative">
                              <Info className="h-5 w-5 text-gray-400 cursor-help" />
                              <div className="absolute hidden group-hover:block w-64 bg-gray-800 text-white text-xs rounded p-2 -top-10 left-6">
-                                {t('booking.payer.tooltip')}
+                                {t('booking:payer.tooltip')}
                              </div>
                         </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input
-                            label={t('booking.payer.firstName')}
+                            label={t('booking:payer.firstName')}
                             type="text"
                             value={payer.firstName}
                             onChange={e => handlePayerChange('firstName', e.target.value)}
@@ -563,7 +563,7 @@ export const BookingWizard = () => {
                             fullWidth
                         />
                         <Input
-                            label={t('booking.payer.lastName')}
+                            label={t('booking:payer.lastName')}
                             type="text"
                             value={payer.lastName}
                             onChange={e => handlePayerChange('lastName', e.target.value)}
@@ -572,7 +572,7 @@ export const BookingWizard = () => {
                         />
                         <div className="md:col-span-2">
                             <Select
-                                label={t('booking.payer.country')}
+                                label={t('booking:payer.country')}
                                 value={payer.country}
                                 onChange={e => handlePayerChange('country', e.target.value)}
                                 options={[
@@ -588,17 +588,17 @@ export const BookingWizard = () => {
                         </div>
                         <div className="md:col-span-2">
                             <Input
-                                label={t('booking.payer.address')}
+                                label={t('booking:payer.address')}
                                 type="text"
                                 value={payer.address}
                                 onChange={e => handlePayerChange('address', e.target.value)}
-                                placeholder={t('booking.payer.streetAndNumber')}
+                                placeholder={t('booking:payer.streetAndNumber')}
                                 required
                                 fullWidth
                             />
                         </div>
                         <Input
-                            label={t('booking.payer.zip')}
+                            label={t('booking:payer.zip')}
                             type="text"
                             value={payer.zipCode}
                             onChange={e => handlePayerChange('zipCode', e.target.value)}
@@ -606,7 +606,7 @@ export const BookingWizard = () => {
                             fullWidth
                         />
                         <Input
-                            label={t('booking.payer.city')}
+                            label={t('booking:payer.city')}
                             type="text"
                             value={payer.city}
                             onChange={e => handlePayerChange('city', e.target.value)}
@@ -614,7 +614,7 @@ export const BookingWizard = () => {
                             fullWidth
                         />
                         <Input
-                            label={t('booking.payer.phone')}
+                            label={t('booking:payer.phone')}
                             type="tel"
                             value={payer.phone}
                             onChange={e => handlePayerChange('phone', e.target.value)}
@@ -622,7 +622,7 @@ export const BookingWizard = () => {
                             fullWidth
                         />
                         <Input
-                            label={t('booking.payer.email')}
+                            label={t('booking:payer.email')}
                             type="email"
                             value={payer.email}
                             onChange={e => handlePayerChange('email', e.target.value)}
@@ -636,12 +636,12 @@ export const BookingWizard = () => {
 
                 {/* Travelers Loop */}
                 <section>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-8">{t('booking.traveler.sectionTitle')}</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-8">{t('booking:traveler.sectionTitle')}</h2>
                     <div className="space-y-12">
                     {travelers.map((traveler, index) => (
                         <div key={index} className="bg-gray-50 p-6 rounded-xl border border-gray-200 relative">
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-bold text-gray-800">{t('booking.traveler.title')} {index + 1}</h3>
+                                <h3 className="text-lg font-bold text-gray-800">{t('booking:traveler.title')} {index + 1}</h3>
                                 <div className="flex items-center bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
                                     <input 
                                     type="checkbox" 
@@ -651,14 +651,14 @@ export const BookingWizard = () => {
                                     className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                                     />
                                     <label htmlFor={`payer-check-${index}`} className="ml-2 block text-sm font-medium text-gray-700 cursor-pointer select-none">
-                                    {t('booking.traveler.sameAsPayer')}
+                                    {t('booking:traveler.sameAsPayer')}
                                     </label>
                                 </div>
                             </div>
 
                             <div className={`grid grid-cols-1 md:grid-cols-2 gap-6`}>
                                 <Input
-                                    label={t('booking.payer.firstName')}
+                                    label={t('booking:payer.firstName')}
                                     type="text"
                                     value={traveler.firstName}
                                     onChange={(e) => handleTravelerChange(index, 'firstName', e.target.value)}
@@ -667,7 +667,7 @@ export const BookingWizard = () => {
                                     fullWidth
                                 />
                                 <Input
-                                    label={t('booking.payer.lastName')}
+                                    label={t('booking:payer.lastName')}
                                     type="text"
                                     value={traveler.lastName}
                                     onChange={(e) => handleTravelerChange(index, 'lastName', e.target.value)}
@@ -676,7 +676,7 @@ export const BookingWizard = () => {
                                     fullWidth
                                 />
                                 <Input
-                                    label={t('booking.payer.phone')}
+                                    label={t('booking:payer.phone')}
                                     type="tel"
                                     value={traveler.phone}
                                     onChange={(e) => handleTravelerChange(index, 'phone', e.target.value)}
@@ -685,7 +685,7 @@ export const BookingWizard = () => {
                                     fullWidth
                                 />
                                 <Input
-                                    label={t('booking.payer.email')}
+                                    label={t('booking:payer.email')}
                                     type="email"
                                     value={traveler.email}
                                     onChange={(e) => handleTravelerChange(index, 'email', e.target.value)}
@@ -696,19 +696,19 @@ export const BookingWizard = () => {
 
                                 <div className="md:col-span-2">
                                     <Input
-                                        label={t('booking.payer.address')}
+                                        label={t('booking:payer.address')}
                                         type="text"
                                         value={traveler.address}
                                         onChange={(e) => handleTravelerChange(index, 'address', e.target.value)}
                                         disabled={traveler.isPayer}
-                                        placeholder={t('booking.payer.address')}
+                                        placeholder={t('booking:payer.address')}
                                         required
                                         fullWidth
                                     />
                                 </div>
 
                                 <Input
-                                    label={t('booking.payer.zip')}
+                                    label={t('booking:payer.zip')}
                                     type="text"
                                     value={traveler.zipCode}
                                     onChange={(e) => handleTravelerChange(index, 'zipCode', e.target.value)}
@@ -717,7 +717,7 @@ export const BookingWizard = () => {
                                     fullWidth
                                 />
                                 <Input
-                                    label={t('booking.payer.city')}
+                                    label={t('booking:payer.city')}
                                     type="text"
                                     value={traveler.city}
                                     onChange={(e) => handleTravelerChange(index, 'city', e.target.value)}
@@ -728,21 +728,21 @@ export const BookingWizard = () => {
                                 
                                 <div className="md:col-span-2">
                                     <Input
-                                        label={t('booking.traveler.ssn')}
+                                        label={t('booking:traveler.ssn')}
                                         type="text"
                                         value={traveler.ssn}
                                         onChange={(e) => handleTravelerChange(index, 'ssn', e.target.value)}
-                                        placeholder={t('booking.payer.yyyymmdd')}
+                                        placeholder={t('booking:payer.yyyymmdd')}
                                         required
                                         fullWidth
                                     />
                                 </div>
 
                                 <div className="md:col-span-2 space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.traveler.companion')}</label>
+                                    <label className="text-sm font-medium text-gray-700">{t('booking:traveler.companion')}</label>
                                     <textarea 
                                         rows={2}
-                                        placeholder={t('booking.traveler.companionPlaceholder')}
+                                        placeholder={t('booking:traveler.companionPlaceholder')}
                                         value={traveler.travelCompanion} 
                                         onChange={(e) => handleTravelerChange(index, 'travelCompanion', e.target.value)} 
                                         className="w-full border-gray-300 rounded-md p-3 border bg-white" 
@@ -750,10 +750,10 @@ export const BookingWizard = () => {
                                 </div>
 
                                 <div className="md:col-span-2 space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">{t('booking.traveler.preferences')}</label>
+                                    <label className="text-sm font-medium text-gray-700">{t('booking:traveler.preferences')}</label>
                                     <textarea 
                                         rows={2}
-                                        placeholder={t('booking.traveler.preferencesPlaceholder')}
+                                        placeholder={t('booking:traveler.preferencesPlaceholder')}
                                         value={traveler.roomPreference} 
                                         onChange={(e) => handleTravelerChange(index, 'roomPreference', e.target.value)} 
                                         className="w-full border-gray-300 rounded-md p-3 border bg-white" 
@@ -770,17 +770,17 @@ export const BookingWizard = () => {
             {/* Step 0: Add-ons & Extras */}
             {currentStep === 0 && (
               <div className="animate-fade-in flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Travelers & Add-ons</h2>
-                <p className="text-gray-600 mb-6">Select number of travelers and add optional extras to make your trip even more memorable</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('booking:steps.travelersAddons')}</h2>
+                <p className="text-gray-600 mb-6">{t('booking:customize.subtitle')} {t('booking:addons.title')}</p>
                 
                 {/* Number of Travelers */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 mb-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Number of Travelers
+                        {t('booking:customize.travelers')}
                       </label>
-                      <p className="text-xs text-gray-500">How many people are traveling?</p>
+                      <p className="text-xs text-gray-500">{t('booking:customize.howManyTraveling')}</p>
                     </div>
                     <div className="flex items-center gap-4">
                       <button
@@ -791,7 +791,7 @@ export const BookingWizard = () => {
                       </button>
                       <div className="w-20 text-center">
                         <span className="text-3xl font-bold text-gray-900">{participants}</span>
-                        <p className="text-xs text-gray-600">travelers</p>
+                        <p className="text-xs text-gray-600">{t('booking:customize.travelers').toLowerCase()}</p>
                       </div>
                       <button
                         onClick={() => setParticipants(Math.min(10, participants + 1))}
@@ -804,17 +804,17 @@ export const BookingWizard = () => {
                 </div>
                 
                 {/* Add-ons Section */}
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 mt-8">Optional Add-ons</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 mt-8">{t('booking:addons.title')}</h3>
                 
                 {isLoadingAddOns ? (
                   <div className="flex justify-center items-center py-12">
-                    <div className="text-gray-500">Loading available add-ons...</div>
+                    <div className="text-gray-500">{t('booking:addons.loadingAddons')}</div>
                   </div>
                 ) : availableAddOns.length === 0 ? (
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
                     <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No add-ons available for this tour</p>
-                    <p className="text-sm text-gray-500 mt-2">Continue to the next step</p>
+                    <p className="text-gray-600">{t('booking:addons.noAddons')}</p>
+                    <p className="text-sm text-gray-500 mt-2">{t('booking:addons.continueNextStep')}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -856,7 +856,7 @@ export const BookingWizard = () => {
                                   <span className="text-xs text-gray-500 uppercase">{addOn.type.replace('_', ' ')}</span>
                                   {addOn.isMandatory && (
                                     <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
-                                      Required
+                                      {t('booking:addons.required')}
                                     </span>
                                   )}
                                 </div>
@@ -865,7 +865,7 @@ export const BookingWizard = () => {
                                     {formatCurrency(itemPrice, addOn.currency)}
                                   </div>
                                   <div className="text-xs text-gray-500">
-                                    {addOn.pricePerPerson ? 'per person' : 'per booking'}
+                                    {addOn.pricePerPerson ? t('booking:addons.perPerson') : t('booking:addons.perBooking')}
                                   </div>
                                 </div>
                               </div>
@@ -906,7 +906,7 @@ export const BookingWizard = () => {
                                 
                                 {quantity > 0 && (
                                   <div className="text-right">
-                                    <div className="text-sm text-gray-600">Total for this item</div>
+                                    <div className="text-sm text-gray-600">{t('booking:addons.totalForItem')}</div>
                                     <div className="text-lg font-bold text-orange-600">
                                       {formatCurrency(
                                         addOn.pricePerPerson 
@@ -922,9 +922,9 @@ export const BookingWizard = () => {
                               {/* Constraints Info */}
                               {(addOn.minQuantity > 1 || addOn.maxQuantity > 0) && (
                                 <div className="mt-3 text-xs text-gray-500">
-                                  {addOn.minQuantity > 1 && `Minimum: ${addOn.minQuantity}`}
+                                  {addOn.minQuantity > 1 && `${t('booking:addons.minimum')}: ${addOn.minQuantity}`}
                                   {addOn.minQuantity > 1 && addOn.maxQuantity > 0 && ' • '}
-                                  {addOn.maxQuantity > 0 && `Maximum: ${addOn.maxQuantity}`}
+                                  {addOn.maxQuantity > 0 && `${t('booking:addons.maximum')}: ${addOn.maxQuantity}`}
                                 </div>
                               )}
                             </div>
@@ -936,7 +936,7 @@ export const BookingWizard = () => {
                     {/* Add-ons Summary */}
                     {selectedAddOns.size > 0 && (
                       <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6 mt-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-3">Selected Add-ons Summary</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-3">{t('booking:addons.selectedSummary')}</h3>
                         <div className="space-y-2 mb-4">
                           {Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => (
                             <div key={addOn.id} className="flex justify-between text-sm">
@@ -953,7 +953,7 @@ export const BookingWizard = () => {
                           ))}
                         </div>
                         <div className="border-t border-orange-300 pt-3 flex justify-between">
-                          <span className="font-bold text-gray-900">Total Add-ons</span>
+                          <span className="font-bold text-gray-900">{t('booking:addons.totalAddons')}</span>
                           <span className="font-bold text-xl text-orange-600">
                             {formatCurrency(addOnsTotal, tour.currency)}
                           </span>
@@ -968,21 +968,21 @@ export const BookingWizard = () => {
             {/* Step 2: Payment */}
             {currentStep === 2 && (
                <div className="animate-fade-in flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('booking.payment.title')}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('booking:payment.title')}</h2>
                   
                   {/* Payment Breakdown Card */}
                   <div className="bg-red-50 border border-red-100 rounded-xl p-6 mb-8">
-                     <h3 className="text-lg font-bold text-gray-900 mb-4">{t('booking.payment.scheduleTitle')}</h3>
+                     <h3 className="text-lg font-bold text-gray-900 mb-4">{t('booking:payment.scheduleTitle')}</h3>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm flex flex-col">
-                            <span className="text-sm text-gray-500">{t('booking.payment.payNow')}</span>
+                            <span className="text-sm text-gray-500">{t('booking:payment.payNow')}</span>
                             <span className="text-xl font-bold text-gray-900">{depositTotal.toLocaleString()} {tour.currency}</span>
-                            <span className="text-xs text-green-600 mt-1">{t('booking.payment.dueToday')}</span>
+                            <span className="text-xs text-green-600 mt-1">{t('booking:payment.dueToday')}</span>
                         </div>
                         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-col opacity-75">
-                            <span className="text-sm text-gray-500">{t('booking.payment.payLater')}</span>
+                            <span className="text-sm text-gray-500">{t('booking:payment.payLater')}</span>
                             <span className="text-xl font-bold text-gray-900">{remainingAmount.toLocaleString()} {tour.currency}</span>
-                            <span className="text-xs text-gray-500 mt-1">{t('booking.payment.dueLater')}</span>
+                            <span className="text-xs text-gray-500 mt-1">{t('booking:payment.dueLater')}</span>
                         </div>
                      </div>
                   </div>
@@ -991,14 +991,14 @@ export const BookingWizard = () => {
                   <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6 mb-6">
                      <div className="flex items-center gap-2 mb-4">
                         <Tag className="h-5 w-5 text-purple-600" />
-                        <h3 className="text-lg font-bold text-gray-900">Have a Promo Code?</h3>
+                        <h3 className="text-lg font-bold text-gray-900">{t('booking:promo.havePromoCode')}</h3>
                      </div>
                      
                      {!appliedPromoCode ? (
                         <div className="flex gap-3">
                            <input 
                               type="text" 
-                              placeholder={t('booking.payer.enterPromoCode')}
+                              placeholder={t('booking:payer.enterPromoCode')}
                               value={promoCode}
                               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                               onKeyPress={(e) => e.key === 'Enter' && handleApplyPromoCode()}
@@ -1011,7 +1011,7 @@ export const BookingWizard = () => {
                               loading={isValidatingPromo}
                               className="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
                            >
-                              {isValidatingPromo ? 'Validating...' : 'Apply'}
+                              {isValidatingPromo ? t('booking:promo.validating') : t('booking:promo.apply')}
                            </Button>
                         </div>
                      ) : (
@@ -1022,13 +1022,13 @@ export const BookingWizard = () => {
                               </div>
                               <div>
                                  <p className="font-bold text-green-900">{appliedPromoCode}</p>
-                                 <p className="text-sm text-green-700">You saved {discountAmount.toLocaleString()} {tour.currency}!</p>
+                                 <p className="text-sm text-green-700">{t('booking:promo.youSaved')} {discountAmount.toLocaleString()} {tour.currency}!</p>
                               </div>
                            </div>
                            <button
                               onClick={handleRemovePromoCode}
                               className="p-2 hover:bg-green-200 rounded-full transition"
-                              title="Remove promo code"
+                              title={t('booking:promo.removePromoCode')}
                            >
                               <X className="h-5 w-5 text-green-700" />
                            </button>
@@ -1051,7 +1051,7 @@ export const BookingWizard = () => {
                   <div className="bg-white border border-gray-300 rounded-xl p-6 mb-6">
                      <div className="flex items-center space-x-3 mb-6">
                         <input type="radio" checked className="w-5 h-5 text-blue-600" readOnly />
-                        <span className="font-bold text-gray-800">{t('booking.payment.cardDetails')}</span>
+                        <span className="font-bold text-gray-800">{t('booking:payment.cardDetails')}</span>
                         <div className="flex space-x-2 ml-4">
                             {/* Icons */}
                             <div className="w-8 h-5 bg-gray-200 rounded"></div>
@@ -1062,24 +1062,24 @@ export const BookingWizard = () => {
                      <div className="space-y-4 max-w-md">
                         <Input
                             type="text"
-                            placeholder={t('booking.payment.cardNumber')}
+                            placeholder={t('booking:payment.cardNumber')}
                             fullWidth
                         />
                         <div className="grid grid-cols-2 gap-4">
                             <Input
                                 type="text"
-                                placeholder={t('booking.payment.expiry')}
+                                placeholder={t('booking:payment.expiry')}
                                 fullWidth
                             />
                             <Input
                                 type="text"
-                                placeholder={t('booking.payment.cvc')}
+                                placeholder={t('booking:payment.cvc')}
                                 fullWidth
                             />
                         </div>
                         <Input
                             type="text"
-                            placeholder={t('booking.payment.holderName')}
+                            placeholder={t('booking:payment.holderName')}
                             fullWidth
                         />
                      </div>
@@ -1087,7 +1087,7 @@ export const BookingWizard = () => {
                   
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
                       <input type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
-                      <span>{t('booking.payment.agree')} <a href="#" className="text-blue-600 underline">{t('booking.payment.terms')}</a> och <a href="#" className="text-blue-600 underline">{t('booking.payment.privacy')}</a>.</span>
+                      <span>{t('booking:payment.agree')} <a href="#" className="text-blue-600 underline">{t('booking:payment.terms')}</a> och <a href="#" className="text-blue-600 underline">{t('booking:payment.privacy')}</a>.</span>
                   </div>
                </div>
             )}
@@ -1100,9 +1100,9 @@ export const BookingWizard = () => {
                         <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                             <CheckCircle2 className="h-14 w-14 text-green-600" />
                         </div>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-3">Booking Confirmed!</h2>
+                        <h2 className="text-4xl font-bold text-gray-900 mb-3">{t('booking:confirmation.title')}</h2>
                         <p className="text-xl text-gray-600">
-                            Thank you, <span className="font-semibold text-gray-900">{payer.firstName}!</span> Your adventure awaits.
+                            {t('booking:confirmation.thankYou')}, <span className="font-semibold text-gray-900">{payer.firstName}!</span> {t('booking:confirmation.yourAdventureAwaits')}
                         </p>
                     </div>
 
@@ -1110,11 +1110,11 @@ export const BookingWizard = () => {
                     <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 mb-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600 mb-1">Booking Reference</p>
+                                <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.ref')}</p>
                                 <p className="text-3xl font-mono font-bold text-gray-900">#BK-{Math.floor(Math.random() * 100000)}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm text-gray-600 mb-1">Booking Date</p>
+                                <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.bookingDate')}</p>
                                 <p className="text-lg font-semibold text-gray-900">{new Date().toLocaleDateString()}</p>
                             </div>
                         </div>
@@ -1124,35 +1124,35 @@ export const BookingWizard = () => {
                     <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
                         <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                             <Package className="h-5 w-5 text-orange-600" />
-                            Tour Details
+                            {t('booking:confirmation.tourDetails')}
                         </h3>
                         <div className="space-y-3">
                             <div className="flex justify-between items-start">
-                                <span className="text-gray-600">Tour Name:</span>
+                                <span className="text-gray-600">{t('booking:confirmation.tourName')}:</span>
                                 <span className="font-semibold text-gray-900 text-right">{tour.title}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Departure Date:</span>
+                                <span className="text-gray-600">{t('booking:confirmation.departureDate')}:</span>
                                 <span className="font-semibold text-gray-900">{date}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Duration:</span>
-                                <span className="font-semibold text-gray-900">{tour.durationDays} days</span>
+                                <span className="text-gray-600">{t('booking:confirmation.duration')}:</span>
+                                <span className="font-semibold text-gray-900">{tour.durationDays} {t('home:days')}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Location:</span>
+                                <span className="text-gray-600">{t('booking:confirmation.location')}:</span>
                                 <span className="font-semibold text-gray-900">{tour.location}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Number of Travelers:</span>
-                                <span className="font-semibold text-gray-900">{participants} {participants === 1 ? 'person' : 'people'}</span>
+                                <span className="text-gray-600">{t('booking:confirmation.numberOfTravelers')}:</span>
+                                <span className="font-semibold text-gray-900">{participants} {participants === 1 ? t('booking:customize.person') : t('booking:customize.people')}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Travelers Info */}
                     <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Travelers</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking:confirmation.travelers')}</h3>
                         <div className="space-y-3">
                             {travelers.map((traveler, index) => (
                                 <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
@@ -1167,7 +1167,7 @@ export const BookingWizard = () => {
                                     </div>
                                     {traveler.isPayer && (
                                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
-                                            Payer
+                                            {t('booking:confirmation.payer')}
                                         </span>
                                     )}
                                 </div>
@@ -1178,7 +1178,7 @@ export const BookingWizard = () => {
                     {/* Add-ons (if any) */}
                     {selectedAddOns.size > 0 && (
                         <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Selected Add-ons</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking:confirmation.selectedAddons')}</h3>
                             <div className="space-y-3">
                                 {Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => (
                                     <div key={addOn.id} className="flex justify-between items-center">
@@ -1188,7 +1188,7 @@ export const BookingWizard = () => {
                                             </div>
                                             <div>
                                                 <p className="font-semibold text-gray-900">{addOn.name}</p>
-                                                <p className="text-sm text-gray-500">Quantity: {quantity}</p>
+                                                <p className="text-sm text-gray-500">{t('booking:confirmation.quantity')}: {quantity}</p>
                                             </div>
                                         </div>
                                         <span className="font-semibold text-gray-900">
@@ -1207,41 +1207,41 @@ export const BookingWizard = () => {
 
                     {/* Payment Summary */}
                     <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Payment Summary</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking:confirmation.paymentSummary')}</h3>
                         <div className="space-y-3">
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Tour Base Price:</span>
+                                <span className="text-gray-600">{t('booking:confirmation.tourBasePrice')}:</span>
                                 <span className="text-gray-900">{formatCurrency(baseAmount, tour.currency)}</span>
                             </div>
                             {addOnsTotal > 0 && (
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Add-ons Total:</span>
+                                    <span className="text-gray-600">{t('booking:confirmation.addonsTotal')}:</span>
                                     <span className="text-gray-900">{formatCurrency(addOnsTotal, tour.currency)}</span>
                                 </div>
                             )}
                             {discountAmount > 0 && (
                                 <div className="flex justify-between text-sm text-green-600">
-                                    <span>Discount ({appliedPromoCode}):</span>
+                                    <span>{t('booking:confirmation.discount')} ({appliedPromoCode}):</span>
                                     <span>-{formatCurrency(discountAmount, tour.currency)}</span>
                                 </div>
                             )}
                             <div className="border-t border-gray-200 pt-3 mt-3">
                                 <div className="flex justify-between">
-                                    <span className="font-semibold text-gray-900">Total Amount:</span>
+                                    <span className="font-semibold text-gray-900">{t('booking:confirmation.totalAmount')}:</span>
                                     <span className="font-bold text-xl text-gray-900">{formatCurrency(finalAmount, tour.currency)}</span>
                                 </div>
                             </div>
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
                                 <div className="flex justify-between mb-2">
-                                    <span className="font-semibold text-green-800">Paid Today:</span>
+                                    <span className="font-semibold text-green-800">{t('booking:confirmation.paidToday')}:</span>
                                     <span className="font-bold text-green-800">{formatCurrency(depositTotal, tour.currency)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-green-700">Remaining Balance:</span>
+                                    <span className="text-green-700">{t('booking:payment.payLater')}:</span>
                                     <span className="font-semibold text-green-700">{formatCurrency(remainingAmount, tour.currency)}</span>
                                 </div>
                                 <p className="text-xs text-green-700 mt-2">
-                                    Remaining balance due 30 days before departure
+                                    {t('booking:confirmation.remainingBalanceDue')}
                                 </p>
                             </div>
                         </div>
@@ -1249,18 +1249,18 @@ export const BookingWizard = () => {
 
                     {/* Contact Information */}
                     <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking:confirmation.contactInformation')}</h3>
                         <div className="space-y-2">
                             <div className="flex items-start gap-2">
-                                <span className="text-gray-600 min-w-24">Email:</span>
+                                <span className="text-gray-600 min-w-24">{t('booking:confirmation.email')}:</span>
                                 <span className="font-semibold text-gray-900">{payer.email}</span>
                             </div>
                             <div className="flex items-start gap-2">
-                                <span className="text-gray-600 min-w-24">Phone:</span>
+                                <span className="text-gray-600 min-w-24">{t('booking:confirmation.phone')}:</span>
                                 <span className="font-semibold text-gray-900">{payer.phone}</span>
                             </div>
                             <div className="flex items-start gap-2">
-                                <span className="text-gray-600 min-w-24">Address:</span>
+                                <span className="text-gray-600 min-w-24">{t('booking:confirmation.address')}:</span>
                                 <span className="font-semibold text-gray-900">
                                     {payer.address}, {payer.zipCode} {payer.city}, {payer.country}
                                 </span>
@@ -1273,10 +1273,10 @@ export const BookingWizard = () => {
                         <div className="flex items-start gap-3">
                             <Info className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
                             <div>
-                                <h4 className="font-semibold text-blue-900 mb-1">Confirmation Email Sent</h4>
+                                <h4 className="font-semibold text-blue-900 mb-1">{t('booking:confirmation.confirmationEmailSent')}</h4>
                                 <p className="text-sm text-blue-800">
-                                    A detailed confirmation email with your booking details, travel documents, and next steps has been sent to <span className="font-semibold">{payer.email}</span>. 
-                                    Please check your inbox and spam folder.
+                                    {t('booking:confirmation.confirmationEmailDetails')} <span className="font-semibold">{payer.email}</span>. 
+                                    {t('booking:confirmation.checkInboxSpam')}
                                 </p>
                             </div>
                         </div>
@@ -1284,15 +1284,15 @@ export const BookingWizard = () => {
 
                     {/* Next Steps */}
                     <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">What Happens Next?</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('booking:confirmation.whatHappensNext')}</h3>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">
                                 <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center flex-shrink-0">
                                     1
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-gray-900">Check Your Email</p>
-                                    <p className="text-sm text-gray-600">Review your booking confirmation and save it for your records.</p>
+                                    <p className="font-semibold text-gray-900">{t('booking:confirmation.checkYourEmail')}</p>
+                                    <p className="text-sm text-gray-600">{t('booking:confirmation.reviewBookingConfirmation')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
@@ -1300,8 +1300,8 @@ export const BookingWizard = () => {
                                     2
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-gray-900">{t('booking.confirmation.prepareForTrip')}</p>
-                                    <p className="text-sm text-gray-600">{t('booking.confirmation.visitMyPages')}</p>
+                                    <p className="font-semibold text-gray-900">{t('booking:confirmation.prepareForTrip')}</p>
+                                    <p className="text-sm text-gray-600">{t('booking:confirmation.visitMyPages')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
@@ -1309,8 +1309,8 @@ export const BookingWizard = () => {
                                     3
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-gray-900">Final Payment</p>
-                                    <p className="text-sm text-gray-600">Complete your remaining payment 30 days before departure. We'll send you a reminder.</p>
+                                    <p className="font-semibold text-gray-900">{t('booking:confirmation.finalPayment')}</p>
+                                    <p className="text-sm text-gray-600">{t('booking:confirmation.finalPaymentDetails')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
@@ -1318,8 +1318,8 @@ export const BookingWizard = () => {
                                     4
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-gray-900">Enjoy Your Adventure!</p>
-                                    <p className="text-sm text-gray-600">Get ready for an unforgettable experience on {date}.</p>
+                                    <p className="font-semibold text-gray-900">{t('booking:confirmation.enjoyAdventure')}</p>
+                                    <p className="text-sm text-gray-600">{t('booking:confirmation.getReadyExperience')} {date}.</p>
                                 </div>
                             </div>
                         </div>
@@ -1333,20 +1333,20 @@ export const BookingWizard = () => {
                             className="flex items-center gap-2"
                         >
                             <CreditCard className="h-4 w-4" />
-                            Print Confirmation
+                            {t('booking:confirmation.printConfirmation')}
                         </Button>
             <Button 
               onClick={() => navigate('/my-bookings')} 
                             variant="primary"
                             className="flex items-center gap-2"
                         >
-                            View My Bookings
+                            {t('booking:confirmation.viewMyBookings')}
                         </Button>
                         <Button 
                             onClick={() => navigate('/')} 
                             variant="ghost"
                         >
-                            Browse More Tours
+                            {t('booking:confirmation.browseMoreTours')}
                         </Button>
                     </div>
                 </div>
@@ -1367,7 +1367,7 @@ export const BookingWizard = () => {
               className="md:w-auto shadow-none"
               icon={<ArrowLeft className="h-5 w-5" />}
             >
-              {t('common.back') || 'Back'}
+              {t('common:back') || 'Back'}
             </Button>
           )}
           <div className={currentStep > 0 ? 'md:ml-auto w-full md:w-auto' : 'w-full'}>
@@ -1381,7 +1381,7 @@ export const BookingWizard = () => {
                 fullWidth
                 className="md:w-auto shadow-lg"
               >
-                {isProcessing ? t('common.processing') : `${t('booking.payment.payBtn')} ${formatCurrency(depositTotal, tour.currency)}`}
+                {isProcessing ? t('common:processing') : `${t('booking:payment.payBtn')} ${formatCurrency(depositTotal, tour.currency)}`}
               </Button>
             ) : (
               <Button
@@ -1392,7 +1392,7 @@ export const BookingWizard = () => {
                 className="md:w-auto shadow-lg"
                 icon={<ChevronRight className="h-5 w-5" />}
               >
-                {t('booking.payment.nextStep')}
+                {t('booking:payment.nextStep')}
               </Button>
             )}
           </div>

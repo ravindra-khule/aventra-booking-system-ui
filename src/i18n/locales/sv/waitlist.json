@@ -1,0 +1,12 @@
+{
+  "title": "Gå med i Väntelistan",
+  "infoTitle": "Turen är för närvarande fullbokad.",
+  "infoText": "Vi meddelar dig så snart en plats blir ledig.",
+  "participants": "Antal Deltagare",
+  "preferredDate": "Önskat Datum (Valfritt)",
+  "message": "Ytterligare Meddelande (Valfritt)",
+  "messagePlaceholder": "Berätta om dina preferenser eller frågor...",
+  "submitBtn": "Skicka Förfrågan",
+  "successTitle": "Du är med på listan!",
+  "successMessage": "Vi meddelar dig om en plats öppnas för denna tur."
+}

@@ -23,6 +23,7 @@ import {
   Loader,
   AlertCircle,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type ViewMode = 'list' | 'timeline' | 'analytics';
 
@@ -41,6 +42,7 @@ type ViewMode = 'list' | 'timeline' | 'analytics';
  * - Export communication history
  */
 export const CommunicationLogs = () => {
+  const { t } = useTranslation();
   // State Management
   const [communications, setCommunications] = useState<CommunicationLog[]>([]);
   const [filteredCommunications, setFilteredCommunications] = useState<CommunicationLog[]>([]);
@@ -134,15 +136,15 @@ export const CommunicationLogs = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
                 <MessageSquare className="h-8 w-8 text-blue-600" />
-                Communication Logs
+                {t('admin:communicationLogsTitle')}
               </h1>
-              <p className="text-gray-600 mt-1">Track all customer interactions in one place</p>
+              <p className="text-gray-600 mt-1">{t('admin:trackAllCustomerInteractions')}</p>
             </div>
             <div className="flex gap-2">
               <div className="relative">
                 <button
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  title="More options"
+                  title={t('admin:moreOptions')}
                   onClick={e => {
                     const menu = e.currentTarget.nextElementSibling as HTMLElement;
                     menu?.classList.toggle('hidden');
@@ -162,7 +164,7 @@ export const CommunicationLogs = () => {
                     className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 first:rounded-t-lg"
                   >
                     <Download className="h-4 w-4" />
-                    Export as CSV
+                    {t('admin:exportAsCsv')}
                   </button>
                   <button
                     onClick={() => handleExport('json')}
@@ -170,7 +172,7 @@ export const CommunicationLogs = () => {
                     className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
                   >
                     <Download className="h-4 w-4" />
-                    Export as JSON
+                    {t('admin:exportAsJson')}
                   </button>
                   <button
                     onClick={() => handleExport('pdf')}
@@ -178,7 +180,7 @@ export const CommunicationLogs = () => {
                     className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 last:rounded-b-lg"
                   >
                     <Download className="h-4 w-4" />
-                    Export as PDF
+                    {t('admin:exportAsPdf')}
                   </button>
                 </div>
               </div>
@@ -196,7 +198,7 @@ export const CommunicationLogs = () => {
               }`}
             >
               <Search className="h-4 w-4 inline mr-2" />
-              List View
+              {t('admin:communicationListView')}
             </button>
             <button
               onClick={() => setViewMode('timeline')}
@@ -207,7 +209,7 @@ export const CommunicationLogs = () => {
               }`}
             >
               <Calendar className="h-4 w-4 inline mr-2" />
-              Timeline
+              {t('admin:communicationTimeline')}
             </button>
             <button
               onClick={() => setViewMode('analytics')}
@@ -218,7 +220,7 @@ export const CommunicationLogs = () => {
               }`}
             >
               <BarChart3 className="h-4 w-4 inline mr-2" />
-              Analytics
+              {t('admin:analytics')}
             </button>
           </div>
         </div>
@@ -233,11 +235,11 @@ export const CommunicationLogs = () => {
             <div className="lg:col-span-1 space-y-4">
               <div>
                 <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-2">
-                  Customer Filter
+                  {t('admin:customerFilterLabel')}
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter customer ID..."
+                  placeholder={t('admin:enterCustomerId')}
                   value={customerFilter}
                   onChange={e => setCustomerFilter(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
@@ -249,8 +251,8 @@ export const CommunicationLogs = () => {
               {/* Results Summary */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm font-medium text-blue-900">
-                  Showing <strong>{filteredCommunications.length}</strong> of{' '}
-                  <strong>{communications.length}</strong> communications
+                  {t('admin:showingCommunications')} <strong>{filteredCommunications.length}</strong> {t('admin:ofCommunications')}{' '}
+                  <strong>{communications.length}</strong> {t('admin:communicationsText')}
                 </p>
               </div>
             </div>
@@ -281,8 +283,8 @@ export const CommunicationLogs = () => {
               ) : (
                 <div className="text-center py-12 bg-white rounded-lg border">
                   <AlertCircle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 font-medium">No communications found</p>
-                  <p className="text-sm text-gray-500 mt-1">Try adjusting your filters</p>
+                  <p className="text-gray-600 font-medium">{t('admin:noCommunicationsFound')}</p>
+                  <p className="text-sm text-gray-500 mt-1">{t('admin:tryAdjustingFilters')}</p>
                 </div>
               )}
             </div>
@@ -300,11 +302,11 @@ export const CommunicationLogs = () => {
               <>
                 <div className="mb-4">
                   <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-2">
-                    Customer Filter
+                    {t('admin:customerFilterLabel')}
                   </label>
                   <input
                     type="text"
-                    placeholder="Enter customer ID..."
+                    placeholder={t('admin:enterCustomerId')}
                     value={customerFilter}
                     onChange={e => setCustomerFilter(e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
@@ -348,11 +350,11 @@ export const CommunicationLogs = () => {
               <div>
                 <div className="mb-6">
                   <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-2">
-                    Customer Filter
+                    {t('admin:customerFilterLabel')}
                   </label>
                   <input
                     type="text"
-                    placeholder="Enter customer ID (optional)..."
+                    placeholder={t('admin:enterCustomerIdOptional')}
                     value={customerFilter}
                     onChange={e => setCustomerFilter(e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"

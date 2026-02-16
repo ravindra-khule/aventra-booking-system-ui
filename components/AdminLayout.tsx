@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
 import { LogOut, Globe, User as UserIcon } from 'lucide-react';
 import Sidebar from './Sidebar';
@@ -9,7 +9,7 @@ import { MobileSidebar, MenuButton } from './MobileSidebar';
 
 export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   const { user, logout, login } = useAuth();
-  const { t, language, setLanguage } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -31,7 +31,8 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'sv' : 'en');
+    const newLang = i18n.language === 'en' ? 'sv' : 'en';
+    i18n.changeLanguage(newLang);
   };
 
   return (
@@ -69,10 +70,10 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                 <button
                   onClick={toggleLanguage}
                   className="btn btn-secondary-dark btn-sm"
-                  title={language === 'en' ? 'Switch to Swedish' : 'Switch to English'}
+                  title={i18n.language === 'en' ? t('admin:switchToSwedish') : t('admin:switchToEnglish')}
                 >
                   <Globe className="h-4 w-4" />
-                  <span className="hidden sm:inline">{language === 'en' ? 'EN' : 'SV'}</span>
+                  <span className="hidden sm:inline">{i18n.language === 'en' ? 'EN' : 'SV'}</span>
                 </button>
 
                 {/* User Info */}
@@ -93,7 +94,7 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                       onClick={handleLogout}
                       className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                       style={{ color: '#6b7280' }}
-                      title="Logout"
+                      title={t('common:logout')}
                     >
                       <LogOut className="h-5 w-5" />
                     </button>
@@ -114,12 +115,12 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-center text-sm" style={{ color: '#6b7280' }}>
               <div className="mb-2 sm:mb-0">
-                &copy; {new Date().getFullYear()} Swett AB. All rights reserved.
+                &copy; {new Date().getFullYear()} {t('admin:footer.copyright')}
               </div>
               <div className="flex gap-4">
-                <a href="#" className="hover:text-gray-700 transition-colors">Support</a>
-                <a href="#" className="hover:text-gray-700 transition-colors">Documentation</a>
-                <a href="#" className="hover:text-gray-700 transition-colors">Privacy</a>
+                <a href="#" className="hover:text-gray-700 transition-colors">{t('admin:footer.support')}</a>
+                <a href="#" className="hover:text-gray-700 transition-colors">{t('admin:footer.documentation')}</a>
+                <a href="#" className="hover:text-gray-700 transition-colors">{t('admin:footer.privacy')}</a>
               </div>
             </div>
           </div>

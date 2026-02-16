@@ -10,11 +10,13 @@ import {
 import { Button } from '../../../src/shared/components/ui';
 import { formatCurrency, formatDate } from '../../../src/shared/utils';
 import { useToast } from '../../../src/shared/context/ToastContext';
+import { useTranslation } from 'react-i18next';
 
 type ViewMode = 'grid' | 'list';
 
 export const TourManagement: React.FC = () => {
   const toast = useToast();
+  const { t } = useTranslation();
   const [tours, setTours] = useState<Tour[]>([]);
   const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
   const [categories, setCategories] = useState<TourCategory[]>([]);
@@ -180,7 +182,7 @@ export const TourManagement: React.FC = () => {
     return (
       <div className="p-8 max-w-7xl mx-auto">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Loading tours...</div>
+          <div className="text-gray-500">{t('admin:loadingTours')}</div>
         </div>
       </div>
     );
@@ -192,8 +194,8 @@ export const TourManagement: React.FC = () => {
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tour Management</h1>
-            <p className="text-gray-500 mt-1">Manage tour packages, pricing, and availability</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('admin:tourManagementTitle')}</h1>
+            <p className="text-gray-500 mt-1">{t('admin:manageTourPackagesPricing')}</p>
           </div>
           <div className="flex gap-2">
             <Button 
@@ -201,14 +203,14 @@ export const TourManagement: React.FC = () => {
               icon={<Download className="h-4 w-4" />}
               onClick={() => alert('Export functionality to be implemented')}
             >
-              Export
+              {t('admin:export')}
             </Button>
             <Button 
               variant="primary" 
               icon={<Plus className="h-4 w-4" />}
               onClick={handleCreateNew}
             >
-              Create Tour
+              {t('admin:createTour')}
             </Button>
           </div>
         </div>
@@ -219,7 +221,7 @@ export const TourManagement: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Tours</p>
+              <p className="text-sm text-gray-500">{t('admin:totalToursCount')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
             </div>
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -231,7 +233,7 @@ export const TourManagement: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Active Tours</p>
+              <p className="text-sm text-gray-500">{t('admin:activeToursCount')}</p>
               <p className="text-2xl font-bold text-green-600">{stats.active}</p>
             </div>
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -243,7 +245,7 @@ export const TourManagement: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Draft Tours</p>
+              <p className="text-sm text-gray-500">{t('admin:draftToursCount')}</p>
               <p className="text-2xl font-bold text-yellow-600">{stats.draft}</p>
             </div>
             <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -255,7 +257,7 @@ export const TourManagement: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Bookings</p>
+              <p className="text-sm text-gray-500">{t('admin:toursTotalBookings')}</p>
               <p className="text-2xl font-bold text-blue-600">{stats.totalBookings}</p>
             </div>
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -267,7 +269,7 @@ export const TourManagement: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Revenue</p>
+              <p className="text-sm text-gray-500">{t('admin:toursTotalRevenue')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalRevenue)}</p>
             </div>
             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -286,7 +288,7 @@ export const TourManagement: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input 
                 type="text"
-                placeholder="Search tours by name, location, or country..."
+                placeholder={t('admin:searchToursPlaceholder')}
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -302,7 +304,7 @@ export const TourManagement: React.FC = () => {
                     ? 'bg-purple-100 text-purple-600' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
-                title="Grid View"
+                title={t('admin:tourGridView')}
               >
                 <Grid className="h-5 w-5" />
               </button>
@@ -313,7 +315,7 @@ export const TourManagement: React.FC = () => {
                     ? 'bg-purple-100 text-purple-600' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
-                title="List View"
+                title={t('admin:tourListView')}
               >
                 <List className="h-5 w-5" />
               </button>
@@ -336,7 +338,7 @@ export const TourManagement: React.FC = () => {
 
       {/* Results Count */}
       <div className="mb-4 text-sm text-gray-500">
-        Showing {filteredTours.length} of {tours.length} tours
+        {t('admin:showingToursOf')} {filteredTours.length} {t('admin:ofCommunications')} {tours.length} {t('admin:toursText')}
       </div>
 
       {/* Tours Display */}
@@ -345,8 +347,8 @@ export const TourManagement: React.FC = () => {
           <div className="text-gray-400 mb-2">
             <Search className="h-12 w-12 mx-auto" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No tours found</h3>
-          <p className="text-gray-500">Try adjusting your search or filters</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">{t('admin:noToursFound')}</h3>
+          <p className="text-gray-500">{t('admin:tryAdjustingSearchFilters')}</p>
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -368,14 +370,14 @@ export const TourManagement: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difficulty</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bookings</th>
-                  <th className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:tourTableHeader')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:locationHeader')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:statusHeader')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:difficultyHeader')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:priceHeader')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:capacityHeader')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:bookingsHeader')}</th>
+                  <th className="relative px-6 py-3"><span className="sr-only">{t('admin:actions')}</span></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">

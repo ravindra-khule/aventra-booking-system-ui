@@ -1,0 +1,13 @@
+{
+  "loading": "Loading...",
+  "next": "Next",
+  "back": "Back",
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "pay": "Pay",
+  "details": "Details",
+  "close": "Close",
+  "processing": "Processing...",
+  "error": "Error",
+  "logout": "Logout"
+}
