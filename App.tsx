@@ -29,7 +29,6 @@ import { EmailSettings } from './pages/admin/settings/EmailSettings';
 import { Logs } from './pages/admin/settings/components/Logs';
 import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { LanguageProvider } from './context/LanguageContext';
 import { ToastProvider } from './src/shared/context/ToastContext';
 import { UserRole } from './types';
 
@@ -181,13 +180,11 @@ const AppRoutes = () => {
 function App() {
   return (
     <AuthProvider>
-      <LanguageProvider>
-        <ToastProvider>
-          <Router>
-              <AppRoutes />
-          </Router>
-        </ToastProvider>
-      </LanguageProvider>
+      <ToastProvider>
+        <Router>
+            <AppRoutes />
+        </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }

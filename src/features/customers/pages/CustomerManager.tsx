@@ -7,8 +7,10 @@ import { Button, Badge, Card, Input } from '../../../shared/components/ui';
 import { BulkActionsToolbar } from '../../../shared/components/BulkActionsToolbar';
 import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
 import { formatCurrency, formatDate } from '../../../shared/utils';
+import { useTranslation } from 'react-i18next';
 
 export const CustomerManager = () => {
+  const { t } = useTranslation();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState('');
@@ -63,10 +65,10 @@ export const CustomerManager = () => {
       await CustomerService.update(updatedCustomer.id, updatedCustomer);
       setCustomers(prev => prev.map(c => c.id === updatedCustomer.id ? updatedCustomer : c));
       setSelectedCustomer(updatedCustomer);
-      alert('Customer updated successfully!');
+      alert(t('admin:customerUpdated'));
     } catch (error) {
       console.error('Failed to update customer', error);
-      alert('Failed to update customer');
+      alert(t('admin:failedToUpdateCustomer'));
     }
   };
 
@@ -116,7 +118,7 @@ export const CustomerManager = () => {
               <div className="px-6 py-6 bg-blue-900 text-white flex justify-between items-start sticky top-0 z-10">
                 <div>
                   <h2 className="text-2xl font-bold">{formData.firstName} {formData.lastName}</h2>
-                  <p className="text-blue-200 text-sm mt-1">Customer ID: {customer.id}</p>
+                  <p className="text-blue-200 text-sm mt-1">{t('admin:customerId')}: {customer.id}</p>
                 </div>
                 <button onClick={onClose} className="text-blue-200 hover:text-white">
                   <X className="h-6 w-6" />
@@ -128,14 +130,14 @@ export const CustomerManager = () => {
                 <div className="bg-white p-4 rounded-lg shadow-sm border">
                   <div className="flex items-center text-gray-500 text-sm mb-1">
                     <ShoppingBag className="h-4 w-4 mr-1" />
-                    Total Bookings
+                    {t('admin:totalBookingsLabel')}
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{customer.totalBookings}</div>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm border">
                   <div className="flex items-center text-gray-500 text-sm mb-1">
                     <DollarSign className="h-4 w-4 mr-1" />
-                    Total Spent
+                    {t('admin:totalSpent')}
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{customer.totalSpent.toLocaleString()} SEK</div>
                 </div>
@@ -150,7 +152,7 @@ export const CustomerManager = () => {
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     <Edit2 className="h-4 w-4" />
-                    Edit Customer Details
+                    {t('admin:editCustomerDetails')}
                   </button>
                 )}
 
@@ -158,14 +160,14 @@ export const CustomerManager = () => {
                 <div className="border rounded-xl p-6 bg-white shadow-sm">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                     <User className="h-5 w-5 mr-2 text-blue-600" />
-                    Contact Information
+                    {t('admin:contactInformation')}
                   </h3>
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
-                          First Name
+                          {t('admin:firstName')}
                         </label>
                         {isEditing ? (
                           <input
@@ -180,7 +182,7 @@ export const CustomerManager = () => {
                       </div>
                       <div>
                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
-                          Last Name
+                          {t('admin:lastName')}
                         </label>
                         {isEditing ? (
                           <input
@@ -198,7 +200,7 @@ export const CustomerManager = () => {
                     <div>
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
                         <Mail className="h-3 w-3 inline mr-1" />
-                        Email
+                        {t('admin:email')}
                       </label>
                       {isEditing ? (
                         <input
@@ -215,7 +217,7 @@ export const CustomerManager = () => {
                     <div>
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
                         <Phone className="h-3 w-3 inline mr-1" />
-                        Phone
+                        {t('admin:phone')}
                       </label>
                       {isEditing ? (
                         <input
@@ -232,13 +234,13 @@ export const CustomerManager = () => {
                     <div>
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
                         <MapPin className="h-3 w-3 inline mr-1" />
-                        Address
+                        {t('admin:address')}
                       </label>
                       {isEditing ? (
                         <>
                           <input
                             type="text"
-                            placeholder="Street Address"
+                            placeholder={t('admin:streetAddress')}
                             value={formData.address}
                             onChange={(e) => setFormData({...formData, address: e.target.value})}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2"
@@ -246,21 +248,21 @@ export const CustomerManager = () => {
                           <div className="grid grid-cols-3 gap-2">
                             <input
                               type="text"
-                              placeholder="Zip Code"
+                              placeholder={t('admin:zipCode')}
                               value={formData.zipCode}
                               onChange={(e) => setFormData({...formData, zipCode: e.target.value})}
                               className="border border-gray-300 rounded-lg px-3 py-2"
                             />
                             <input
                               type="text"
-                              placeholder="City"
+                              placeholder={t('admin:city')}
                               value={formData.city}
                               onChange={(e) => setFormData({...formData, city: e.target.value})}
                               className="border border-gray-300 rounded-lg px-3 py-2"
                             />
                             <input
                               type="text"
-                              placeholder="Country"
+                              placeholder={t('admin:country')}
                               value={formData.country}
                               onChange={(e) => setFormData({...formData, country: e.target.value})}
                               className="border border-gray-300 rounded-lg px-3 py-2"
@@ -278,17 +280,17 @@ export const CustomerManager = () => {
 
                     <div>
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
-                        Notes
+                        {t('admin:notes')}
                       </label>
                       {isEditing ? (
                         <textarea
                           value={formData.notes || ''}
                           onChange={(e) => setFormData({...formData, notes: e.target.value})}
                           className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[80px]"
-                          placeholder="Add any notes about this customer..."
+                          placeholder={t('admin:addNotes')}
                         />
                       ) : (
-                        <p className="text-gray-900">{formData.notes || 'No notes'}</p>
+                        <p className="text-gray-900">{formData.notes || t('admin:noNotes')}</p>
                       )}
                     </div>
                   </div>
@@ -301,14 +303,14 @@ export const CustomerManager = () => {
                         className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                       >
                         <Save className="h-4 w-4" />
-                        Save Changes
+                        {t('admin:saveChanges')}
                       </button>
                       <button
                         onClick={handleCancel}
                         className="flex-1 flex items-center justify-center gap-2 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
                       >
                         <X className="h-4 w-4" />
-                        Cancel
+                        {t('admin:cancelEdit')}
                       </button>
                     </div>
                   )}
@@ -318,15 +320,15 @@ export const CustomerManager = () => {
                 <div className="border rounded-xl p-6 bg-white shadow-sm">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                     <Calendar className="h-5 w-5 mr-2 text-blue-600" />
-                    Customer History
+                    {t('admin:customerHistory')}
                   </h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">First Booking:</span>
+                      <span className="text-gray-500">{t('admin:firstBooking')}:</span>
                       <p className="font-medium text-gray-900">{new Date(customer.createdDate).toLocaleDateString()}</p>
                     </div>
                     <div>
-                      <span className="text-gray-500">Last Booking:</span>
+                      <span className="text-gray-500">{t('admin:lastBooking')}:</span>
                       <p className="font-medium text-gray-900">
                         {customer.lastBookingDate ? new Date(customer.lastBookingDate).toLocaleDateString() : 'N/A'}
                       </p>
@@ -342,7 +344,7 @@ export const CustomerManager = () => {
                   >
                     <h3 className="text-lg font-bold text-gray-900 flex items-center">
                       <ShoppingBag className="h-5 w-5 mr-2 text-blue-600" />
-                      Booking History ({bookings.length})
+                      {t('admin:bookingHistory')} ({bookings.length})
                     </h3>
                     {showBookings ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                   </button>
@@ -350,7 +352,7 @@ export const CustomerManager = () => {
                   {showBookings && (
                     <div className="p-6">
                       {bookings.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8">No bookings found</p>
+                        <p className="text-gray-500 text-center py-8">{t('admin:noBookingsYet')}</p>
                       ) : (
                         <div className="space-y-4">
                           {bookings.map(booking => (
@@ -358,7 +360,7 @@ export const CustomerManager = () => {
                               <div className="flex justify-between items-start mb-2">
                                 <div>
                                   <h4 className="font-bold text-gray-900">{booking.tourTitle}</h4>
-                                  <p className="text-sm text-gray-500">Booking ID: {booking.id}</p>
+                                  <p className="text-sm text-gray-500">{t('admin:bookingId')}: {booking.id}</p>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
                                   {booking.status}
@@ -366,27 +368,27 @@ export const CustomerManager = () => {
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-sm mt-3">
                                 <div>
-                                  <span className="text-gray-500">Booking Date:</span>
+                                  <span className="text-gray-500">{t('admin:bookingDate')}:</span>
                                   <p className="font-medium">{new Date(booking.bookingDate).toLocaleDateString()}</p>
                                 </div>
                                 <div>
-                                  <span className="text-gray-500">Trip Date:</span>
+                                  <span className="text-gray-500">{t('admin:tripDate')}:</span>
                                   <p className="font-medium">{new Date(booking.tripDate).toLocaleDateString()}</p>
                                 </div>
                                 <div>
-                                  <span className="text-gray-500">Participants:</span>
+                                  <span className="text-gray-500">{t('admin:participants')}:</span>
                                   <p className="font-medium">{booking.participants}</p>
                                 </div>
                                 <div>
-                                  <span className="text-gray-500">Total Amount:</span>
+                                  <span className="text-gray-500">{t('admin:totalAmount')}:</span>
                                   <p className="font-medium">{booking.totalAmount.toLocaleString()} SEK</p>
                                 </div>
                                 <div>
-                                  <span className="text-gray-500">Paid Amount:</span>
+                                  <span className="text-gray-500">{t('admin:paidAmount')}:</span>
                                   <p className="font-medium text-green-600">{booking.paidAmount.toLocaleString()} SEK</p>
                                 </div>
                                 <div>
-                                  <span className="text-gray-500">Payment Status:</span>
+                                  <span className="text-gray-500">{t('admin:paymentStatus')}:</span>
                                   <p className="font-medium">{booking.paymentStatus}</p>
                                 </div>
                               </div>
@@ -412,8 +414,8 @@ export const CustomerManager = () => {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Management</h1>
-        <p className="text-gray-600">View and manage all customers in the system</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:customerManager')}</h1>
+        <p className="text-gray-600">{t('admin:manageCustomerProfilesDesc')}</p>
       </div>
 
       {/* Search Bar */}
@@ -422,7 +424,7 @@ export const CustomerManager = () => {
           <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by name, email, phone, or customer ID..."
+            placeholder={t('admin:searchCustomers')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -436,14 +438,14 @@ export const CustomerManager = () => {
             actions={[
               {
                 id: 'send-email',
-                label: 'Send Email',
+                label: t('admin:sendBulkEmail'),
                 icon: <Mail className="h-4 w-4" />,
                 variant: 'primary',
                 onClick: () => console.log('Send email to selected customers')
               },
               {
                 id: 'export',
-                label: 'Export',
+                label: t('admin:exportCustomers'),
                 icon: <ShoppingBag className="h-4 w-4" />,
                 variant: 'outline',
                 onClick: () => console.log('Export selected customers')
@@ -459,7 +461,7 @@ export const CustomerManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Total Customers</p>
+              <p className="text-sm text-gray-500 mb-1">{t('admin:totalCustomersLabel')}</p>
               <p className="text-2xl font-bold text-gray-900">{customers.length}</p>
             </div>
             <User className="h-8 w-8 text-blue-600" />
@@ -468,7 +470,7 @@ export const CustomerManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Total Bookings</p>
+              <p className="text-sm text-gray-500 mb-1">{t('admin:totalBookingsLabel')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {customers.reduce((sum, c) => sum + c.totalBookings, 0)}
               </p>
@@ -479,7 +481,7 @@ export const CustomerManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
+              <p className="text-sm text-gray-500 mb-1">{t('admin:totalSpent')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {customers.reduce((sum, c) => sum + c.totalSpent, 0).toLocaleString()} SEK
               </p>
@@ -499,7 +501,7 @@ export const CustomerManager = () => {
                   <button
                     onClick={() => bulkSelection.selectAll()}
                     className="inline-flex items-center justify-center h-5 w-5 hover:bg-gray-200 rounded"
-                    title={bulkSelection.isAllSelected ? 'Deselect all' : 'Select all'}
+                    title={bulkSelection.isAllSelected ? t('admin:deselectAllCustomers') : t('admin:selectAllCustomers')}
                   >
                     {bulkSelection.isAllSelected ? (
                       <CheckSquare className="h-5 w-5 text-blue-600" />
@@ -509,25 +511,25 @@ export const CustomerManager = () => {
                   </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
+                  {t('admin:customerTableHeader')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
+                  {t('admin:contactTableHeader')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
+                  {t('admin:locationTableHeader')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Bookings
+                  {t('admin:bookings')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Spent
+                  {t('admin:totalSpent')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Booking
+                  {t('admin:lastBooking')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('admin:actions')}
                 </th>
               </tr>
             </thead>
@@ -535,7 +537,7 @@ export const CustomerManager = () => {
               {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                    No customers found
+                    {t('admin:noCustomersFound')}
                   </td>
                 </tr>
               ) : (
@@ -604,7 +606,7 @@ export const CustomerManager = () => {
                         className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                       >
                         <Eye className="h-4 w-4" />
-                        View
+                        {t('admin:view')}
                       </button>
                     </td>
                   </tr>

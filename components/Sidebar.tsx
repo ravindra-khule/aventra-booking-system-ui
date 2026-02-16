@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
 import {
@@ -58,8 +58,8 @@ const Sidebar: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth(); // Get current user to check role
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
-    t('admin.bookings'),
-    t('admin.marketing'),
+    t('admin:bookings'),
+    t('admin:marketing'),
   ]);
 
   const toggleCategory = (category: string) => {
@@ -82,127 +82,127 @@ const Sidebar: React.FC = () => {
   // This is recreated on every render to ensure translations are updated
   const menuCategories: MenuCategory[] = [
     {
-      label: t('admin.bookings'),
+      label: t('admin:bookings'),
       icon: <Calendar className="w-5 h-5" />,
       allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.SUPPORT], // Support can see bookings
       items: [
         {
-          label: t('admin.allBookings'),
+          label: t('admin:allBookings'),
           path: '/admin/bookings',
           icon: <ListOrdered className="w-4 h-4" />,
         },
         {
-          label: t('admin.waitlist'),
+          label: t('admin:waitlist'),
           path: '/admin/waitlist',
           icon: <Clock className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: t('admin.marketing'),
+      label: t('admin:marketing'),
       icon: <TrendingUp className="w-5 h-5" />,
       allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Only Super Admin and Admin
       items: [
         {
-          label: t('admin.promoCodes'),
+          label: t('admin:promoCodes'),
           path: '/admin/marketing/promo-codes',
           icon: <Tag className="w-4 h-4" />,
         },
         {
-          label: t('admin.emailTemplates'),
+          label: t('admin:emailTemplates'),
           path: '/admin/marketing/email-templates',
           icon: <Mail className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: t('admin.customers'),
+      label: t('admin:customers'),
       icon: <Users className="w-5 h-5" />,
       allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.SUPPORT], // Support can see customers
       items: [
         {
-          label: t('admin.customerList'),
+          label: t('admin:customerList'),
           path: '/admin/customers',
           icon: <UsersRound className="w-4 h-4" />,
         },
         {
-          label: t('admin.customerGroups'),
+          label: t('admin:customerGroups'),
           path: '/admin/customers/groups',
           icon: <Users className="w-4 h-4" />,
         },
         {
-          label: t('admin.communicationLogs'),
+          label: t('admin:communicationLogs'),
           path: '/admin/customers/communications',
           icon: <MessageSquare className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: t('admin.tours'),
+      label: t('admin:tours'),
       icon: <Map className="w-5 h-5" />,
       allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DEVELOPER], // Admins and Developers
       items: [
         {
-          label: t('admin.tourManagement'),
+          label: t('admin:tourManagement'),
           path: '/admin/tours',
           icon: <MapPin className="w-4 h-4" />,
         },
         {
-          label: t('admin.addons'),
+          label: t('admin:addons'),
           path: '/admin/tours/addons',
           icon: <Package className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: t('admin.finance'),
+      label: t('admin:finance'),
       icon: <DollarSign className="w-5 h-5" />,
       allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Finance roles
       items: [
         {
-          label: t('admin.invoices'),
+          label: t('admin:invoices'),
           path: '/admin/finance/invoices',
           icon: <Receipt className="w-4 h-4" />,
         },
         {
-          label: t('admin.reports'),
+          label: t('admin:reports'),
           path: '/admin/finance/reports',
           icon: <FileText className="w-4 h-4" />,
         },
         {
-          label: t('admin.fortnoxIntegration'),
+          label: t('admin:fortnoxIntegration'),
           path: '/admin/finance/fortnox',
           icon: <Building2 className="w-4 h-4" />,
         },
       ],
     },
     {
-      label: t('admin.settings'),
+      label: t('admin:settings'),
       icon: <Settings className="w-5 h-5" />,
       allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DEVELOPER], // Settings access
       items: [
         {
-          label: t('admin.companyInfo'),
+          label: t('admin:companyInfo'),
           path: '/admin/settings/company',
           icon: <Building2 className="w-4 h-4" />,
         },
         {
-          label: t('admin.userManagement'),
+          label: t('admin:userManagement'),
           path: '/admin/settings/users',
           icon: <UserCog className="w-4 h-4" />,
         },
         {
-          label: t('admin.rolesPermissions'),
+          label: t('admin:rolesPermissions'),
           path: '/admin/settings/roles',
           icon: <Shield className="w-4 h-4" />,
         },
         {
-          label: t('admin.emailSettings'),
+          label: t('admin:emailSettings'),
           path: '/admin/settings/email',
           icon: <MailOpen className="w-4 h-4" />,
         },
         {
-          label: t('admin.systemLogs'),
+          label: t('admin:systemLogs'),
           path: '/admin/settings/logs',
           icon: <FileBarChart className="w-4 h-4" />,
         },
@@ -215,7 +215,7 @@ const Sidebar: React.FC = () => {
       {/* Header */}
       <div className="p-6 border-b" style={{ borderColor: '#e5e7eb' }}>
         <h2 className="text-xl font-bold" style={{ color: '#ff1b00' }}>Swett Admin</h2>
-        <p className="text-sm mt-1" style={{ color: '#6b7280' }}>{t('admin.managementPortal')}</p>
+        <p className="text-sm mt-1" style={{ color: '#6b7280' }}>{t('admin:managementPortal')}</p>
       </div>
 
       {/* Navigation */}
@@ -235,7 +235,7 @@ const Sidebar: React.FC = () => {
           }
         >
           <LayoutDashboard className="w-5 h-5" />
-          <span className="font-medium">{t('admin.dashboard')}</span>
+          <span className="font-medium">{t('admin:dashboard')}</span>
         </Link>
 
         {/* Categories with submenus - filtered by user role */}
@@ -305,9 +305,9 @@ const Sidebar: React.FC = () => {
       {/* Footer */}
       <div className="p-4 border-t" style={{ borderColor: '#e5e7eb' }}>
         <div className="rounded-lg p-3" style={{ backgroundColor: '#fff1ed' }}>
-          <p className="text-xs font-medium" style={{ color: '#ff1b00' }}>{t('admin.needHelp')}</p>
+          <p className="text-xs font-medium" style={{ color: '#ff1b00' }}>{t('admin:needHelp')}</p>
           <p className="text-xs mt-1" style={{ color: '#6b7280' }}>
-            {t('admin.helpText')}
+            {t('admin:helpText')}
           </p>
         </div>
       </div>

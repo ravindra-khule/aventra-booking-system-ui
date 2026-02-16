@@ -6,7 +6,7 @@ import { RoleManagementTab } from './components/RoleManagementTab';
 import { PermissionManagerTab } from './components/PermissionManagerTab';
 import { RoleTemplatesTab } from './components/RoleTemplatesTab';
 import { AuditLogsTab } from './components/AuditLogsTab';
-import { useTranslation } from '../../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 type TabType = 'roles' | 'permissions' | 'templates' | 'audit';
 
@@ -132,7 +132,7 @@ export const RolesPermissions: React.FC = () => {
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <StatCard
-              label={t('admin.totalRoles')}
+              label={t('admin:totalRoles')}
               value={roles.length}
               icon={<Users className="h-6 w-6 text-purple-600" />}
             />
@@ -142,12 +142,12 @@ export const RolesPermissions: React.FC = () => {
               icon={<Lock className="h-6 w-6 text-blue-600" />}
             />
             <StatCard
-              label={t('admin.customRoles')}
+              label={t('admin:customRoles')}
               value={roles.filter((r) => !r.isBuiltIn).length}
               icon={<Settings className="h-6 w-6 text-green-600" />}
             />
             <StatCard
-              label={t('admin.totalPermissions')}
+              label={t('admin:totalPermissions')}
               value={permissions.reduce((acc, cat) => acc + cat.features.length, 0)}
               icon={<Lock className="h-6 w-6 text-orange-600" />}
             />

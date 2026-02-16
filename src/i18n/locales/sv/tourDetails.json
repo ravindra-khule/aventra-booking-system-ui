@@ -1,0 +1,19 @@
+{
+  "about": "Om äventyret",
+  "highlights": "Höjdpunkter",
+  "itinerary": "Resplan",
+  "day": "Dag",
+  "bookCardTitle": "Boka denna tur",
+  "nextDeparture": "Nästa Avresa",
+  "securePayment": "Säker betalning via Stripe",
+  "freeCancel": "Gratis avbokning upp till 30 dagar",
+  "bookNow": "Boka Nu",
+  "startingFrom": "Från",
+  "maxPeople": "Max 12 Personer",
+  "guideIncluded": "Professionell guide inkluderad",
+  "fullyBooked": "Fullbokad",
+  "fullyBookedInfo": "Denna tur är för närvarande fullbokad.",
+  "joinWaitlistInfo": "Gå med i vår väntelista för att få besked om en plats blir ledig.",
+  "joinWaitlist": "Gå med i Väntelistan",
+  "tourNotFound": "Turen hittades inte"
+}

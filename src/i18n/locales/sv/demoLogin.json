@@ -1,0 +1,26 @@
+{
+  "title": "Demo Inloggning",
+  "subtitle": "Välj roll och logga in för att utforska",
+  "selectRole": "Välj Roll",
+  "emailAddress": "E-postadress",
+  "password": "Lösenord",
+  "demoMode": "Demo Läge",
+  "demoModeText": "Uppgifterna fylls i automatiskt när du väljer en roll. Alla lösenord följer formatet:",
+  "loginAs": "Logga in som",
+  "loggingIn": "Loggar in...",
+  "loginFailed": "Inloggningen misslyckades. Vänligen försök igen.",
+  "roles": {
+    "superAdmin": "Superadministratör",
+    "superAdminDesc": "Full systemåtkomst - Ägarnivåkontroll",
+    "admin": "Administratör",
+    "adminDesc": "Administrativ åtkomst - Hantera verksamhet & användare",
+    "support": "Support",
+    "supportDesc": "Kundsupport - Bokningar & kundhantering",
+    "accountant": "Revisor",
+    "accountantDesc": "Ekonomiåtkomst - Ekonomiska operationer & rapportering",
+    "developer": "Utvecklare",
+    "developerDesc": "Teknisk åtkomst - Systemloggar & utvecklarverktyg",
+    "customer": "Gäst / Kund",
+    "customerDesc": "Kundvy - Boka turer & visa bokningar"
+  }
+}

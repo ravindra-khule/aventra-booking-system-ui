@@ -7,7 +7,7 @@ import {
   Activity, Target, TrendingDown, Eye, MapPin, Mail, CreditCard, BarChart3, 
   RefreshCw, ArrowRight, ChevronRight, Zap, Shield, Calendar, UserPlus
 } from 'lucide-react';
-import { useTranslation } from '../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 interface KPIData {
   totalRevenue: number;
@@ -163,24 +163,24 @@ export const AdminDashboard = () => {
         {
           id: '1',
           type: 'warning',
-          title: 'High Cancellation Rate',
-          message: '3 bookings cancelled this week. Consider reviewing tour availability.',
-          action: { label: 'Review', href: '/admin/bookings' },
+          title: t('admin:highCancellationRate'),
+          message: t('admin:cancellationMessage'),
+          action: { label: t('admin:review'), href: '/admin/bookings' },
           timestamp: new Date(),
         },
         {
           id: '2',
           type: 'info',
-          title: 'Payment Pending',
-          message: '2 invoices awaiting payment. Automated reminder sent.',
-          action: { label: 'Follow up', href: '/admin/finance/invoices' },
+          title: t('admin:paymentPending'),
+          message: t('admin:paymentPendingMessage'),
+          action: { label: t('admin:followUp'), href: '/admin/finance/invoices' },
           timestamp: new Date(),
         },
         {
           id: '3',
           type: 'success',
-          title: 'Monthly Target Met',
-          message: 'Revenue target exceeded by 15% this month.',
+          title: t('admin:monthlyTargetMet'),
+          message: t('admin:monthlyTargetMessage'),
           timestamp: new Date(),
         },
       ]);
@@ -198,10 +198,10 @@ export const AdminDashboard = () => {
   ];
 
   const bookingStatusData = [
-    { name: 'Confirmed', value: 42, fill: '#10b981' },
-    { name: 'Pending', value: 18, fill: '#f59e0b' },
-    { name: 'Completed', value: 156, fill: '#3b82f6' },
-    { name: 'Cancelled', value: 12, fill: '#ef4444' },
+    { name: t('admin:confirmed'), value: 42, fill: '#10b981' },
+    { name: t('admin:pending'), value: 18, fill: '#f59e0b' },
+    { name: t('admin:completed'), value: 156, fill: '#3b82f6' },
+    { name: t('admin:cancelled'), value: 12, fill: '#ef4444' },
   ];
 
   const customerAcquisitionData = [
@@ -213,16 +213,16 @@ export const AdminDashboard = () => {
     { name: 'Jun', direct: 58, organic: 92, referral: 75, campaign: 78 },
   ];
 
-  if (!stats || !kpiData) return <div className="p-8 text-center">Loading dashboard...</div>;
+  if (!stats || !kpiData) return <div className="p-8 text-center">{t('common:loading')}</div>;
 
   return (
     <div className="p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:dashboardOverview')}</h1>
         <p className="text-gray-600 flex items-center gap-2">
           <Activity className="h-4 w-4" />
-          Real-time system performance and user activity insights
+          {t('admin:realtimeInsights')}
         </p>
       </div>
 
@@ -230,11 +230,11 @@ export const AdminDashboard = () => {
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Target className="h-5 w-5 text-purple-600" />
-          {t('admin.kpiTitle')}
+          {t('admin:kpiTitle')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard 
-            title={t('admin.totalRevenue')}
+            title={t('admin:totalRevenue')}
             value={`${(kpiData.totalRevenue / 1000000).toFixed(1)}M SEK`} 
             change={kpiData.revenueGrowth}
             trend="up"
@@ -242,7 +242,7 @@ export const AdminDashboard = () => {
             color="bg-success" 
           />
           <StatCard 
-            title={t('admin.monthlyRevenue')}
+            title={t('admin:monthlyRevenue')}
             value={`${(kpiData.monthlyRevenue / 1000).toFixed(0)}K SEK`} 
             change={5.8}
             trend="up"
@@ -250,7 +250,7 @@ export const AdminDashboard = () => {
             color="bg-primary" 
           />
           <StatCard 
-            title={t('admin.activeBookings')}
+            title={t('admin:activeBookings')}
             value={kpiData.activeBookings}
             change={3.2}
             trend="up"
@@ -258,7 +258,7 @@ export const AdminDashboard = () => {
             color="bg-info" 
           />
           <StatCard 
-            title={t('admin.customerSatisfaction')}
+            title={t('admin:customerSatisfaction')}
             value={`${kpiData.customerSatisfaction}%`}
             change={2.1}
             trend="up"
@@ -273,7 +273,7 @@ export const AdminDashboard = () => {
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-600" />
-            {t('admin.systemAlertsTitle')}
+            {t('admin:systemAlertsTitle')}
           </h2>
           <div className="space-y-3">
             {alerts.map((alert) => (
@@ -287,8 +287,8 @@ export const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Revenue Performance */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-1">Revenue Performance</h3>
-          <p className="text-sm text-gray-500 mb-6">Monthly revenue vs. target (SEK)</p>
+          <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:revenuePerformance')}</h3>
+          <p className="text-sm text-gray-500 mb-6">{t('admin:revenueVsTarget')}</p>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueData}>
@@ -305,8 +305,8 @@ export const AdminDashboard = () => {
 
         {/* Booking Status Distribution */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-1">Booking Status Distribution</h3>
-          <p className="text-sm text-gray-500 mb-6">Current booking status overview</p>
+          <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:bookingStatusDistribution')}</h3>
+          <p className="text-sm text-gray-500 mb-6">{t('admin:bookingStatusOverview')}</p>
           <div className="h-72 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -340,8 +340,8 @@ export const AdminDashboard = () => {
 
       {/* Customer Acquisition Trends */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-1">Customer Acquisition Trends</h3>
-        <p className="text-sm text-gray-500 mb-6">New customers by channel over time</p>
+        <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:customerAcquisitionTrends')}</h3>
+        <p className="text-sm text-gray-500 mb-6">{t('admin:newCustomersByChannel')}</p>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={customerAcquisitionData}>
@@ -349,10 +349,10 @@ export const AdminDashboard = () => {
               <XAxis dataKey="name" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
               <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
-              <Line type="monotone" dataKey="direct" stroke="#3b82f6" strokeWidth={2} name="Direct" />
-              <Line type="monotone" dataKey="organic" stroke="#10b981" strokeWidth={2} name="Organic" />
-              <Line type="monotone" dataKey="referral" stroke="#f59e0b" strokeWidth={2} name="Referral" />
-              <Line type="monotone" dataKey="campaign" stroke="#8b5cf6" strokeWidth={2} name="Campaign" />
+              <Line type="monotone" dataKey="direct" stroke="#3b82f6" strokeWidth={2} name={t('admin:direct')} />
+              <Line type="monotone" dataKey="organic" stroke="#10b981" strokeWidth={2} name={t('admin:organic')} />
+              <Line type="monotone" dataKey="referral" stroke="#f59e0b" strokeWidth={2} name={t('admin:referral')} />
+              <Line type="monotone" dataKey="campaign" stroke="#8b5cf6" strokeWidth={2} name={t('admin:campaign')} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -362,34 +362,34 @@ export const AdminDashboard = () => {
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Zap className="h-5 w-5 text-yellow-600" />
-          Business Insights
+          {t('admin:businessInsights')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <InsightCard
-            title={t('admin.occupancyRate')}
+            title={t('admin:occupancyRate')}
             value={`${kpiData.occupancyRate}%`}
-            context="Tours at capacity. Growing demand indicates need for more tours."
+            context={t('admin:toursAtCapacity')}
             icon={MapPin}
             color="bg-info"
           />
           <InsightCard
-            title={t('admin.conversionRate')}
+            title={t('admin:conversionRate')}
             value={`${kpiData.conversionRate}%`}
-            context="Visitor to booking conversion. Industry avg is 2-4%."
+            context={t('admin:visitorConversion')}
             icon={Target}
             color="bg-success"
           />
           <InsightCard
-            title="Avg Booking Value"
+            title={t('admin:avgBookingValue')}
             value={`${(kpiData.averageBookingValue / 1000).toFixed(1)}K SEK`}
-            context="Higher than Q1 average. Premium tours gaining traction."
+            context={t('admin:higherThanAverage')}
             icon={CreditCard}
             color="bg-purple-500"
           />
           <InsightCard
-            title="Payment Success Rate"
+            title={t('admin:paymentSuccessRate')}
             value={`${kpiData.paymentSuccessRate}%`}
-            context="Excellent rate. Only {kpiData.pendingBookings} payments pending."
+            context={t('admin:excellentRate').replace('{count}', kpiData.pendingBookings.toString())}
             icon={CheckCircle}
             color="bg-green-500"
           />
@@ -398,41 +398,41 @@ export const AdminDashboard = () => {
 
       {/* System Health & Integrations */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-1">System Health & Integrations</h3>
-        <p className="text-sm text-gray-500 mb-6">Real-time status of critical services</p>
+        <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:systemHealthIntegrations')}</h3>
+        <p className="text-sm text-gray-500 mb-6">{t('admin:criticalServicesStatus')}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="font-medium text-gray-900">Fortnox Accounting</p>
+                <p className="font-medium text-gray-900">{t('admin:fortnoxAccounting')}</p>
               </div>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">Active</span>
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">{t('admin:statusActive')}</span>
             </div>
-            <p className="text-xs text-gray-600">Last sync: 10 mins ago</p>
-            <p className="text-xs text-gray-500 mt-2">Syncing invoices and GL entries</p>
+            <p className="text-xs text-gray-600">{t('admin:lastSync')}: 10 {t('admin:minsAgo')}</p>
+            <p className="text-xs text-gray-500 mt-2">{t('admin:syncingInvoices')}</p>
           </div>
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="font-medium text-gray-900">Stripe Payments</p>
+                <p className="font-medium text-gray-900">{t('admin:stripePayments')}</p>
               </div>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">Live</span>
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">{t('admin:live')}</span>
             </div>
-            <p className="text-xs text-gray-600">Operational • 0 failed transactions</p>
-            <p className="text-xs text-gray-500 mt-2">Processing bookings & refunds</p>
+            <p className="text-xs text-gray-600">{t('admin:operational')} • 0 {t('admin:failedTransactions')}</p>
+            <p className="text-xs text-gray-500 mt-2">{t('admin:processingBookings')}</p>
           </div>
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="font-medium text-gray-900">SendGrid Email</p>
+                <p className="font-medium text-gray-900">{t('admin:sendgridEmail')}</p>
               </div>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">Active</span>
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">{t('admin:statusActive')}</span>
             </div>
-            <p className="text-xs text-gray-600">98.5% Delivery Rate</p>
-            <p className="text-xs text-gray-500 mt-2">1,240 emails sent this month</p>
+            <p className="text-xs text-gray-600">98.5% {t('admin:emailDeliveryRate')}</p>
+            <p className="text-xs text-gray-500 mt-2">1,240 {t('admin:emailsSent')}</p>
           </div>
         </div>
       </div>
@@ -445,46 +445,46 @@ export const AdminDashboard = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ActionWidget
-            title={t('admin.bookingManagement')}
-            description="Review and manage active bookings and reservations"
+            title={t('admin:bookingManagement')}
+            description={t('admin:bookingManagementDesc')}
             icon={Calendar}
             color="bg-primary"
-            actions={['View Bookings', 'New Booking', 'Calendar']}
+            actions={[t('admin:viewBookings'), t('admin:newBooking'), t('admin:calendar')]}
           />
           <ActionWidget
-            title={t('admin.customerManagement')}
-            description="Manage customer profiles, communications, and groups"
+            title={t('admin:customerManagement')}
+            description={t('admin:customerManagementDesc')}
             icon={Users}
             color="bg-success"
-            actions={['All Customers', 'Groups', 'Communications']}
+            actions={[t('admin:allCustomers'), t('admin:groups'), t('admin:communications')]}
           />
           <ActionWidget
-            title={t('admin.financialOperations')}
-            description="Track payments, invoices, and financial reporting"
+            title={t('admin:financialOperations')}
+            description={t('admin:financialOperationsDesc')}
             icon={CreditCard}
             color="bg-emerald-500"
-            actions={['Invoices', 'Payments', 'Reports']}
+            actions={[t('admin:invoices'), t('admin:payments'), t('admin:reports')]}
           />
           <ActionWidget
-            title={t('admin.tourManagement')}
-            description="Create and manage tour offerings, pricing, and availability"
+            title={t('admin:tourManagement')}
+            description={t('admin:tourManagementDesc')}
             icon={MapPin}
             color="bg-purple-500"
-            actions={['View Tours', 'Add Tour', 'Availability']}
+            actions={[t('admin:viewTours'), t('admin:addTour'), t('admin:availability')]}
           />
           <ActionWidget
-            title={t('admin.marketingCampaigns')}
-            description="Create promotions, manage campaigns, and track analytics"
+            title={t('admin:marketingCampaigns')}
+            description={t('admin:marketingCampaignsDesc')}
             icon={BarChart3}
             color="bg-orange-500"
-            actions={['Campaigns', 'Promo Codes', 'Analytics']}
+            actions={[t('admin:campaigns'), t('admin:promoCodes'), t('admin:analytics')]}
           />
           <ActionWidget
-            title={t('admin.systemAdministration')}
-            description="Configure settings, manage users, and system health"
+            title={t('admin:systemAdministration')}
+            description={t('admin:systemAdministrationDesc')}
             icon={Shield}
             color="bg-red-500"
-            actions={['Users', 'Settings', 'Logs']}
+            actions={[t('admin:users'), t('admin:settings'), t('admin:logs')]}
           />
         </div>
       </div>
@@ -492,7 +492,7 @@ export const AdminDashboard = () => {
       {/* Customer Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard 
-          title={t('admin.totalCustomers')}
+          title={t('admin:totalCustomers')}
           value={kpiData.totalCustomers.toLocaleString()}
           change={9.2}
           trend="up"
@@ -500,7 +500,7 @@ export const AdminDashboard = () => {
           color="bg-cyan-500" 
         />
         <StatCard 
-          title="New This Month" 
+          title={t('admin:newThisMonth')} 
           value={kpiData.newCustomersThisMonth}
           change={12.8}
           trend="up"
@@ -508,7 +508,7 @@ export const AdminDashboard = () => {
           color="bg-info" 
         />
         <StatCard 
-          title={t('admin.repeatRate')}
+          title={t('admin:repeatRate')}
           value={`${kpiData.repeatCustomerRate}%`}
           change={3.5}
           trend="up"
@@ -527,7 +527,7 @@ export const AdminDashboard = () => {
 
       {/* Footer Info */}
       <div className="text-center text-sm text-gray-500 py-4 border-t border-gray-200">
-        <p>Dashboard last updated: {new Date().toLocaleTimeString('sv-SE')} • Auto-refresh enabled</p>
+        <p>{t('admin:dashboardLastUpdated')}: {new Date().toLocaleTimeString('sv-SE')} • {t('admin:autoRefreshEnabled')}</p>
       </div>
     </div>
   );

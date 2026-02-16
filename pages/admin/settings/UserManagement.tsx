@@ -25,7 +25,7 @@ import { AddUserModal } from './AddUserModal';
 import { EditUserModal } from './EditUserModal';
 import { InviteUserModal } from './InviteUserModal';
 import { UserDetailsModal } from './UserDetailsModal';
-import { useTranslation } from '../../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 interface UserManagementProps {}
 
@@ -372,7 +372,7 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                             setShowDetailsModal(true);
                           }}
                           className="text-blue-600 hover:text-blue-900"
-                          title={t('admin.viewDetails')}
+                          title={t('admin:viewDetails')}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -382,14 +382,14 @@ export const UserManagement: React.FC<UserManagementProps> = () => {
                             setShowEditModal(true);
                           }}
                           className="text-indigo-600 hover:text-indigo-900"
-                          title={t('admin.editUser')}
+                          title={t('admin:editUser')}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteUser(user.id)}
                           className="text-red-600 hover:text-red-900"
-                          title={t('admin.deleteUser')}
+                          title={t('admin:deleteUser')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

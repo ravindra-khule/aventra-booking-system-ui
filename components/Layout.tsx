@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
 import { Menu, X, User as UserIcon, LogOut, Globe } from 'lucide-react';
 import { DemoLoginModal } from './DemoLoginModal';
 
 export const Layout = ({ children }: { children?: React.ReactNode }) => {
   const { user, logout, login } = useAuth();
-  const { t, language, setLanguage } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
@@ -42,7 +42,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'sv' : 'en');
+    i18n.changeLanguage(i18n.language === 'en' ? 'sv' : 'en');
   };
 
   return (
@@ -57,11 +57,11 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <Link to="/" className="border-transparent hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" style={{ color: '#6b7280' }}>
-                  {t('nav.tours')}
+                  {t('nav:tours')}
                 </Link>
                 {user?.role === UserRole.CUSTOMER && (
                    <Link to="/my-bookings" className="border-transparent hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" style={{ color: '#6b7280' }}>
-                     {t('nav.myPages')}
+                     {t('nav:myPages')}
                    </Link>
                 )}
               </div>
@@ -72,17 +72,17 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                <button 
                  onClick={toggleLanguage}
                  className="btn btn-secondary-dark btn-sm"
-                 title={language === 'en' ? 'Switch to Swedish' : 'Switch to English'}
+                 title={i18n.language === 'en' ? t('admin:switchToSwedish') : t('admin:switchToEnglish')}
                >
                  <Globe className="h-4 w-4" />
-                 <span className="font-semibold">{language === 'en' ? 'EN' : 'SV'}</span>
+                 <span className="font-semibold">{i18n.language === 'en' ? 'EN' : 'SV'}</span>
                </button>
 
                {user ? (
                  <div className="flex items-center space-x-3">
                    <div className="flex flex-col text-right">
                       <span className="text-sm font-medium" style={{ color: '#000' }}>{user.name}</span>
-                      <span className="text-xs" style={{ color: '#6b7280' }}>{t('nav.loggedInAs')} {user.role}</span>
+                      <span className="text-xs" style={{ color: '#6b7280' }}>{t('nav:loggedInAs')} {user.role}</span>
                    </div>
                    <button onClick={handleLogout} className="p-2 rounded-full hover:bg-gray-100" style={{ color: '#6b7280' }}>
                      <LogOut className="h-5 w-5" />
@@ -93,7 +93,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                    onClick={() => setShowLoginModal(true)}
                    className="btn btn-primary btn-md"
                  >
-                   {t('nav.signIn')}
+                   {t('nav:signIn')}
                  </button>
                )}
             </div>
@@ -114,11 +114,11 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
           <div className="sm:hidden">
             <div className="pt-2 pb-3 space-y-1">
               <Link to="/" className="border-l-4 block pl-3 pr-4 py-2 text-base font-medium" style={{ backgroundColor: '#fff1ed', borderColor: '#ff1b00', color: '#ff1b00' }}>
-                {t('nav.tours')}
+                {t('nav:tours')}
               </Link>
               {user?.role === UserRole.CUSTOMER && (
                 <Link to="/my-bookings" className="border-transparent border-l-4 block pl-3 pr-4 py-2 text-base font-medium hover:bg-gray-50" style={{ color: '#6b7280' }}>
-                  {t('nav.myPages')}
+                  {t('nav:myPages')}
                 </Link>
               )}
               <button 
@@ -127,7 +127,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                 style={{ color: '#6b7280' }}
               >
                 <Globe className="h-4 w-4" />
-                {language === 'en' ? 'Svenska (SV)' : 'English (EN)'}
+                {i18n.language === 'en' ? t('nav:switchToSwedish') : t('nav:switchToEnglish')}
               </button>
               {!user && (
                 <button 
@@ -136,7 +136,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                   style={{ color: '#6b7280' }}
                 >
                   <UserIcon className="h-4 w-4" />
-                  {t('nav.signIn')}
+                  {t('nav:signIn')}
                 </button>
               )}
               {user && (
@@ -146,7 +146,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                   style={{ color: '#dc2626' }}
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout ({user.name})
+                  {t('common:logout')} ({user.name})
                 </button>
               )}
             </div>
@@ -171,19 +171,19 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
             <div>
               <h3 className="text-xl font-bold mb-4">SWETT</h3>
               <p className="text-sm" style={{ color: '#9ca3af' }}>
-                {t('footer.tagline')}
+                {t('footer:tagline')}
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">{t('footer.support')}</h4>
+              <h4 className="font-semibold mb-4">{t('footer:support')}</h4>
               <ul className="space-y-2 text-sm" style={{ color: '#9ca3af' }}>
-                <li><a href="#" className="hover:text-white">{t('footer.contact')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('footer.faq')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('footer.cancelPolicy')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('footer:contact')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('footer:faq')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('footer:cancelPolicy')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">{t('footer.secure')}</h4>
+              <h4 className="font-semibold mb-4">{t('footer:secure')}</h4>
               <div className="flex items-center space-x-2 text-sm" style={{ color: '#9ca3af' }}>
                 <span>Stripe</span>
                 <span>•</span>
@@ -192,7 +192,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
             </div>
           </div>
           <div className="mt-8 border-t pt-8 text-center text-sm" style={{ borderColor: '#374151', color: '#9ca3af' }}>
-            &copy; {new Date().getFullYear()} Swett AB. {t('footer.rights')}
+            &copy; {new Date().getFullYear()} Swett AB. {t('footer:rights')}
           </div>
         </div>
       </footer>

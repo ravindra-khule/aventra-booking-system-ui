@@ -1,0 +1,12 @@
+{
+  "title": "Join Waitlist",
+  "infoTitle": "Tour Currently Full.",
+  "infoText": "We'll notify you as soon as a spot becomes available.",
+  "participants": "Number of Participants",
+  "preferredDate": "Preferred Date (Optional)",
+  "message": "Additional Message (Optional)",
+  "messagePlaceholder": "Tell us about your preferences or questions...",
+  "submitBtn": "Submit Request",
+  "successTitle": "You're on the List!",
+  "successMessage": "We'll notify you if a spot opens up for this tour."
+}

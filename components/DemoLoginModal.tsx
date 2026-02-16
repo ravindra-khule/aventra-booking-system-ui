@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, Shield, Crown, Headphones, Calculator, Code, User, ChevronDown } from 'lucide-react';
 import { UserRole } from '../src/shared/types/common.types';
+import { useTranslation } from 'react-i18next';
 
 interface DemoLoginModalProps {
   isOpen: boolean;
@@ -16,71 +17,73 @@ interface DemoLoginModalProps {
 interface RoleOption {
   role: UserRole;
   icon: React.ReactNode;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   email: string;
   password: string;
   color: string;
 }
 
-const roleOptions: RoleOption[] = [
-  {
-    role: UserRole.SUPER_ADMIN,
-    icon: <Crown className="w-5 h-5" />,
-    title: 'Super Admin',
-    description: 'Full system access - Owner level control',
-    email: 'superadmin@swett.com',
-    password: 'Swett2025!Super',
-    color: 'text-purple-600',
-  },
-  {
-    role: UserRole.ADMIN,
-    icon: <Shield className="w-5 h-5" />,
-    title: 'Admin',
-    description: 'Administrative access - Manage operations & users',
-    email: 'admin@swett.com',
-    password: 'Swett2025!Admin',
-    color: 'text-blue-600',
-  },
-  {
-    role: UserRole.SUPPORT,
-    icon: <Headphones className="w-5 h-5" />,
-    title: 'Support',
-    description: 'Customer support - Bookings & customer management',
-    email: 'support@swett.com',
-    password: 'Swett2025!Support',
-    color: 'text-green-600',
-  },
-  {
-    role: UserRole.ACCOUNTANT,
-    icon: <Calculator className="w-5 h-5" />,
-    title: 'Accountant',
-    description: 'Finance access - Financial operations & reporting',
-    email: 'accountant@swett.com',
-    password: 'Swett2025!Finance',
-    color: 'text-amber-600',
-  },
-  {
-    role: UserRole.DEVELOPER,
-    icon: <Code className="w-5 h-5" />,
-    title: 'Developer',
-    description: 'Technical access - System logs & developer tools',
-    email: 'developer@swett.com',
-    password: 'Swett2025!Dev',
-    color: 'text-slate-600',
-  },
-  {
-    role: UserRole.CUSTOMER,
-    icon: <User className="w-5 h-5" />,
-    title: 'Guest / Customer',
-    description: 'Customer view - Book tours & view bookings',
-    email: 'guest@swett.com',
-    password: 'Swett2025!Guest',
-    color: 'text-gray-600',
-  },
-];
-
 export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose, onLogin }) => {
+  const { t } = useTranslation();
+  
+  const roleOptions: RoleOption[] = [
+    {
+      role: UserRole.SUPER_ADMIN,
+      icon: <Crown className="w-5 h-5" />,
+      titleKey: 'demoLogin:roles.superAdmin',
+      descriptionKey: 'demoLogin:roles.superAdminDesc',
+      email: 'superadmin@swett.com',
+      password: 'Swett2025!Super',
+      color: 'text-purple-600',
+    },
+    {
+      role: UserRole.ADMIN,
+      icon: <Shield className="w-5 h-5" />,
+      titleKey: 'demoLogin:roles.admin',
+      descriptionKey: 'demoLogin:roles.adminDesc',
+      email: 'admin@swett.com',
+      password: 'Swett2025!Admin',
+      color: 'text-blue-600',
+    },
+    {
+      role: UserRole.SUPPORT,
+      icon: <Headphones className="w-5 h-5" />,
+      titleKey: 'demoLogin:roles.support',
+      descriptionKey: 'demoLogin:roles.supportDesc',
+      email: 'support@swett.com',
+      password: 'Swett2025!Support',
+      color: 'text-green-600',
+    },
+    {
+      role: UserRole.ACCOUNTANT,
+      icon: <Calculator className="w-5 h-5" />,
+      titleKey: 'demoLogin:roles.accountant',
+      descriptionKey: 'demoLogin:roles.accountantDesc',
+      email: 'accountant@swett.com',
+      password: 'Swett2025!Finance',
+      color: 'text-amber-600',
+    },
+    {
+      role: UserRole.DEVELOPER,
+      icon: <Code className="w-5 h-5" />,
+      titleKey: 'demoLogin:roles.developer',
+      descriptionKey: 'demoLogin:roles.developerDesc',
+      email: 'developer@swett.com',
+      password: 'Swett2025!Dev',
+      color: 'text-slate-600',
+    },
+    {
+      role: UserRole.CUSTOMER,
+      icon: <User className="w-5 h-5" />,
+      titleKey: 'demoLogin:roles.customer',
+      descriptionKey: 'demoLogin:roles.customerDesc',
+      email: 'guest@swett.com',
+      password: 'Swett2025!Guest',
+      color: 'text-gray-600',
+    },
+  ];
+  
   const [selectedRole, setSelectedRole] = useState<RoleOption>(roleOptions[0]); // Default to Super Admin
   const [email, setEmail] = useState(roleOptions[0].email);
   const [password, setPassword] = useState(roleOptions[0].password);
@@ -109,7 +112,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
       // Don't close here - let the parent component handle closing and navigation
     } catch (error) {
       console.error('Login failed:', error);
-      alert('Login failed. Please try again.');
+      alert(t('demoLogin:loginFailed'));
       setLoading(false);
     }
   };
@@ -123,10 +126,10 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
             <div>
               <h2 className="text-2xl font-bold flex items-center gap-2">
                 <Shield className="w-7 h-7" />
-                Demo Login
+                {t('demoLogin:title')}
               </h2>
               <p className="text-gray-300 mt-1 text-sm">
-                Select role and login to explore
+                {t('demoLogin:subtitle')}
               </p>
             </div>
             <button
@@ -143,7 +146,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
           {/* Role Selector */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Role
+              {t('demoLogin:selectRole')}
             </label>
             <div className="relative">
               <select
@@ -153,7 +156,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
               >
                 {roleOptions.map((role) => (
                   <option key={role.role} value={role.role}>
-                    {role.title} - {role.description}
+                    {t(role.titleKey)} - {t(role.descriptionKey)}
                   </option>
                 ))}
               </select>
@@ -169,9 +172,9 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
               </div>
               <div>
                 <h4 className={`font-semibold ${selectedRole.color}`}>
-                  {selectedRole.title}
+                  {t(selectedRole.titleKey)}
                 </h4>
-                <p className="text-xs text-gray-600 mt-1">{selectedRole.description}</p>
+                <p className="text-xs text-gray-600 mt-1">{t(selectedRole.descriptionKey)}</p>
               </div>
             </div>
           </div>
@@ -179,7 +182,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
           {/* Email Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              {t('demoLogin:emailAddress')}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -197,7 +200,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
           {/* Password Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+              {t('demoLogin:password')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -224,8 +227,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
             <div className="flex items-start gap-2">
               <Shield className="w-4 h-4 text-gray-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-gray-700">
-                <strong>Demo Mode:</strong> Credentials auto-populate when you select a role. 
-                All passwords follow format: <code className="bg-gray-100 px-1 rounded">Swett2025!{'{Role}'}</code>
+                <strong>{t('demoLogin:demoMode')}:</strong> {t('demoLogin:demoModeText')} <code className="bg-gray-100 px-1 rounded">Swett2025!{'{Role}'}</code>
               </p>
             </div>
           </div>
@@ -242,10 +244,10 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                Logging in...
+                {t('demoLogin:loggingIn')}
               </span>
             ) : (
-              `Login as ${selectedRole.title}`
+              `${t('demoLogin:loginAs')} ${t(selectedRole.titleKey)}`
             )}
           </button>
         </form>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { Booking, BookingStatus, PaymentStatus } from '../types';
 import { getSampleBooking } from '../src/features/bookings/services/booking.service';
 import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download, ChevronDown, ChevronUp } from 'lucide-react';
@@ -57,7 +57,7 @@ export const MyPages = () => {
   const downloadBookingPDF = async (bookingId: string | number) => {
     const el = document.getElementById(`booking-${bookingId}`);
     if (!el) {
-      alert('Could not find booking to export');
+      alert(t('myPages:exportError') || 'Could not find booking to export');
       return;
     }
 
@@ -76,7 +76,7 @@ export const MyPages = () => {
       pdf.save(`booking-${bookingId}.pdf`);
     } catch (err) {
       console.error('Failed to generate PDF', err);
-      alert('Failed to generate PDF');
+      alert(t('myPages:pdfError') || 'Failed to generate PDF');
     }
   };
 
@@ -103,7 +103,7 @@ export const MyPages = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">{t('common.loading')}</div>
+        <div className="text-gray-500">{t('common:loading')}</div>
       </div>
     );
   }
@@ -113,8 +113,8 @@ export const MyPages = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('myPages.title')}</h1>
-          <p className="text-gray-600 mt-2">{t('myPages.welcome')}</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('myPages:title')}</h1>
+          <p className="text-gray-600 mt-2">{t('myPages:welcome')}</p>
         </div>
 
         {/* Bookings List */}
@@ -123,18 +123,18 @@ export const MyPages = () => {
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Calendar className="h-10 w-10 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('myPages.noTrips')}</h3>
-            <p className="text-gray-500 mb-6">{t('myPages.exploreText')}</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('myPages:noTrips')}</h3>
+            <p className="text-gray-500 mb-6">{t('myPages:exploreText')}</p>
             <button
               onClick={() => navigate('/')}
               className="btn btn-primary btn-lg"
             >
-              {t('myPages.browseBtn')}
+              {t('myPages:browseBtn')}
             </button>
           </div>
         ) : (
           <div className="space-y-6">
-            <h2 className="text-xl font-bold text-gray-900">{t('myPages.upcoming')}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('myPages:upcoming')}</h2>
             
             {bookings.map((booking) => {
               const remainingAmount = booking.totalAmount - booking.paidAmount;
@@ -186,7 +186,7 @@ export const MyPages = () => {
                             </div>
                             <div className="flex items-center">
                               <Users className="h-4 w-4 mr-1.5" />
-                              <span>{booking.participants} {booking.participants === 1 ? t('myPages.traveler') : t('myPages.travelers')}</span>
+                              <span>{booking.participants} {booking.participants === 1 ? t('myPages:traveler') : t('myPages:travelers')}</span>
                             </div>
                             <div className="flex items-center">
                               <CreditCard className="h-4 w-4 mr-1.5" />
@@ -197,7 +197,7 @@ export const MyPages = () => {
                         <div className="flex items-center gap-3 ml-4">
                           {/* Download PDF button */}
                           <button
-                            title="Download confirmation PDF"
+                            title={t('myPages:downloadPDF')}
                             onClick={(e) => {
                               e.stopPropagation();
                               downloadBookingPDF(booking.id);
@@ -232,7 +232,7 @@ export const MyPages = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                               <span className="font-bold text-sm">
-                                You saved {booking.discountAmount.toLocaleString()} SEK with {booking.promoCode}!
+                                {t('myPages:savedAmount')} {booking.discountAmount.toLocaleString()} SEK {t('myPages:withCode')} {booking.promoCode}!
                               </span>
                             </div>
                           )}
@@ -240,20 +240,20 @@ export const MyPages = () => {
                           <div className="space-y-2 mb-6">
                             <div className="flex items-center text-gray-600">
                               <Clock className="h-4 w-4 mr-2" />
-                              <span className="text-sm">{t('myPages.bookedOn')}: {booking.bookingDate}</span>
+                              <span className="text-sm">{t('myPages:bookedOn')}: {booking.bookingDate}</span>
                             </div>
                           </div>
 
                           {/* Booking Reference */}
                           <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-                            <p className="text-xs text-gray-500 mb-1">{t('myPages.bookingRef')}</p>
+                            <p className="text-xs text-gray-500 mb-1">{t('myPages:bookingRef')}</p>
                             <p className="text-lg font-mono font-bold text-gray-900">{booking.id}</p>
                           </div>
 
                           {/* Payer Information */}
                           <div className="border-t border-gray-200 pt-4">
                             <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center">
-                              <UserIcon className="h-4 w-4 mr-2" /> {t('myPages.contactPerson')}
+                              <UserIcon className="h-4 w-4 mr-2" /> {t('myPages:contactPerson')}
                             </h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                               <div className="flex items-center text-gray-600">
@@ -275,7 +275,7 @@ export const MyPages = () => {
                           {booking.travelers && booking.travelers.length > 0 && (
                             <div className="border-t border-gray-200 pt-4 mt-4">
                               <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">
-                                {t('myPages.travelers')} ({booking.travelers.length})
+                                {t('myPages:travelers')} ({booking.travelers.length})
                               </h4>
                               <div className="space-y-2">
                                 {booking.travelers.map((traveler, idx) => (
@@ -291,7 +291,7 @@ export const MyPages = () => {
                                     </div>
                                     {traveler.isPayer && (
                                       <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">
-                                        {t('myPages.payer')}
+                                        {t('myPages:payer')}
                                       </span>
                                     )}
                                   </div>
@@ -305,7 +305,7 @@ export const MyPages = () => {
                         <div className="lg:w-80">
                           <div className="bg-white border border-gray-200 rounded-xl p-6">
                             <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4 flex items-center">
-                              <CreditCard className="h-4 w-4 mr-2" /> {t('myPages.paymentDetails')}
+                              <CreditCard className="h-4 w-4 mr-2" /> {t('myPages:paymentDetails')}
                             </h4>
                             
                             <div className="space-y-3 mb-4">
@@ -316,15 +316,15 @@ export const MyPages = () => {
                                     <svg className="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                     </svg>
-                                    <span className="text-xs font-bold text-purple-900 uppercase tracking-wide">Promo Applied</span>
+                                    <span className="text-xs font-bold text-purple-900 uppercase tracking-wide">{t('myPages:promoApplied')}</span>
                                   </div>
                                   <div className="space-y-1">
                                     <div className="flex justify-between text-sm">
-                                      <span className="text-purple-700">Code:</span>
+                                      <span className="text-purple-700">{t('myPages:code')}:</span>
                                       <span className="font-mono font-bold text-purple-900">{booking.promoCode}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                      <span className="text-purple-700">You Saved:</span>
+                                      <span className="text-purple-700">{t('myPages:youSaved')}:</span>
                                       <span className="font-bold text-purple-900">{booking.discountAmount.toLocaleString()} SEK</span>
                                     </div>
                                   </div>
@@ -332,16 +332,16 @@ export const MyPages = () => {
                               )}
                               
                               <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">{t('myPages.totalAmount')}</span>
+                                <span className="text-gray-600">{t('myPages:totalAmount')}</span>
                                 <span className="font-bold text-gray-900">{booking.totalAmount.toLocaleString()} SEK</span>
                               </div>
                               <div className="flex justify-between text-sm text-green-600">
-                                <span>{t('myPages.paidAmount')}</span>
+                                <span>{t('myPages:paidAmount')}</span>
                                 <span className="font-bold">-{booking.paidAmount.toLocaleString()} SEK</span>
                               </div>
                               {remainingAmount > 0 && (
                                 <div className="border-t border-gray-200 pt-3 flex justify-between text-sm">
-                                  <span className="text-gray-700 font-medium">{t('myPages.remainingBalance')}</span>
+                                  <span className="text-gray-700 font-medium">{t('myPages:remainingBalance')}</span>
                                   <span className="font-bold text-orange-600">{remainingAmount.toLocaleString()} SEK</span>
                                 </div>
                               )}
@@ -356,8 +356,8 @@ export const MyPages = () => {
                             {booking.paymentStatus === PaymentStatus.PARTIAL && (
                               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
                                 <p className="text-xs text-orange-800">
-                                  <strong>{t('myPages.reminderTitle')}</strong><br />
-                                  {t('myPages.reminderText')}
+                                  <strong>{t('myPages:reminderTitle')}</strong><br />
+                                  {t('myPages:reminderText')}
                                 </p>
                               </div>
                             )}
@@ -365,13 +365,13 @@ export const MyPages = () => {
                             {booking.paymentStatus === PaymentStatus.PAID && (
                               <div className="flex items-center justify-center text-green-600 text-sm font-medium">
                                 <CheckCircle2 className="h-4 w-4 mr-1" />
-                                {t('myPages.fullyPaid')}
+                                {t('myPages:fullyPaid')}
                               </div>
                             )}
 
                             {booking.transactionId && (
                               <div className="mt-4 pt-4 border-t border-gray-200">
-                                <p className="text-xs text-gray-500">{t('myPages.transactionId')}</p>
+                                <p className="text-xs text-gray-500">{t('myPages:transactionId')}</p>
                                 <p className="font-mono text-xs text-gray-600 truncate">{booking.transactionId}</p>
                               </div>
                             )}

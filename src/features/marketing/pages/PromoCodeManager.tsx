@@ -6,8 +6,10 @@ import { TourService } from '../../tours/services/tour.service';
 import { Search, Plus, Edit2, Trash2, X, Save, Tag, Calendar, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button, Badge, Input, Select, Modal } from '../../../shared/components/ui';
 import { formatCurrency, formatDate } from '../../../shared/utils';
+import { useTranslation } from 'react-i18next';
 
 export const PromoCodeManager = () => {
+  const { t } = useTranslation();
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [tours, setTours] = useState<Tour[]>([]);
   const [filteredPromoCodes, setFilteredPromoCodes] = useState<PromoCode[]>([]);
@@ -75,14 +77,14 @@ export const PromoCodeManager = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this promo code?')) {
+    if (window.confirm(t('admin:deletePromoConfirm'))) {
       try {
         await PromoCodeService.delete(id);
         await fetchPromoCodes();
-        alert('Promo code deleted successfully!');
+        alert(t('admin:promoCodeDeleted'));
       } catch (error) {
         console.error('Failed to delete promo code', error);
-        alert('Failed to delete promo code');
+        alert(t('admin:failedToDelete'));
       }
     }
   };
@@ -90,11 +92,11 @@ export const PromoCodeManager = () => {
   const getStatusBadge = (status: PromoCodeStatus) => {
     switch (status) {
       case PromoCodeStatus.ACTIVE:
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>;
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">{t('admin:activePromos')}</span>;
       case PromoCodeStatus.INACTIVE:
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Inactive</span>;
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{t('admin:inactivePromos')}</span>;
       case PromoCodeStatus.EXPIRED:
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Expired</span>;
+        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">{t('admin:expiredPromos')}</span>;
       default:
         return null;
     }
@@ -102,9 +104,9 @@ export const PromoCodeManager = () => {
 
   const getTypeBadge = (type: PromoCodeType) => {
     return type === PromoCodeType.PERCENTAGE ? (
-      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Percentage</span>
+      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{t('admin:percentage')}</span>
     ) : (
-      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">Fixed Amount</span>
+      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">{t('admin:fixedAmount')}</span>
     );
   };
 
@@ -112,15 +114,15 @@ export const PromoCodeManager = () => {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Promo Code Manager</h1>
-          <p className="text-gray-500 mt-1">Create and manage discount codes for bookings</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin:promoCodeManager')}</h1>
+          <p className="text-gray-500 mt-1">{t('admin:createManageDiscountCodes')}</p>
         </div>
         <button
           onClick={handleCreateNew}
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
         >
           <Plus className="h-5 w-5" />
-          Create Promo Code
+          {t('admin:createPromoCode')}
         </button>
       </div>
 
@@ -129,7 +131,7 @@ export const PromoCodeManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Total Codes</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('admin:totalCodes')}</p>
               <h3 className="text-2xl font-bold text-gray-900">{promoCodes.length}</h3>
             </div>
             <div className="p-3 rounded-full bg-blue-100">
@@ -140,7 +142,7 @@ export const PromoCodeManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Active</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('admin:activePromos')}</p>
               <h3 className="text-2xl font-bold text-green-600">
                 {promoCodes.filter(pc => pc.status === PromoCodeStatus.ACTIVE).length}
               </h3>
@@ -153,7 +155,7 @@ export const PromoCodeManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Expired</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('admin:expiredPromos')}</p>
               <h3 className="text-2xl font-bold text-red-600">
                 {promoCodes.filter(pc => pc.status === PromoCodeStatus.EXPIRED).length}
               </h3>
@@ -166,7 +168,7 @@ export const PromoCodeManager = () => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Total Usage</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('admin:totalUsage')}</p>
               <h3 className="text-2xl font-bold text-gray-900">
                 {promoCodes.reduce((sum, pc) => sum + pc.usageCount, 0)}
               </h3>
@@ -186,7 +188,7 @@ export const PromoCodeManager = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
-                placeholder="Search by code or description..."
+                placeholder={t('admin:searchPromoCode')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -198,10 +200,10 @@ export const PromoCodeManager = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="ALL">All Status</option>
-            <option value={PromoCodeStatus.ACTIVE}>Active</option>
-            <option value={PromoCodeStatus.INACTIVE}>Inactive</option>
-            <option value={PromoCodeStatus.EXPIRED}>Expired</option>
+            <option value="ALL">{t('admin:allStatusPromo')}</option>
+            <option value={PromoCodeStatus.ACTIVE}>{t('admin:activePromos')}</option>
+            <option value={PromoCodeStatus.INACTIVE}>{t('admin:inactivePromos')}</option>
+            <option value={PromoCodeStatus.EXPIRED}>{t('admin:expiredPromos')}</option>
           </select>
         </div>
       </div>
@@ -209,24 +211,24 @@ export const PromoCodeManager = () => {
       {/* Promo Codes Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-gray-500">Loading promo codes...</div>
+          <div className="p-12 text-center text-gray-500">{t('admin:loadingPromoCodes')}</div>
         ) : filteredPromoCodes.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
             <Tag className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p>No promo codes found</p>
+            <p>{t('admin:noPromoCodesFound')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usage</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valid Period</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:code')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:type')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:value')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:usage')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:validPeriod')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:status')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin:promoActions')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -252,7 +254,7 @@ export const PromoCodeManager = () => {
                             : `${promoCode.value} SEK`}
                         </span>
                         {promoCode.maxDiscount && (
-                          <div className="text-xs text-gray-500">Max: {promoCode.maxDiscount} SEK</div>
+                          <div className="text-xs text-gray-500">{t('admin:max')}: {promoCode.maxDiscount} SEK</div>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -274,7 +276,7 @@ export const PromoCodeManager = () => {
                       <td className="px-6 py-4">
                         <div className="text-sm">
                           <div className="text-gray-900">{promoCode.validFrom}</div>
-                          <div className="text-gray-500">to {promoCode.validUntil}</div>
+                          <div className="text-gray-500">{t('admin:to')} {promoCode.validUntil}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">{getStatusBadge(promoCode.status)}</td>
@@ -283,14 +285,14 @@ export const PromoCodeManager = () => {
                           <button
                             onClick={() => handleEdit(promoCode)}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                            title="Edit"
+                            title={t('admin:editPromo')}
                           >
                             <Edit2 className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(promoCode.id)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                            title="Delete"
+                            title={t('admin:deletePromo')}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

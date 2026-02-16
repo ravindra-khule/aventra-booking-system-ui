@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
-import { useTranslation } from '../../../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -100,7 +100,7 @@ export const Toast: React.FC<ToastProps> = ({
       <button
         onClick={handleClose}
         className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-        aria-label={t('admin.closeNotification')}
+        aria-label={t('admin:closeNotification')}
       >
         <X className="h-4 w-4" />
       </button>

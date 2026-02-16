@@ -16,6 +16,7 @@ import { GroupForm } from './GroupForm';
 import { GroupAnalyticsDialog } from './GroupAnalytics';
 import { BulkActionsDialog } from './BulkActions';
 import styles from '../styles/GroupList.module.css';
+import { useTranslation } from 'react-i18next';
 
 interface GroupListProps {
   onRefresh?: () => void;
@@ -48,6 +49,7 @@ const downloadCSV = (csv: string, filename: string) => {
 };
 
 export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
+  const { t } = useTranslation();
   const [groups, setGroups] = useState<CustomerGroup[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<CustomerGroup[]>([]);
   const [loading, setLoading] = useState(false);
@@ -146,8 +148,8 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
       {/* Header */}
       <div className={styles['group-list-header']}>
         <div className={styles['header-title']}>
-          <h2>Customer Groups</h2>
-          <p>Manage customer segments and groups</p>
+          <h2>{t('admin:customerGroupsTitle')}</h2>
+          <p>{t('admin:manageCustomerSegments')}</p>
         </div>
         <div className={styles['header-actions']}>
           {selectedGroups.size > 0 && (
@@ -155,7 +157,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
               className={`${styles.btn} ${styles['btn-secondary']}`}
               onClick={() => setBulkActionsOpen(true)}
             >
-              Bulk Actions ({selectedGroups.size})
+              {t('admin:bulkActions')} ({selectedGroups.size})
             </button>
           )}
           <button
@@ -166,7 +168,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
             }}
           >
             <Plus size={18} />
-            New Group
+            {t('admin:newGroup')}
           </button>
         </div>
       </div>
@@ -176,7 +178,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
         <Search size={18} className={styles['search-icon']} />
         <input
           type="text"
-          placeholder="Search groups by name, description, or tags..."
+          placeholder={t('admin:searchGroups')}
           value={searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
           className={styles['search-input']}
@@ -186,12 +188,12 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
       {/* Groups Table */}
       <div className={styles['group-list-container']}>
         {loading ? (
-          <div className={styles.loading}>Loading groups...</div>
+          <div className={styles.loading}>{t('admin:loadingGroups')}</div>
         ) : filteredGroups.length === 0 ? (
           <div className={styles['empty-state']}>
             <Users size={48} />
-            <h3>No customer groups yet</h3>
-            <p>Create your first customer group to get started</p>
+            <h3>{t('admin:noCustomerGroupsYet')}</h3>
+            <p>{t('admin:createFirstGroup')}</p>
             <button
               className={`${styles.btn} ${styles['btn-primary']}`}
               onClick={() => {
@@ -200,7 +202,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
               }}
             >
               <Plus size={18} />
-              Create Group
+              {t('admin:createGroupButton')}
             </button>
           </div>
         ) : (
@@ -216,12 +218,12 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
                   onChange={handleSelectAll}
                 />
               </div>
-              <div className={`${styles.cell} ${styles.name}`}>Name</div>
-              <div className={`${styles.cell} ${styles.type}`}>Type</div>
-              <div className={`${styles.cell} ${styles.members}`}>Members</div>
-              <div className={`${styles.cell} ${styles.tags}`}>Tags</div>
-              <div className={`${styles.cell} ${styles.status}`}>Status</div>
-              <div className={`${styles.cell} ${styles.actions}`}>Actions</div>
+              <div className={`${styles.cell} ${styles.name}`}>{t('admin:groupNameHeader')}</div>
+              <div className={`${styles.cell} ${styles.type}`}>{t('admin:groupTypeHeader')}</div>
+              <div className={`${styles.cell} ${styles.members}`}>{t('admin:groupMembersHeader')}</div>
+              <div className={`${styles.cell} ${styles.tags}`}>{t('admin:groupTagsHeader')}</div>
+              <div className={`${styles.cell} ${styles.status}`}>{t('admin:groupStatusHeader')}</div>
+              <div className={`${styles.cell} ${styles.actions}`}>{t('admin:actions')}</div>
             </div>
 
             {filteredGroups.map((group) => (
@@ -254,7 +256,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
 
                 <div className={`${styles.cell} ${styles.type}`}>
                   <span className={`${styles.badge} ${styles[`badge-${group.type}`]}`}>
-                    {group.type === 'manual' ? 'Manual' : 'Smart'}
+                    {group.type === 'manual' ? t('admin:groupTypeManual') : t('admin:groupTypeSmart')}
                   </span>
                 </div>
 
@@ -282,7 +284,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
                   <span
                     className={`${styles.status} ${styles[group.isActive ? 'active' : 'inactive']}`}
                   >
-                    {group.isActive ? 'Active' : 'Inactive'}
+                    {group.isActive ? t('admin:groupStatusActive') : t('admin:groupStatusInactive')}
                   </span>
                 </div>
 
@@ -290,14 +292,14 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
                   <div className={styles['action-buttons']}>
                     <button
                       className={styles['action-btn']}
-                      title="View Analytics"
+                      title={t('admin:viewGroupAnalytics')}
                       onClick={() => setAnalyticsGroup(group)}
                     >
                       <BarChart3 size={16} />
                     </button>
                     <button
                       className={styles['action-btn']}
-                      title="Edit Group"
+                      title={t('admin:editGroupButton')}
                       onClick={() => {
                         setEditingGroup(group);
                         setFormDialogOpen(true);
@@ -307,13 +309,13 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
                     </button>
                     <button
                       className={styles['action-btn']}
-                      title="Export Members"
+                      title={t('admin:exportGroupMembers')}
                       onClick={() => handleExportGroup(group.id)}
                     >
                       <Download size={16} />
                     </button>
                     <div className={styles.dropdown}>
-                      <button className={styles['action-btn']} title="More options">
+                      <button className={styles['action-btn']} title={t('admin:moreOptions')}>
                         <ChevronDown size={16} />
                       </button>
                       <div className={styles['dropdown-menu']}>
@@ -322,7 +324,7 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
                           className={styles['delete-option']}
                         >
                           <Trash2 size={16} />
-                          Delete
+                          {t('admin:deleteGroupButton')}
                         </button>
                       </div>
                     </div>
@@ -330,18 +332,18 @@ export const GroupList: React.FC<GroupListProps> = ({ onRefresh }) => {
 
                   {deleteConfirm === group.id && (
                     <div className={styles['delete-confirm']}>
-                      <p>Delete this group?</p>
+                      <p>{t('admin:deleteGroupQuestion')}</p>
                       <button
                         onClick={() => handleDeleteGroup(group.id)}
                         className={`${styles.btn} ${styles['btn-danger']} ${styles['btn-sm']}`}
                       >
-                        Delete
+                        {t('admin:deleteGroupButton')}
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(null)}
                         className={`${styles.btn} ${styles['btn-secondary']} ${styles['btn-sm']}`}
                       >
-                        Cancel
+                        {t('common:cancel')}
                       </button>
                     </div>
                   )}
