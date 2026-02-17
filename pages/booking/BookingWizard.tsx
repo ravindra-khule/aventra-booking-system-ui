@@ -4,8 +4,7 @@ import { Tour, Traveler, PayerDetails } from '../../types';
 import { TourAddOn, SelectedAddOn, AddOnType } from '../../src/features/tours/types/tour.types';
 import { TourService, BookingService, PromoCodeService } from '../../services/api';
 import { AddOnService } from '../../src/features/tours/services/addon.service';
-import { useTranslation } from '../../context/LanguageContext';
-import { PaymentSection } from '../../src/features/bookings/components/PaymentSection';
+import { useTranslation } from 'react-i18next';
 import { 
   CheckCircle2, 
   ChevronRight, 
@@ -64,7 +63,7 @@ const EMPTY_TRAVELER: Traveler = {
   isPayer: false
 };
 
-export const BookingWizard: React.FC<{ isDevelopmentMode?: boolean }> = ({ isDevelopmentMode = false }) => {
+export const BookingWizard = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
