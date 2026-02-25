@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { StripeWrapper } from '../components/StripeWrapper';
 import { Booking, BookingStatus, PaymentStatus, PayerDetails, Traveler } from '../types/booking.types';
 import { BookingService } from '../services/booking.service';
 import { Search, Filter, MoreHorizontal, Download, Eye, X, CreditCard, User, Users, Calendar, Edit2, Save, Trash, Mail, CheckSquare, Square } from 'lucide-react';
@@ -343,11 +344,21 @@ export const BookingManager = () => {
      };
 
      return (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-            <div className="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
-            <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-                <div className="w-screen max-w-md">
-                    <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+      <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
+        <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+          <div className="w-screen max-w-md">
+            <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                                                {/* Payment UI Integration with Stripe */}
+                                                <div className="mt-6">
+                                                  <StripeWrapper
+                                                    booking={formData}
+                                                    onPaymentSuccess={(updatedBooking) => {
+                                                      setFormData(updatedBooking);
+                                                      onUpdate(updatedBooking);
+                                                    }}
+                                                  />
+                                                </div>
                         <div className="px-6 py-6 bg-gray-900 text-white flex justify-between items-start sticky top-0 z-10">
                            <div>
                                 <h2 className="text-xl font-bold">{formData.tourTitle}</h2>
