@@ -35,7 +35,12 @@ import { UserRole } from './types';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, requiredRole }: { children?: React.ReactNode, requiredRole?: UserRole }) => {
-  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { user, isAuthenticated, isAdmin, isLoading } = useAuth();
+  
+  // Don't redirect while checking auth state
+  if (isLoading) {
+    return null;
+  }
   
   if (!isAuthenticated && requiredRole) {
       // In a real app, redirect to login
