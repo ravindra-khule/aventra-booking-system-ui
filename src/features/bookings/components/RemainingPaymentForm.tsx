@@ -12,6 +12,7 @@ import { Loader, AlertCircle } from 'lucide-react';
 interface RemainingPaymentFormProps {
   booking: Booking;
   remainingAmount: number;
+  currency?: string;
   onSuccess: (transactionId: string) => void;
   onError: (error: string) => void;
   onProcessing: () => void;
@@ -20,6 +21,7 @@ interface RemainingPaymentFormProps {
 export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
   booking,
   remainingAmount,
+  currency = 'SEK',
   onSuccess,
   onError,
   onProcessing,
@@ -58,7 +60,7 @@ export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
         <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-200">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Amount to Pay:</span>
-            <span className="font-semibold">{formatCurrency(remainingAmount, booking.currency)}</span>
+            <span className="font-semibold">{formatCurrency(remainingAmount, currency)}</span>
           </div>
         </div>
 
@@ -73,7 +75,7 @@ export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
               Processing...
             </>
           ) : (
-            `Pay Now ${formatCurrency(remainingAmount, booking.currency)}`
+            `Pay Now ${formatCurrency(remainingAmount, currency)}`
           )}
         </button>
       </form>
@@ -109,7 +111,7 @@ export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
       console.log('[RemainingPayment] Processing payment:', {
         bookingId: booking.id,
         amount: remainingAmount,
-        currency: booking.currency,
+        currency: currency,
       });
 
       // Confirm the payment with Stripe
@@ -161,7 +163,7 @@ export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
         </div>
       )}
 
-      {/* Stripe Payment Element - Amazon Pay excluded */}
+      {/* Stripe Payment Element */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <PaymentElement
           options={{
@@ -184,7 +186,7 @@ export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex justify-between items-center">
           <span className="text-blue-900 font-semibold">Total Amount to Pay:</span>
-          <span className="text-2xl font-bold text-blue-600">{formatCurrency(remainingAmount, booking.currency)}</span>
+          <span className="text-2xl font-bold text-blue-600">{formatCurrency(remainingAmount, currency)}</span>
         </div>
       </div>
 
@@ -200,7 +202,7 @@ export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
             Processing Payment...
           </>
         ) : (
-          `Pay ${formatCurrency(remainingAmount, booking.currency)}`
+          `Pay ${formatCurrency(remainingAmount, currency)}`
         )}
       </button>
 

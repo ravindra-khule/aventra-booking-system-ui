@@ -28,6 +28,7 @@ import { AdminUsersManager } from './pages/admin/settings/components/AdminUsersM
 import { RolesPermissions } from './pages/admin/settings/RolesPermissions';
 import { EmailSettings } from './pages/admin/settings/EmailSettings';
 import { Logs } from './pages/admin/settings/components/Logs';
+import { StripePaymentSettings } from './pages/admin/settings/StripeSettings';
 import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './src/shared/context/ToastContext';
@@ -170,6 +171,11 @@ const AppRoutes = () => {
             <Route path="/admin/settings/email" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><EmailSettings /></AdminLayout>
+                </ProtectedRoute>
+            } />
+            <Route path="/admin/settings/payment" element={
+                <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                    <AdminLayout><StripePaymentSettings /></AdminLayout>
                 </ProtectedRoute>
             } />
             <Route path="/admin/settings/logs" element={
