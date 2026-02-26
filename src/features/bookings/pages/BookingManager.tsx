@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { StripeWrapper } from '../components/StripeWrapper';
 import { Booking, BookingStatus, PaymentStatus, PayerDetails, Traveler } from '../types/booking.types';
 import { BookingService } from '../services/booking.service';
@@ -227,83 +228,160 @@ export const BookingManager = () => {
         .map(b => b.payer.email)
     ).size;
 
-    return (
-      <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowEmailModal(false)}></div>
-          
-          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div className="sm:flex sm:items-start mb-4">
-                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <Mail className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Send Email to {customerCount} Customer(s)
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {selectedCount} booking(s) selected
-                  </p>
-                </div>
-              </div>
+    return createPortal(
+      <div style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        bottom: 0, 
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        zIndex: 9999,
+        padding: '16px'
+      }}>
+        <div style={{
+          backgroundColor: '#fff',
+          borderRadius: '8px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+          maxWidth: '600px',
+          width: '100%',
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          {/* Header */}
+          <div style={{
+            padding: '24px',
+            borderBottom: '1px solid #e5e7eb',
+            flexShrink: 0
+          }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+              Send Email to {customerCount} Customer(s)
+            </h2>
+            <p style={{ fontSize: '14px', color: '#6b7280' }}>
+              {selectedCount} booking(s) selected
+            </p>
+          </div>
 
-              <div className="space-y-4 mt-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Subject
-                  </label>
-                  <input
-                    type="text"
-                    value={emailSubject}
-                    onChange={(e) => setEmailSubject(e.target.value)}
-                    placeholder="e.g., Important Update About Your Tour"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Message
-                  </label>
-                  <textarea
-                    value={emailMessage}
-                    onChange={(e) => setEmailMessage(e.target.value)}
-                    placeholder="Enter your message here..."
-                    rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-800">
-                  <p>
-                    <strong>Recipients:</strong> {customerCount} unique customer(s) will receive this email.
-                  </p>
-                </div>
-              </div>
+          {/* Content */}
+          <div style={{
+            padding: '24px',
+            flex: 1,
+            overflowY: 'auto'
+          }}>
+            {/* Email Subject */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '8px', color: '#374151' }}>
+                Email Subject
+              </label>
+              <input
+                type="text"
+                value={emailSubject}
+                onChange={(e) => {
+                  setEmailSubject(e.target.value);
+                }}
+                placeholder="e.g., Important Update About Your Tour"
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit'
+                }}
+              />
             </div>
 
-            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-              <Button
-                onClick={handleSendEmails}
-                variant="primary"
-                disabled={sendingEmail}
-                className="w-full sm:w-auto"
-              >
-                {sendingEmail ? 'Sending...' : 'Send Email'}
-              </Button>
-              <Button
-                onClick={() => setShowEmailModal(false)}
-                variant="outline"
-                className="w-full sm:w-auto"
-                disabled={sendingEmail}
-              >
-                Cancel
-              </Button>
+            {/* Email Message */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '8px', color: '#374151' }}>
+                Email Message
+              </label>
+              <textarea
+                value={emailMessage}
+                onChange={(e) => {
+                  setEmailMessage(e.target.value);
+                }}
+                placeholder="Enter your message here..."
+                rows={6}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                  resize: 'none'
+                }}
+              />
+            </div>
+
+            {/* Recipients Info */}
+            <div style={{
+              backgroundColor: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '6px',
+              padding: '16px',
+              fontSize: '14px',
+              color: '#1e40af'
+            }}>
+              <strong>Recipients:</strong> {customerCount} unique customer(s) will receive this email.
             </div>
           </div>
+
+          {/* Footer */}
+          <div style={{
+            padding: '24px',
+            borderTop: '1px solid #e5e7eb',
+            backgroundColor: '#f9fafb',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '12px',
+            flexShrink: 0
+          }}>
+            <button
+              type="button"
+              onClick={() => setShowEmailModal(false)}
+              disabled={sendingEmail}
+              style={{
+                padding: '10px 16px',
+                borderRadius: '6px',
+                border: '1px solid #d1d5db',
+                backgroundColor: '#fff',
+                color: '#374151',
+                fontWeight: '500',
+                cursor: sendingEmail ? 'not-allowed' : 'pointer',
+                opacity: sendingEmail ? 0.5 : 1
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSendEmails}
+              disabled={sendingEmail}
+              style={{
+                padding: '10px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: '#dc2626',
+                color: '#fff',
+                fontWeight: '500',
+                cursor: sendingEmail ? 'not-allowed' : 'pointer',
+                opacity: sendingEmail ? 0.5 : 1
+              }}
+            >
+              {sendingEmail ? 'Sending...' : 'Send Email'}
+            </button>
+          </div>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   };
 
@@ -364,7 +442,7 @@ export const BookingManager = () => {
                                 <h2 className="text-xl font-bold">{formData.tourTitle}</h2>
                                 <p className="text-gray-400 text-sm mt-1">Ref: {formData.id}</p>
                            </div>
-                           <Button onClick={onClose} variant="ghost" className="text-gray-400 hover:text-white !p-2">
+                           <Button onClick={onClose} variant="secondary" className="text-gray-400 hover:text-white !p-2">
                                <X className="h-6 w-6" />
                            </Button>
                         </div>
@@ -375,13 +453,13 @@ export const BookingManager = () => {
                             <div className="flex justify-end space-x-2">
                                 {isEditing ? (
                                     <>
-                                        <Button onClick={handleCancel} variant="outline" size="sm">Cancel</Button>
+                                        <Button onClick={handleCancel} variant="secondary" size="sm">Cancel</Button>
                                         <Button onClick={handleSave} variant="primary" size="sm" icon={<Save className="h-4 w-4" />}>
                                             Save Changes
                                         </Button>
                                     </>
                                 ) : (
-                                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm" icon={<Edit2 className="h-4 w-4" />}>
+                                    <Button onClick={() => setIsEditing(true)} variant="secondary" size="sm" icon={<Edit2 className="h-4 w-4" />}>
                                         Edit Booking
                                     </Button>
                                 )}
@@ -583,7 +661,7 @@ export const BookingManager = () => {
             <h1 className="text-2xl font-bold text-gray-900">All Bookings</h1>
             <p className="text-gray-500">Manage customers, payments, and trip rosters.</p>
         </div>
-        <Button variant="outline" icon={<Download className="h-4 w-4" />} onClick={handleExportCSV}>
+        <Button variant="secondary" icon={<Download className="h-4 w-4" />} onClick={handleExportCSV}>
           Export CSV
         </Button>
       </div>
@@ -592,81 +670,75 @@ export const BookingManager = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {/* Toolbar */}
         <div className="p-4 border-b border-gray-200">
-          {/* Search Bar */}
-          <div className="flex flex-col gap-4 mb-4">
-            <div className="relative flex-1 max-w-md">
+          {/* Search & Filters - Single Line */}
+          <div className="flex flex-wrap gap-2 items-center mb-4">
+            <div className="relative max-w-md flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input 
                 type="text"
                 placeholder="Search by name, ID, or tour..."
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
 
-            {/* Filters Row 1 */}
-            <div className="flex flex-wrap gap-2">
-              <select 
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="ALL">All Status</option>
-                {Object.values(BookingStatus).map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-              <select 
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
-                value={paymentFilter}
-                onChange={(e) => setPaymentFilter(e.target.value)}
-              >
-                <option value="ALL">All Payments</option>
-                {Object.values(PaymentStatus).map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-              <select 
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
-                value={tourFilter}
-                onChange={(e) => setTourFilter(e.target.value)}
-              >
-                <option value="ALL">All Tours</option>
-                {uniqueTours.map(tour => <option key={tour} value={tour}>{tour}</option>)}
-              </select>
-            </div>
+            {/* Filters */}
+            <select 
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="ALL">All Status</option>
+              {Object.values(BookingStatus).map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <select 
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+              value={paymentFilter}
+              onChange={(e) => setPaymentFilter(e.target.value)}
+            >
+              <option value="ALL">All Payments</option>
+              {Object.values(PaymentStatus).map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <select 
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+              value={tourFilter}
+              onChange={(e) => setTourFilter(e.target.value)}
+            >
+              <option value="ALL">All Tours</option>
+              {uniqueTours.map(tour => <option key={tour} value={tour}>{tour}</option>)}
+            </select>
 
-            {/* Filters Row 2 - Date Range */}
-            <div className="flex flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-600 font-medium">Trip Date Range:</label>
-              </div>
-              <input
-                type="date"
-                value={dateFromFilter}
-                onChange={(e) => setDateFromFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                placeholder="From"
-              />
-              <span className="text-gray-400">to</span>
-              <input
-                type="date"
-                value={dateToFilter}
-                onChange={(e) => setDateToFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                placeholder="To"
-              />
-              {(dateFromFilter || dateToFilter) && (
-                <Button
-                  onClick={() => {
-                    setDateFromFilter('');
-                    setDateToFilter('');
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  Clear Dates
-                </Button>
-              )}
-            </div>
+            {/* Date Range */}
+            <label className="text-sm text-gray-600 font-medium whitespace-nowrap">Trip Date Range:</label>
+            <input
+              type="date"
+              value={dateFromFilter}
+              onChange={(e) => setDateFromFilter(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              placeholder="From"
+            />
+            <span className="text-gray-400">to</span>
+            <input
+              type="date"
+              value={dateToFilter}
+              onChange={(e) => setDateToFilter(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              placeholder="To"
+            />
+            {(dateFromFilter || dateToFilter) && (
+              <Button
+                onClick={() => {
+                  setDateFromFilter('');
+                  setDateToFilter('');
+                }}
+                variant="secondary"
+                size="sm"
+                className="text-xs"
+              >
+                Clear Dates
+              </Button>
+            )}
           </div>
 
           {/* Bulk Actions Toolbar */}
@@ -737,23 +809,22 @@ export const BookingManager = () => {
                     {booking.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedBooking(booking)}>
-                    <div className="text-sm font-medium text-gray-900">{booking.customerName}</div>
-                    <div className="text-sm text-gray-500">{booking.payer.email}</div>
+                    <div className="text-sm font-medium text-gray-900 inline">{booking.customerName}</div>
+                    <span className="text-sm text-gray-500 mx-2">—</span>
+                    <span className="text-sm text-gray-500 inline">{booking.payer.email}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedBooking(booking)}>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm text-gray-900">{booking.tourTitle}</div>
-                      {booking.promoCode && (
-                        <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                          <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                          </svg>
-                          {booking.promoCode}
-                        </span>
-                      )}
-                    </div>
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer flex items-center gap-2" onClick={() => setSelectedBooking(booking)}>
+                    <div className="text-sm text-gray-900 truncate">{booking.tourTitle}</div>
+                    {booking.promoCode && (
+                      <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 flex-shrink-0">
+                        <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        {booking.promoCode}
+                      </span>
+                    )}
                     {booking.discountAmount && (
-                      <div className="text-xs text-purple-600 font-medium">Saved: {formatCurrency(booking.discountAmount)}</div>
+                      <span className="text-xs text-purple-600 font-medium flex-shrink-0">Saved: {formatCurrency(booking.discountAmount)}</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm cursor-pointer" onClick={() => setSelectedBooking(booking)}>
@@ -770,13 +841,14 @@ export const BookingManager = () => {
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="text-gray-900 font-medium">{formatCurrency(booking.paidAmount)} <span className="text-gray-400 font-normal">/ {formatCurrency(booking.totalAmount)}</span></div>
-                    {booking.totalAmount - booking.paidAmount > 0 && (
-                        <div className="text-xs text-red-500">Due: {formatCurrency(booking.totalAmount - booking.paidAmount)}</div>
-                    )}
+                    <div className="text-gray-900 font-medium inline">{formatCurrency(booking.paidAmount)} <span className="text-gray-400 font-normal">/ {formatCurrency(booking.totalAmount)}</span>
+                      {booking.totalAmount - booking.paidAmount > 0 && (
+                          <span className="text-xs text-red-500 ml-2">Due: {formatCurrency(booking.totalAmount - booking.paidAmount)}</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-600 !p-1" onClick={(e) => { e.stopPropagation(); setSelectedBooking(booking); }}>
+                    <Button variant="secondary" size="sm" className="text-gray-400 hover:text-blue-600 !p-1" onClick={(e) => { e.stopPropagation(); setSelectedBooking(booking); }}>
                       <Eye className="h-5 w-5" />
                     </Button>
                   </td>
