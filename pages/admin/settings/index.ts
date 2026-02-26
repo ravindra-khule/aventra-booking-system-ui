@@ -1,6 +1,7 @@
 // Main Pages
 export { CompanyInformationSettings } from './CompanyInformation';
 export { UserManagement } from './UserManagement';
+export { StripePaymentSettings } from './StripeSettings';
 
 // Company Info Section Components
 export { CompanyIdentity } from './components/CompanyIdentitySection';

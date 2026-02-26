@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Button, Input, Select } from '../../src/shared/components/ui';
 import { formatCurrency } from '../../src/shared/utils';
+import { PaymentSection } from '../../src/features/bookings/components/PaymentSection';
 
 // Icon mapping for different add-on types
 const ADDON_TYPE_ICONS: Record<AddOnType, React.ReactNode> = {
@@ -91,6 +92,8 @@ export const BookingWizard = () => {
   const [availableAddOns, setAvailableAddOns] = useState<TourAddOn[]>([]);
   const [selectedAddOns, setSelectedAddOns] = useState<Map<string, { addOn: TourAddOn; quantity: number }>>(new Map());
   const [isLoadingAddOns, setIsLoadingAddOns] = useState(false);
+  
+  const isDevelopmentMode = import.meta.env.DEV;
   
   const steps = [
     t('booking:steps.travelersAddons'),
@@ -426,12 +429,13 @@ export const BookingWizard = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Tour Not Found</h2>
             <p className="text-gray-600 mb-4">{loadError}</p>
           </div>
-          <button
+          <Button
             onClick={() => navigate('/')}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"
+            variant="primary"
+            fullWidth
           >
             Back to Tours
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -533,7 +537,7 @@ export const BookingWizard = () => {
         </Button>
         <Button 
           onClick={() => navigate('/')} 
-          variant="outline" 
+          variant="secondary" 
           fullWidth
         >
           {t('booking:confirmation.browseMoreTours')}
@@ -1485,7 +1489,7 @@ export const BookingWizard = () => {
                     <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
                         <Button 
                             onClick={() => window.print()} 
-                            variant="outline"
+                            variant="secondary"
                             className="flex items-center gap-2"
                         >
                             <CreditCard className="h-4 w-4" />
@@ -1500,7 +1504,7 @@ export const BookingWizard = () => {
                         </Button>
                         <Button 
                             onClick={() => navigate('/')} 
-                            variant="ghost"
+                            variant="secondary"
                         >
                             {t('booking:confirmation.browseMoreTours')}
                         </Button>
@@ -1531,7 +1535,7 @@ export const BookingWizard = () => {
                 setCurrentStep((prev) => Math.max(prev - 1, 0));
                 window.scrollTo(0, 0);
               }}
-              variant="outline"
+              variant="secondary"
               size="lg"
               className="md:w-auto shadow-none"
               icon={<ArrowLeft className="h-5 w-5" />}

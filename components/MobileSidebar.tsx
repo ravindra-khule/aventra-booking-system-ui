@@ -32,6 +32,7 @@ import {
   Shield,
   MailOpen,
   FileBarChart,
+  CreditCard,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -211,6 +212,11 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           label: t('admin:emailSettings'),
           path: '/admin/settings/email',
           icon: <MailOpen className="w-4 h-4" />,
+        },
+        {
+          label: t('admin:paymentDetails'),
+          path: '/admin/settings/payment',
+          icon: <CreditCard className="w-4 h-4" />,
         },
         {
           label: t('admin:systemLogs'),
