@@ -342,10 +342,10 @@ const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClo
     code: promoCode?.code || '',
     description: promoCode?.description || '',
     type: promoCode?.type || PromoCodeType.PERCENTAGE,
-    value: promoCode?.value || 0,
-    minBookingAmount: promoCode?.minBookingAmount || undefined,
-    maxDiscount: promoCode?.maxDiscount || undefined,
-    usageLimit: promoCode?.usageLimit || undefined,
+    value: promoCode?.value,
+    minBookingAmount: promoCode?.minBookingAmount,
+    maxDiscount: promoCode?.maxDiscount,
+    usageLimit: promoCode?.usageLimit,
     validFrom: promoCode?.validFrom || new Date().toISOString().split('T')[0],
     validUntil: promoCode?.validUntil || '',
     status: promoCode?.status || PromoCodeStatus.ACTIVE,
@@ -363,8 +363,10 @@ const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClo
       return;
     }
 
-    if (formData.value === undefined || formData.value <= 0) {
-      setError('Value must be greater than 0');
+    // For creating new codes, value is required
+    // For editing, value can be undefined (means don't change it)
+    if (isCreating && (formData.value === undefined || formData.value <= 0)) {
+      setError('Discount value must be greater than 0');
       return;
     }
 
@@ -452,10 +454,13 @@ const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClo
               </label>
               <input
                 type="number"
-                value={formData.value}
-                onChange={(e) => setFormData({ ...formData, value: parseFloat(e.target.value) || 0 })}
+                value={formData.value || ''}
+                onChange={(e) => setFormData({ ...formData, value: e.target.value ? parseFloat(e.target.value) : undefined })}
                 className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder={formData.type === PromoCodeType.PERCENTAGE ? "10" : "500"}
+                step="0.01"
+                min="0"
+                required
               />
             </div>
 

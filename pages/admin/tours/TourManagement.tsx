@@ -46,7 +46,7 @@ export const TourManagement: React.FC = () => {
     setIsLoading(true);
     try {
       const [toursData, categoriesData, tagsData] = await Promise.all([
-        TourService.getAll(),
+        TourService.getAll({ isAdmin: true }),
         TourService.getCategories(),
         TourService.getTags()
       ]);
@@ -124,7 +124,8 @@ export const TourManagement: React.FC = () => {
       toast.success('Tour updated successfully!');
     } catch (error) {
       console.error('Failed to update tour:', error);
-      toast.error('Failed to update tour. Please try again.');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to update tour: ${errorMsg}`);
     }
   };
 
@@ -135,7 +136,8 @@ export const TourManagement: React.FC = () => {
       toast.success(`Tour "${tour.title}" has been duplicated successfully!`);
     } catch (error) {
       console.error('Failed to duplicate tour:', error);
-      toast.error('Failed to duplicate tour. Please try again.');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to duplicate tour: ${errorMsg}`);
     }
   };
 
@@ -150,7 +152,8 @@ export const TourManagement: React.FC = () => {
         toast.success('Tour deleted successfully!');
       } catch (error) {
         console.error('Failed to delete tour:', error);
-        toast.error('Failed to delete tour. Please try again.');
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        toast.error(`Failed to delete tour: ${errorMsg}`);
       }
     }
   };
@@ -167,7 +170,8 @@ export const TourManagement: React.FC = () => {
       toast.success(`Tour "${newTour.title}" created successfully!`);
     } catch (error) {
       console.error('Failed to create tour:', error);
-      toast.error('Failed to create tour. Please try again.');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create tour: ${errorMsg}`);
     }
   };
 

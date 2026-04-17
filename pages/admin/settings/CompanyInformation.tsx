@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { SettingsService, SETTINGS_CATEGORIES } from '../../../src/shared/services/settings.service';
 import {
   CompanyInformationData,
   BusinessHour,
@@ -41,6 +42,7 @@ export const CompanyInformationSettings: React.FC = () => {
   const [logoModalOpen, setLogoModalOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [saveMessage, setSaveMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Initialize with default data
   const [data, setData] = useState<CompanyInformationData>({
@@ -87,6 +89,52 @@ export const CompanyInformationSettings: React.FC = () => {
     ],
   });
 
+  // Load settings from backend on mount
+  useEffect(() => {
+    loadCompanySettings();
+  }, []);
+
+  const loadCompanySettings = async () => {
+    try {
+      setIsLoading(true);
+      const settings = await SettingsService.getByCategory(SETTINGS_CATEGORIES.COMPANY);
+      
+      if (settings && settings.length > 0) {
+        // Map backend settings to component state
+        const settingsMap = settings.reduce((acc, setting) => {
+          acc[setting.key] = setting.value;
+          return acc;
+        }, {} as Record<string, string>);
+
+        setData(prev => ({
+          ...prev,
+          identity: {
+            ...prev.identity,
+            companyName: settingsMap['name'] || prev.identity.companyName,
+            logo: settingsMap['logo_url'] ? settingsMap['logo_url'] : null,
+          },
+          contact: {
+            ...prev.contact,
+            address: settingsMap['address'] || prev.contact.address,
+            phoneNumber: settingsMap['phone'] || prev.contact.phoneNumber,
+            emailAddress: settingsMap['email'] || prev.contact.emailAddress,
+          },
+          businessRegistration: {
+            ...prev.businessRegistration,
+            vatTaxId: settingsMap['vat_number'] || prev.businessRegistration.vatTaxId,
+          },
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load company settings:', error);
+      setSaveStatus('error');
+      setSaveMessage('Failed to load company settings');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleLogoUpload = (preview: string, fileName: string) => {
     setData(prevData => ({
       ...prevData,
@@ -103,10 +151,7 @@ export const CompanyInformationSettings: React.FC = () => {
     setSaveStatus('saving');
     setSaveMessage('');
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
       // Validate required fields
       const errors = [];
       if (!data.identity.companyName.trim()) errors.push('Company name is required');
@@ -120,17 +165,32 @@ export const CompanyInformationSettings: React.FC = () => {
         return;
       }
 
-      setSaveStatus('success');
-      setSaveMessage('Company information saved successfully!');
+      // Prepare updates for backend
+      const updates = [
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'name', value: data.identity.companyName },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'address', value: data.contact.address },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'phone', value: data.contact.phoneNumber },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'email', value: data.contact.emailAddress },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'vat_number', value: data.businessRegistration.vatTaxId },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'logo_url', value: data.identity.logo || '' },
+      ];
 
-      // Log data to console (since no backend)
-      console.log('Company Information Data:', data);
+      // Save to backend
+      const success = await SettingsService.updateMultiple(updates);
 
-      setTimeout(() => {
-        setSaveStatus('idle');
-        setSaveMessage('');
-      }, 3000);
+      if (success) {
+        setSaveStatus('success');
+        setSaveMessage('Company information saved successfully!');
+        setTimeout(() => {
+          setSaveStatus('idle');
+          setSaveMessage('');
+        }, 3000);
+      } else {
+        setSaveStatus('error');
+        setSaveMessage('Failed to save company information. Please try again.');
+      }
     } catch (error) {
+      console.error('Error saving company settings:', error);
       setSaveStatus('error');
       setSaveMessage('Failed to save. Please try again.');
     }
@@ -202,6 +262,20 @@ export const CompanyInformationSettings: React.FC = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="animate-spin mx-auto mb-4">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full" />
+              </div>
+              <p className="text-gray-600">Loading company settings...</p>
+            </div>
+          </div>
+        )}
+
+        {!isLoading && (
+          <>
         {/* Alert Messages */}
         {saveStatus === 'success' && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
@@ -341,6 +415,8 @@ export const CompanyInformationSettings: React.FC = () => {
             </button>
           </div>
         </div>
+          </>
+        )}
       </div>
 
       {/* Logo Upload Modal */}

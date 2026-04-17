@@ -10,8 +10,9 @@ export default defineConfig(({ mode }) => {
       : (env.VITE_REACT_APP_API_URL || 'http://localhost:5500');
     return {
       server: {
-        port: 3000,
+        port: 4000,
         host: '0.0.0.0',
+        strictPort: true,
       },
       plugins: [react()],
       define: {

@@ -146,7 +146,7 @@ let mockInvitations: UserInvitation[] = [
 
 /**
  * User Service
- * Handles user management operations (mock implementation)
+ * Handles user management operations
  */
 export const UserService = {
   /**
@@ -157,27 +157,40 @@ export const UserService = {
     status?: UserStatus;
     search?: string;
   }): Promise<User[]> => {
-    await delay(300);
-    
-    let filtered = [...mockUsers];
-    
-    if (filters?.role) {
-      filtered = filtered.filter(u => u.role === filters.role);
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      let url = `${API_URL}/api/users-list.php`;
+      const params = new URLSearchParams();
+      
+      if (filters?.role) params.append('role', filters.role);
+      if (filters?.status) params.append('status', filters.status);
+      if (filters?.search) params.append('search', filters.search);
+      
+      if (params.toString()) url += '?' + params.toString();
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to fetch users:', response.statusText);
+        return mockUsers; // Fallback to mock data
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('API error:', data.error);
+        return mockUsers;
+      }
+      
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return mockUsers; // Fallback to mock data
     }
-    
-    if (filters?.status) {
-      filtered = filtered.filter(u => u.status === filters.status);
-    }
-    
-    if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      filtered = filtered.filter(u =>
-        u.name.toLowerCase().includes(search) ||
-        u.email.toLowerCase().includes(search)
-      );
-    }
-    
-    return filtered;
   },
 
   /**
@@ -192,77 +205,101 @@ export const UserService = {
    * Create a new user
    */
   createUser: async (userData: Omit<User, 'id' | 'createdAt'>): Promise<User> => {
-    await delay(500);
-    
-    const newUser: User = {
-      ...userData,
-      id: `u_${Date.now()}`,
-      createdAt: new Date()
-    };
-    
-    mockUsers.push(newUser);
-    
-    // Log activity
-    mockActivities.push({
-      id: `a_${Date.now()}`,
-      userId: userData.createdBy || 'system',
-      action: 'CREATE_USER',
-      description: `Created new user: ${newUser.email}`,
-      timestamp: new Date(),
-      ipAddress: '192.168.1.100'
-    });
-    
-    return newUser;
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-create.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: userData.name,
+          email: userData.email,
+          password: userData.password || 'TempPassword123!',
+          role: userData.role,
+          phone: userData.phone
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create user');
+      }
+      
+      return {
+        ...userData,
+        id: data.data.id,
+        createdAt: new Date()
+      };
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   },
 
   /**
    * Update an existing user
    */
   updateUser: async (id: string, updates: Partial<User>): Promise<User> => {
-    await delay(400);
-    
-    const index = mockUsers.findIndex(u => u.id === id);
-    if (index === -1) {
-      throw new Error('User not found');
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-update.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          ...updates
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update user');
+      }
+      
+      return { id, ...updates } as User;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
     }
-    
-    mockUsers[index] = { ...mockUsers[index], ...updates };
-    
-    // Log activity
-    mockActivities.push({
-      id: `a_${Date.now()}`,
-      userId: 'current_user',
-      action: 'UPDATE_USER',
-      description: `Updated user: ${mockUsers[index].email}`,
-      timestamp: new Date(),
-      ipAddress: '192.168.1.100'
-    });
-    
-    return mockUsers[index];
   },
 
   /**
    * Delete a user
    */
   deleteUser: async (id: string): Promise<void> => {
-    await delay(400);
-    
-    const user = mockUsers.find(u => u.id === id);
-    if (!user) {
-      throw new Error('User not found');
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-delete.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
     }
-    
-    mockUsers = mockUsers.filter(u => u.id !== id);
-    
-    // Log activity
-    mockActivities.push({
-      id: `a_${Date.now()}`,
-      userId: 'current_user',
-      action: 'DELETE_USER',
-      description: `Deleted user: ${user.email}`,
-      timestamp: new Date(),
-      ipAddress: '192.168.1.100'
-    });
   },
 
   /**
@@ -281,31 +318,38 @@ export const UserService = {
    * Invite a new user
    */
   inviteUser: async (email: string, role: UserRole, invitedBy: string): Promise<UserInvitation> => {
-    await delay(500);
-    
-    const invitation: UserInvitation = {
-      id: `inv_${Date.now()}`,
-      email,
-      role,
-      invitedBy,
-      invitedAt: new Date(),
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      status: 'PENDING'
-    };
-    
-    mockInvitations.push(invitation);
-    
-    // Log activity
-    mockActivities.push({
-      id: `a_${Date.now()}`,
-      userId: invitedBy,
-      action: 'INVITE_USER',
-      description: `Invited new user: ${email}`,
-      timestamp: new Date(),
-      ipAddress: '192.168.1.100'
-    });
-    
-    return invitation;
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-invite.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to invite user');
+      }
+      
+      return {
+        id: data.data.id,
+        email,
+        role,
+        invitedBy,
+        invitedAt: new Date(),
+        expiresAt: new Date(data.data.expiresAt),
+        status: 'PENDING'
+      };
+    } catch (error) {
+      console.error('Error inviting user:', error);
+      throw error;
+    }
   },
 
   /**
@@ -321,18 +365,60 @@ export const UserService = {
    * Update user status (activate/deactivate/suspend)
    */
   updateUserStatus: async (id: string, status: UserStatus): Promise<User> => {
-    await delay(300);
-    
-    return UserService.updateUser(id, { status });
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-status.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update status');
+      }
+      
+      return { id, status } as User;
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      throw error;
+    }
   },
 
   /**
    * Toggle 2FA for a user
    */
   toggleTwoFactor: async (id: string, enabled: boolean): Promise<User> => {
-    await delay(300);
-    
-    return UserService.updateUser(id, { twoFactorEnabled: enabled });
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-2fa.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, enabled })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to toggle 2FA');
+      }
+      
+      return { id, twoFactorEnabled: enabled } as User;
+    } catch (error) {
+      console.error('Error toggling 2FA:', error);
+      throw error;
+    }
   },
 
   /**
@@ -360,23 +446,31 @@ export const UserService = {
     active: number;
     inactive: number;
     suspended: number;
-    byRole: Record<UserRole, number>;
   }> => {
-    await delay(200);
-    
-    const stats = {
-      total: mockUsers.length,
-      active: mockUsers.filter(u => u.status === UserStatus.ACTIVE).length,
-      inactive: mockUsers.filter(u => u.status === UserStatus.INACTIVE).length,
-      suspended: mockUsers.filter(u => u.status === UserStatus.SUSPENDED).length,
-      byRole: {} as Record<UserRole, number>
-    };
-    
-    // Count by role
-    Object.values(UserRole).forEach(role => {
-      stats.byRole[role] = mockUsers.filter(u => u.role === role).length;
-    });
-    
-    return stats;
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+      
+      const response = await fetch(`${API_URL}/api/users-stats.php`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to fetch stats:', response.statusText);
+        return { total: 0, active: 0, inactive: 0, suspended: 0 };
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('API error:', data.error);
+        return { total: 0, active: 0, inactive: 0, suspended: 0 };
+      }
+      
+      return data.data || { total: 0, active: 0, inactive: 0, suspended: 0 };
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      return { total: 0, active: 0, inactive: 0, suspended: 0 };
+    }
   }
 };

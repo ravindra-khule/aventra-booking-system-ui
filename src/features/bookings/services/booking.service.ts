@@ -572,8 +572,17 @@ export const BookingService = {
       customerName: bookingData.payer
         ? `${bookingData.payer.firstName} ${bookingData.payer.lastName}`
         : 'Guest',
-      payer: bookingData.payer || mockPayer,
-      bookingDate: getCurrentDate(),
+      payer: bookingData.payer || {
+        firstName: 'Test',
+        lastName: 'User',
+        email: '',
+        phone: '',
+        address: '',
+        zipCode: '',
+        city: '',
+        country: ''
+      },
+      bookingDate: new Date().toISOString().split('T')[0],
       tripDate: bookingData.tripDate || '',
       participants: bookingData.participants || 1,
       travelers: bookingData.travelers || [],
@@ -587,23 +596,25 @@ export const BookingService = {
     } as Booking;
 
     MOCK_BOOKINGS.push(newBooking);
-    console.log('API Call: Creating booking', newBooking);
-    console.log('Tour Image URL:', newBooking.tourImageUrl);
     return newBooking;
   },
 
   /**
-   * Update an existing booking
+   * Get mock booking by ID
    */
-  update: async (id: string, updates: Partial<Booking>): Promise<Booking> => {
-    await delay(800);
+  _getMockBooking: (id: string): Booking | undefined => {
+    return MOCK_BOOKINGS.find((b) => b.id === id);
+  },
+
+  /**
+   * Update mock booking
+   */
+  _updateMockBooking: (id: string, updates: Partial<Booking>): Booking => {
     const index = MOCK_BOOKINGS.findIndex((b) => b.id === id);
     if (index === -1) throw new Error('Booking not found');
 
-    // Update the booking in mock db
     MOCK_BOOKINGS[index] = { ...MOCK_BOOKINGS[index], ...updates };
 
-    // If payer name changed, update top level customer name too
     if (updates.payer) {
       MOCK_BOOKINGS[index].customerName = `${updates.payer.firstName} ${updates.payer.lastName}`;
     }
@@ -612,44 +623,15 @@ export const BookingService = {
   },
 
   /**
-   * Get all bookings
+   * Get mock dashboard stats
    */
-  getAll: async (): Promise<Booking[]> => {
-    await delay(600);
-    return MOCK_BOOKINGS;
-  },
-
-  /**
-   * Get dashboard statistics
-   */
-  getStats: async (): Promise<DashboardStats> => {
-    await delay(400);
+  _getMockStats: (): DashboardStats => {
     return {
-      totalRevenue: 2540000, // SEK
+      totalRevenue: 2540000,
       activeBookings: 45,
       pendingInquiries: 12,
       occupancyRate: 85
     };
-  },
-
-  /**
-   * Send bulk email to customers
-   */
-  sendBulkEmail: async (emailData: {
-    email: string;
-    subject: string;
-    message: string;
-    bookingCount: number;
-  }): Promise<void> => {
-    await delay(800);
-    // Simulate email sending
-    console.log('Email sent:', {
-      to: emailData.email,
-      subject: emailData.subject,
-      message: emailData.message,
-      bookingsAffected: emailData.bookingCount
-    });
-    // In a real implementation, this would call an email API
   }
 };
 

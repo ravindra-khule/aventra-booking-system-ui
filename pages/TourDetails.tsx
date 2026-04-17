@@ -37,7 +37,15 @@ export const TourDetails = () => {
       {showWaitlistForm && <WaitlistForm tour={tour} onClose={() => setShowWaitlistForm(false)} />}
       {/* Hero Image */}
       <div className="relative h-[400px]">
-        <img src={tour.imageUrl} alt={tour.title} className="w-full h-full object-cover" />
+        <img 
+          src={tour.imageUrl} 
+          alt={tour.title} 
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            const img = e.currentTarget;
+            img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23ddd" width="800" height="600"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="24" font-family="sans-serif" fill="%23666"%3ETour Image%3C/text%3E%3C/svg%3E';
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <button
           onClick={() => navigate(-1)} 

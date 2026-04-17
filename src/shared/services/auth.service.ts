@@ -20,8 +20,7 @@ export interface AuthResponse {
 }
 
 /**
- * Auth Service
- * Handles user authentication (mock implementation)
+ * Auth Service - Real backend implementation
  */
 export const AuthService = {
   /**
