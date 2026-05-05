@@ -15,7 +15,9 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
 
   const handleLogin = async (email: string, password: string, role: UserRole) => {
     try {
-      await login(email, role, password);
+      // Call login with email and password
+      // The backend will validate credentials and return user data with JWT token
+      await login(email, password, role);
       
       // Close the modal first
       setShowLoginModal(false);

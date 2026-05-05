@@ -1,5 +1,5 @@
 /**
- * Email Template Service - CRUD operations and business logic
+ * Email Template Service - CRUD operations with backend API calls
  */
 
 import {
@@ -20,93 +20,87 @@ import {
   TemplateStatistics
 } from '../types/email.types';
 import { extractPlaceholders, replacePlaceholders } from '../constants/email.constants';
-import { PRE_DESIGNED_TEMPLATES } from '../constants/pre-designed-templates';
 
 class EmailTemplateService {
-  private templates: Map<string, EmailTemplateWithHistory> = new Map();
-  private nextId = 1;
+  private apiBaseUrl: string;
 
   constructor() {
-    this.initializeMockData();
+    this.apiBaseUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500';
   }
 
-  /**
-   * Initialize with mock data
-   */
-  private initializeMockData(): void {
-    // Load pre-designed templates
-    PRE_DESIGNED_TEMPLATES.forEach((preDesigned) => {
-      const now = new Date().toISOString();
-      const id = `template-${this.nextId++}`;
+  private async apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const url = `${this.apiBaseUrl}/api/${endpoint}`;
+    console.log(`[EmailTemplateService] Calling API: ${url}`, options);
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers,
+        },
+      });
 
-      const template: EmailTemplate = {
-        id,
-        name: preDesigned.name,
-        description: preDesigned.description,
-        category: preDesigned.category,
-        status: EmailTemplateStatus.ACTIVE,
-        content: preDesigned.content,
-        version: 1,
-        isDefault: true,
-        tags: preDesigned.tags,
-        usageCount: 0,
-        createdBy: 'system',
-        createdDate: now
-      };
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
 
-      const initialVersion: EmailTemplateVersion = {
-        id: `version-${id}-1`,
-        templateId: id,
-        version: 1,
-        content: template.content,
-        changeDescription: 'Initial version',
-        createdBy: 'system',
-        createdDate: now
-      };
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || 'API returned error');
+      }
 
-      const templateWithHistory: EmailTemplateWithHistory = {
-        ...template,
-        versions: [initialVersion]
-      };
-
-      this.templates.set(id, templateWithHistory);
-    });
-
-    console.log(`Email Template Service initialized with ${PRE_DESIGNED_TEMPLATES.length} pre-designed templates`);
+      return data.data;
+    } catch (error) {
+      console.error(`[EmailTemplateService] API Error:`, error);
+      throw error;
+    }
   }
 
   /**
    * Get all templates with optional filtering
    */
   async getAllTemplates(filter?: TemplateFilter): Promise<EmailTemplate[]> {
-    let templates = Array.from(this.templates.values()).map(t => {
-      const { versions, ...template } = t;
-      return template;
-    });
+    const params = new URLSearchParams();
+    if (filter?.searchQuery) params.append('search', filter.searchQuery);
+    if (filter?.category) params.append('category', filter.category);
+    if (filter?.status) params.append('status', filter.status);
+    if (filter?.language) params.append('language', filter.language);
 
-    if (filter) {
-      templates = this.applyFilters(templates, filter);
-    }
-
-    return templates;
+    const queryString = params.toString();
+    const endpoint = `email-templates-list.php${queryString ? '?' + queryString : ''}`;
+    
+    return this.apiCall<EmailTemplate[]>(endpoint);
   }
 
   /**
    * Get a single template by ID
    */
   async getTemplateById(id: string): Promise<EmailTemplate | null> {
-    const template = this.templates.get(id);
-    if (!template) return null;
-
-    const { versions, ...templateData } = template;
-    return templateData;
+    try {
+      return await this.apiCall<EmailTemplate>(`email-templates-get.php?id=${id}`);
+    } catch (error) {
+      console.error('Template not found:', id);
+      return null;
+    }
   }
 
   /**
    * Get template with full version history
    */
   async getTemplateWithHistory(id: string): Promise<EmailTemplateWithHistory | null> {
-    return this.templates.get(id) || null;
+    try {
+      const template = await this.apiCall<any>(`email-templates-get.php?id=${id}`);
+      const versions = await this.apiCall<EmailTemplateVersion[]>(`email-templates-versions.php?id=${id}`);
+      
+      return {
+        ...template,
+        versions
+      };
+    } catch (error) {
+      console.error('Template with history not found:', id);
+      return null;
+    }
   }
 
   /**
@@ -115,41 +109,23 @@ class EmailTemplateService {
   async createTemplate(
     template: Omit<EmailTemplate, 'id' | 'version' | 'usageCount' | 'createdDate'>
   ): Promise<EmailTemplate> {
-    const now = new Date().toISOString();
-    const id = `template-${this.nextId++}`;
-
-    const newTemplate: EmailTemplate = {
-      ...template,
-      id,
+    // Validate template
+    const validation = this.validateTemplate({
+      id: 'temp',
       version: 1,
       usageCount: 0,
-      createdDate: now
-    };
-
-    // Validate template
-    const validation = this.validateTemplate(newTemplate);
+      createdDate: new Date().toISOString(),
+      ...template
+    });
+    
     if (!validation.isValid) {
       throw new Error(`Template validation failed: ${validation.errors[0]?.message}`);
     }
 
-    // Create initial version
-    const initialVersion: EmailTemplateVersion = {
-      id: `version-${id}-1`,
-      templateId: id,
-      version: 1,
-      content: newTemplate.content,
-      changeDescription: 'Initial version',
-      createdBy: newTemplate.createdBy,
-      createdDate: now
-    };
-
-    const templateWithHistory: EmailTemplateWithHistory = {
-      ...newTemplate,
-      versions: [initialVersion]
-    };
-
-    this.templates.set(id, templateWithHistory);
-    return newTemplate;
+    return this.apiCall<EmailTemplate>('email-templates-create.php', {
+      method: 'POST',
+      body: JSON.stringify(template)
+    });
   }
 
   /**
@@ -160,105 +136,58 @@ class EmailTemplateService {
     updates: Partial<EmailTemplate>,
     changeDescription?: string
   ): Promise<EmailTemplate> {
-    const existing = this.templates.get(id);
-    if (!existing) {
-      throw new Error(`Template with ID ${id} not found`);
-    }
-
-    const now = new Date().toISOString();
-    const newVersion = existing.version + 1;
-
-    const updatedTemplate: EmailTemplate = {
-      ...existing,
-      ...updates,
-      id, // Preserve ID
-      version: newVersion,
-      lastModified: now
-    };
-
-    // Validate template
-    const validation = this.validateTemplate(updatedTemplate);
-    if (!validation.isValid) {
-      throw new Error(`Template validation failed: ${validation.errors[0]?.message}`);
-    }
-
-    // Create new version if content changed
-    if (updates.content) {
-      const newVersionEntry: EmailTemplateVersion = {
-        id: `version-${id}-${newVersion}`,
-        templateId: id,
-        version: newVersion,
-        content: updates.content,
-        changeDescription: changeDescription || 'Template updated',
-        createdBy: updates.lastModifiedBy || existing.createdBy,
-        createdDate: now
-      };
-
-      existing.versions.push(newVersionEntry);
-    }
-
-    // Update template
-    const templateWithHistory: EmailTemplateWithHistory = {
-      ...updatedTemplate,
-      versions: existing.versions
-    };
-
-    this.templates.set(id, templateWithHistory);
-    return updatedTemplate;
+    return this.apiCall<EmailTemplate>('email-templates-update.php', {
+      method: 'PUT',
+      body: JSON.stringify({
+        id,
+        ...updates,
+        changeDescription
+      })
+    });
   }
 
   /**
    * Delete a template
    */
   async deleteTemplate(id: string): Promise<boolean> {
-    return this.templates.delete(id);
+    try {
+      await this.apiCall<any>('email-templates-delete.php', {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      });
+      return true;
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+      return false;
+    }
   }
 
   /**
    * Duplicate a template
    */
   async duplicateTemplate(id: string, newName: string, createdBy: string): Promise<EmailTemplate> {
-    const existing = await this.getTemplateById(id);
-    if (!existing) {
-      throw new Error(`Template with ID ${id} not found`);
-    }
-
-    const duplicated = await this.createTemplate({
-      name: newName,
-      description: `Copy of ${existing.name}`,
-      category: existing.category,
-      status: EmailTemplateStatus.DRAFT,
-      content: existing.content,
-      isDefault: false,
-      tags: existing.tags,
-      createdBy
+    return this.apiCall<EmailTemplate>('email-templates-duplicate.php', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        newName,
+        createdBy
+      })
     });
-
-    return duplicated;
   }
 
   /**
    * Restore a previous version
    */
   async restoreVersion(templateId: string, versionNumber: number, restoredBy: string): Promise<EmailTemplate> {
-    const existing = this.templates.get(templateId);
-    if (!existing) {
-      throw new Error(`Template with ID ${templateId} not found`);
-    }
-
-    const version = existing.versions.find(v => v.version === versionNumber);
-    if (!version) {
-      throw new Error(`Version ${versionNumber} not found for template ${templateId}`);
-    }
-
-    return this.updateTemplate(
-      templateId,
-      {
-        content: version.content,
-        lastModifiedBy: restoredBy
-      },
-      `Restored to version ${versionNumber}`
-    );
+    return this.apiCall<EmailTemplate>('email-templates-restore.php', {
+      method: 'POST',
+      body: JSON.stringify({
+        templateId,
+        versionNumber,
+        restoredBy
+      })
+    });
   }
 
   /**
@@ -338,33 +267,16 @@ class EmailTemplateService {
    * Send a test email
    */
   async sendTestEmail(payload: TestEmailPayload): Promise<EmailSendResult> {
-    const template = await this.getTemplateById(payload.templateId);
-    if (!template) {
-      return {
-        success: false,
-        error: 'Template not found'
-      };
-    }
-
-    const content = template.content.find(c => c.language === payload.language);
-    if (!content) {
-      return {
-        success: false,
-        error: `Template does not have content for language: ${payload.language}`
-      };
-    }
-
     try {
-      // Mock sending email (in production, this would use SendGrid)
-      console.log('Sending test email:', {
-        to: payload.recipientEmail,
-        subject: content.subject,
-        template: template.name,
-        language: payload.language
+      await this.apiCall<any>('email-templates-send-test.php', {
+        method: 'POST',
+        body: JSON.stringify({
+          templateId: payload.templateId,
+          language: payload.language,
+          testEmail: payload.recipientEmail,
+          createdBy: 'admin'
+        })
       });
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
 
       return {
         success: true,
@@ -383,46 +295,17 @@ class EmailTemplateService {
    * Send an email using a template
    */
   async sendEmail(options: EmailSendOptions): Promise<EmailSendResult> {
-    const template = await this.getTemplateById(options.templateId);
-    if (!template) {
-      return {
-        success: false,
-        error: 'Template not found'
-      };
-    }
-
-    const content = template.content.find(c => c.language === options.language);
-    if (!content) {
-      return {
-        success: false,
-        error: `Template does not have content for language: ${options.language}`
-      };
-    }
-
     try {
-      // Replace placeholders with actual data
-      const subject = replacePlaceholders(content.subject, options.data);
-      const htmlContent = replacePlaceholders(content.htmlContent, options.data);
-      const textContent = content.textContent 
-        ? replacePlaceholders(content.textContent, options.data)
-        : undefined;
-
-      // Mock sending email (in production, this would use SendGrid)
-      console.log('Sending email:', {
-        to: options.to,
-        subject,
-        template: template.name,
-        language: options.language
+      await this.apiCall<any>('email-templates-send-test.php', {
+        method: 'POST',
+        body: JSON.stringify({
+          templateId: options.templateId,
+          language: options.language,
+          testEmail: options.to,
+          placeholders: options.data,
+          createdBy: 'system'
+        })
       });
-
-      // Update usage count
-      await this.updateTemplate(template.id, {
-        usageCount: template.usageCount + 1,
-        lastSent: new Date().toISOString()
-      });
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
 
       return {
         success: true,
@@ -441,61 +324,35 @@ class EmailTemplateService {
    * Get template statistics
    */
   async getStatistics(): Promise<TemplateStatistics> {
-    const templates = await this.getAllTemplates();
+    try {
+      const templates = await this.getAllTemplates();
 
-    const stats: TemplateStatistics = {
-      totalTemplates: templates.length,
-      activeTemplates: templates.filter(t => t.status === EmailTemplateStatus.ACTIVE).length,
-      draftTemplates: templates.filter(t => t.status === EmailTemplateStatus.DRAFT).length,
-      archivedTemplates: templates.filter(t => t.status === EmailTemplateStatus.ARCHIVED).length,
-      totalSent: templates.reduce((sum, t) => sum + t.usageCount, 0),
-      byCategory: {} as Record<EmailTemplateCategory, number>
-    };
+      const stats: TemplateStatistics = {
+        totalTemplates: templates.length,
+        activeTemplates: templates.filter(t => t.status === EmailTemplateStatus.ACTIVE).length,
+        draftTemplates: templates.filter(t => t.status === EmailTemplateStatus.DRAFT).length,
+        archivedTemplates: templates.filter(t => t.status === EmailTemplateStatus.ARCHIVED).length,
+        totalSent: templates.reduce((sum, t) => sum + t.usageCount, 0),
+        byCategory: {} as Record<EmailTemplateCategory, number>
+      };
 
-    // Count by category
-    Object.values(EmailTemplateCategory).forEach(category => {
-      stats.byCategory[category] = templates.filter(t => t.category === category).length;
-    });
+      // Count by category
+      Object.values(EmailTemplateCategory).forEach(category => {
+        stats.byCategory[category] = templates.filter(t => t.category === category).length;
+      });
 
-    return stats;
-  }
-
-  /**
-   * Apply filters to templates
-   */
-  private applyFilters(templates: EmailTemplate[], filter: TemplateFilter): EmailTemplate[] {
-    let filtered = templates;
-
-    if (filter.category) {
-      filtered = filtered.filter(t => t.category === filter.category);
+      return stats;
+    } catch (error) {
+      console.error('Error getting statistics:', error);
+      return {
+        totalTemplates: 0,
+        activeTemplates: 0,
+        draftTemplates: 0,
+        archivedTemplates: 0,
+        totalSent: 0,
+        byCategory: {}
+      };
     }
-
-    if (filter.status) {
-      filtered = filtered.filter(t => t.status === filter.status);
-    }
-
-    if (filter.language) {
-      filtered = filtered.filter(t => 
-        t.content.some(c => c.language === filter.language)
-      );
-    }
-
-    if (filter.tags && filter.tags.length > 0) {
-      filtered = filtered.filter(t =>
-        t.tags?.some(tag => filter.tags?.includes(tag))
-      );
-    }
-
-    if (filter.searchQuery) {
-      const query = filter.searchQuery.toLowerCase();
-      filtered = filtered.filter(t =>
-        t.name.toLowerCase().includes(query) ||
-        t.description.toLowerCase().includes(query) ||
-        t.tags?.some(tag => tag.toLowerCase().includes(query))
-      );
-    }
-
-    return filtered;
   }
 
   /**

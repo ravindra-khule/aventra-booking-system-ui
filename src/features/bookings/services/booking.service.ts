@@ -1,5 +1,6 @@
 /**
  * Booking Service - Booking management and operations
+ * Integrates with PHP backend APIs at localhost:5500
  */
 
 import { Booking, BookingStatus, PaymentStatus, PayerDetails, Waitlist } from '../types/booking.types';
@@ -206,8 +207,363 @@ export const BookingService = {
    * Create a new booking
    */
   create: async (bookingData: Partial<Booking>): Promise<Booking> => {
-    await delay(1000);
+    try {
+      // Define API_URL at runtime
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      // Get auth token
+      const token = localStorage.getItem('auth_token');
+      
+      // Prepare booking payload for PHP API - use exact field names from PHP API
+      const payload = {
+        userId: bookingData.userId || 1,
+        tourId: bookingData.tourId || 0,
+        numberOfPeople: bookingData.numberOfPeople || 1,
+        customerName: bookingData.customerName || 'Guest',
+        customerEmail: bookingData.customerEmail || '',
+        customerPhone: bookingData.customerPhone || '',
+        specialRequirements: bookingData.specialRequirements || ''
+      };
 
+      console.log('Creating booking with payload:', payload);
+
+      const response = await fetch(`${API_URL}/api/bookings-create.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(payload)
+      });
+
+      console.log('Booking create response status:', response.status);
+      const data = await response.json();
+      console.log('Booking create response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('Booking creation API error:', data);
+        throw new Error(data.error || `API Error: ${response.status}`);
+      }
+
+      // Convert API response to Booking type
+      const apiBooking = data.data;
+      return {
+        id: String(apiBooking.id || apiBooking.bookingReference),
+        userId: bookingData.userId || 1,
+        tourId: bookingData.tourId || 0,
+        bookingReference: apiBooking.bookingReference || '',
+        numberOfPeople: bookingData.numberOfPeople || 1,
+        totalPrice: apiBooking.totalPrice || 0,
+        depositPaid: apiBooking.depositPaid || 0,
+        balanceDue: apiBooking.balanceDue || 0,
+        status: apiBooking.status || 'pending' as any,
+        paymentStatus: apiBooking.paymentStatus || 'pending' as any,
+        customerName: bookingData.customerName || '',
+        customerEmail: bookingData.customerEmail || '',
+        customerPhone: bookingData.customerPhone || '',
+        createdAt: new Date().toISOString(),
+        bookingDate: new Date().toISOString().split('T')[0],
+        // Extended fields for UI
+        tourTitle: bookingData.tourTitle || '',
+        customerId: String(bookingData.userId || 1),
+        payer: bookingData.payer || {} as PayerDetails,
+        tripDate: bookingData.tripDate || '',
+        participants: bookingData.numberOfPeople || 1,
+        travelers: bookingData.travelers || [],
+        totalAmount: apiBooking.totalPrice || 0,
+        paidAmount: apiBooking.depositPaid || 0,
+        transactionId: apiBooking.bookingReference
+      } as Booking;
+    } catch (error) {
+      console.error('Booking creation error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get booking by ID
+   */
+  getById: async (id: string): Promise<Booking | undefined> => {
+    try {
+      // Define API_URL at runtime
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      const token = localStorage.getItem('auth_token');
+
+      console.log('Fetching booking with ID:', id);
+
+      const response = await fetch(`${API_URL}/api/bookings-list.php?id=${id}&admin=true`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+
+      console.log('Booking fetch response status:', response.status);
+      const data = await response.json();
+      console.log('Booking fetch response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('API Error:', data.error);
+        throw new Error(data.error || 'Failed to fetch booking');
+      }
+
+      if (!data.data || data.data.length === 0) {
+        console.log('Booking not found:', id);
+        return undefined;
+      }
+
+      // Convert API response to Booking type
+      const apiBooking = data.data[0];
+      return {
+        id: apiBooking.id,
+        tourId: apiBooking.tour_id,
+        tourTitle: apiBooking.tour_title || '',
+        customerId: apiBooking.user_id,
+        customerName: apiBooking.customer_name,
+        payer: {
+          firstName: apiBooking.customer_name?.split(' ')[0] || '',
+          lastName: apiBooking.customer_name?.split(' ')[1] || '',
+          email: apiBooking.customer_email || '',
+          phone: apiBooking.customer_phone || '',
+          address: '',
+          zipCode: '',
+          city: '',
+          country: ''
+        },
+        bookingDate: apiBooking.booking_date?.split('T')[0] || new Date().toISOString().split('T')[0],
+        tripDate: apiBooking.departure_date || '',
+        participants: apiBooking.number_of_people || 1,
+        travelers: [],
+        totalAmount: apiBooking.total_price || 0,
+        paidAmount: apiBooking.deposit_paid || 0,
+        status: apiBooking.status as any,
+        paymentStatus: apiBooking.payment_status as any,
+        transactionId: apiBooking.booking_reference
+      } as Booking;
+    } catch (error) {
+      console.error('Booking fetch error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get all bookings (or user's bookings)
+   */
+  getAll: async (userId?: string): Promise<Booking[]> => {
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const token = localStorage.getItem('auth_token');
+      const queryParam = userId ? `?userId=${userId}` : '?admin=true';
+
+      console.log('[BookingService.getAll] API_URL:', API_URL);
+      console.log('Fetching bookings from:', `${API_URL}/api/bookings-list.php${queryParam}`);
+
+      const response = await fetch(`${API_URL}/api/bookings-list.php${queryParam}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+
+      console.log('Bookings list response status:', response.status);
+      const data = await response.json();
+      console.log('Bookings list response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('Bookings list API error:', data);
+        throw new Error(data.error || `API Error: ${response.status}`);
+      }
+
+      // Convert API response array to Booking types
+      return (data.data || []).map((apiBooking: any) => ({
+        id: String(apiBooking.id),
+        userId: apiBooking.user_id,
+        tourId: apiBooking.tour_id,
+        bookingReference: apiBooking.booking_reference,
+        numberOfPeople: apiBooking.number_of_people,
+        totalPrice: apiBooking.total_price,
+        depositPaid: apiBooking.deposit_paid,
+        balanceDue: apiBooking.balance_due,
+        status: apiBooking.status,
+        paymentStatus: apiBooking.payment_status,
+        customerName: apiBooking.customer_name,
+        customerEmail: apiBooking.customer_email,
+        customerPhone: apiBooking.customer_phone,
+        createdAt: apiBooking.booking_date,
+        tourTitle: apiBooking.tour_title || '',
+        customerId: apiBooking.customer_id ? String(apiBooking.customer_id) : String(apiBooking.user_id),
+        payer: {
+          firstName: apiBooking.customer_name?.split(' ')[0] || '',
+          lastName: apiBooking.customer_name?.split(' ')[1] || '',
+          email: apiBooking.customer_email || '',
+          phone: apiBooking.customer_phone || '',
+          address: '',
+          zipCode: '',
+          city: '',
+          country: ''
+        },
+        bookingDate: apiBooking.booking_date?.split('T')[0] || new Date().toISOString().split('T')[0],
+        tripDate: apiBooking.departure_date || apiBooking.next_date || '',
+        participants: apiBooking.number_of_people || 1,
+        travelers: [],
+        totalAmount: apiBooking.total_price || 0,
+        paidAmount: apiBooking.deposit_paid || 0,
+        transactionId: apiBooking.booking_reference
+      })) as Booking[];
+    } catch (error) {
+      console.error('Bookings fetch error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Update booking status
+   */
+  update: async (id: string, updates: Partial<Booking>): Promise<Booking> => {
+    try {
+      // Define API_URL at runtime
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      const token = localStorage.getItem('auth_token');
+
+      const payload: any = { id };
+      
+      if (updates.status) payload.status = updates.status;
+      if (updates.paymentStatus) payload.paymentStatus = updates.paymentStatus;
+
+      console.log('Updating booking with payload:', payload);
+
+      const response = await fetch(`${API_URL}/api/bookings-update.php`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify(payload)
+      });
+
+      console.log('Booking update response status:', response.status);
+      const data = await response.json();
+      console.log('Booking update response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('Booking update API error:', data);
+        throw new Error(data.error || `API Error: ${response.status}`);
+      }
+
+      // Return updated booking
+      const updated = await BookingService.getById(id);
+      if (!updated) {
+        throw new Error('Failed to retrieve updated booking');
+      }
+      return updated;
+    } catch (error) {
+      console.error('Booking update error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Delete a booking
+   */
+  delete: async (id: string): Promise<void> => {
+    try {
+      // Define API_URL at runtime
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      const token = localStorage.getItem('auth_token');
+
+      const response = await fetch(`${API_URL}/api/bookings-delete.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({ id, _method: 'DELETE' })
+      });
+
+      console.log('Booking delete response status:', response.status);
+      const data = await response.json();
+      console.log('Booking delete response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('Booking delete API error:', data);
+        throw new Error(data.error || `API Error: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get dashboard statistics
+   */
+  getStats: async (): Promise<DashboardStats> => {
+    try {
+      // Define API_URL at runtime
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:8000') as string;
+      
+      const token = localStorage.getItem('auth_token');
+
+      const response = await fetch(`${API_URL}/api/dashboard-stats.php`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+
+      const data = await response.json();
+
+      if (!data.success || !response.ok) {
+        console.warn('API Error:', data.error, '- Using mock stats');
+        return BookingService._getMockStats();
+      }
+
+      // Convert API response to DashboardStats type
+      const stats = data.data?.summary || {};
+      return {
+        totalRevenue: stats.totalRevenue || 0,
+        activeBookings: stats.confirmedBookings || 0,
+        pendingInquiries: stats.pendingBookings || 0,
+        occupancyRate: 85 // Calculate from data if available
+      } as DashboardStats;
+    } catch (error) {
+      console.error('Dashboard stats error:', error);
+      // Fallback to mock
+      return BookingService._getMockStats();
+    }
+  },
+
+  /**
+   * Send bulk email to customers
+   */
+  sendBulkEmail: async (emailData: {
+    email: string;
+    subject: string;
+    message: string;
+    bookingCount: number;
+  }): Promise<void> => {
+    await delay(800);
+    // TODO: Integrate with backend email API
+    console.log('Email sent:', {
+      to: emailData.email,
+      subject: emailData.subject,
+      message: emailData.message,
+      bookingsAffected: emailData.bookingCount
+    });
+  },
+
+  // ===== MOCK DATA HELPERS =====
+
+  /**
+   * Create mock booking for fallback
+   */
+  _createMockBooking: (bookingData: Partial<Booking>): Booking => {
     const newBooking: Booking = {
       id: generateId('BK-'),
       tourId: bookingData.tourId || '',
