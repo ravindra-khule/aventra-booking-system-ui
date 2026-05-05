@@ -700,8 +700,60 @@ export const TourService = {
     tagId?: string;
     search?: string;
   }): Promise<Tour[]> => {
-    await delay(500);
-    let result = [...MOCK_TOURS];
+    try {
+      // Fetch from PHP backend API
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      // Use admin API if isAdmin flag is set, otherwise use public API
+      const endpoint = filters?.isAdmin ? '/api/tours-admin-list.php' : '/api/tours.php';
+      const response = await fetch(`${API_URL}${endpoint}`);
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch tours');
+      }
+      
+      // Convert API response to Tour objects
+      let result: Tour[] = data.data.map((apiTour: any) => ({
+        id: apiTour.id,
+        title: apiTour.title,
+        slug: apiTour.slug,
+        shortDescription: apiTour.shortDescription,
+        description: apiTour.description,
+        status: apiTour.status ? (apiTour.status as TourStatus) : TourStatus.ACTIVE,
+        price: apiTour.price,
+        depositPrice: apiTour.depositPrice || (apiTour.price * 0.2), // 20% deposit
+        currency: apiTour.currency,
+        durationDays: apiTour.durationDays,
+        difficulty: apiTour.difficulty as TourDifficulty,
+        imageUrl: apiTour.imageUrl,
+        images: [
+          { id: 'img-1', url: apiTour.imageUrl, alt: apiTour.title, isPrimary: true, order: 1 }
+        ],
+        location: apiTour.location,
+        country: apiTour.country,
+        region: apiTour.region || apiTour.location,
+        maxCapacity: apiTour.maxCapacity,
+        minCapacity: 1,
+        availableSpots: apiTour.availableSpots,
+        nextDate: apiTour.nextDate,
+        categories: [],
+        tags: [],
+        highlights: [
+          `${apiTour.durationDays} days in ${apiTour.location}`,
+          `Located in ${apiTour.country}`,
+          `${apiTour.difficulty} difficulty level`,
+          `Starting from ${apiTour.currency} ${apiTour.price}`
+        ],
+        itinerary: [],
+        includedItems: [],
+        excludedItems: []
+      }));
 
     if (filters) {
       if (filters.status) {
@@ -733,54 +785,97 @@ export const TourService = {
    * Get a specific tour by ID
    */
   getById: async (id: string): Promise<Tour | undefined> => {
-    await delay(300);
-    return MOCK_TOURS.find(t => t.id === id);
+    try {
+      // Fetch from PHP backend API
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const response = await fetch(`${API_URL}/api/tour-detail.php?id=${id}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return undefined;
+        }
+        throw new Error(`API Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('Tour detail API error:', data.error);
+        return undefined;
+      }
+      
+      const apiTour = data.data;
+      
+      // Convert API response to Tour object
+      const tour: Tour = {
+        id: apiTour.id,
+        title: apiTour.title,
+        slug: apiTour.slug,
+        shortDescription: apiTour.shortDescription,
+        description: apiTour.description,
+        status: TourStatus.ACTIVE,
+        price: apiTour.price,
+        depositPrice: apiTour.depositPrice || apiTour.price * 0.2,
+        currency: apiTour.currency,
+        durationDays: apiTour.durationDays,
+        difficulty: apiTour.difficulty as TourDifficulty,
+        imageUrl: apiTour.imageUrl,
+        images: [
+          { id: 'img-1', url: apiTour.imageUrl, alt: apiTour.title, isPrimary: true, order: 1 }
+        ],
+        location: apiTour.location,
+        country: apiTour.country,
+        region: apiTour.region || apiTour.location,
+        maxCapacity: apiTour.maxCapacity,
+        minCapacity: 1,
+        availableSpots: apiTour.availableSpots,
+        nextDate: apiTour.nextDate,
+        categories: [],
+        tags: [],
+        highlights: [
+          `${apiTour.durationDays} days in ${apiTour.location}`,
+          `Located in ${apiTour.country}`,
+          `${apiTour.difficulty} difficulty level`,
+          `Starting from ${apiTour.currency} ${apiTour.price}`
+        ],
+        itinerary: [],
+        includedItems: [],
+        excludedItems: []
+      };
+      
+      return tour;
+    } catch (error) {
+      console.error('Error fetching tour details:', error);
+      // Fallback to mock data if API fails
+      return MOCK_TOURS.find(t => t.id === id);
+    }
   },
 
   /**
    * Create a new tour
    */
   create: async (tourData: Partial<Tour>): Promise<Tour> => {
-    await delay(500);
-    const newTour: Tour = {
-      id: `tour-${Date.now()}`,
-      title: tourData.title || 'New Tour',
-      slug: tourData.slug || generateSlug(tourData.title || 'New Tour'),
-      shortDescription: tourData.shortDescription || '',
-      description: tourData.description || '',
-      status: tourData.status || TourStatus.DRAFT,
-      price: tourData.price || 0,
-      depositPrice: tourData.depositPrice || 0,
-      currency: tourData.currency || 'SEK',
-      durationDays: tourData.durationDays || 1,
-      difficulty: tourData.difficulty || TourDifficulty.MEDIUM,
-      imageUrl: tourData.imageUrl || '',
-      images: tourData.images || [],
-      location: tourData.location || '',
-      country: tourData.country || '',
-      region: tourData.region,
-      maxCapacity: tourData.maxCapacity || 10,
-      minCapacity: tourData.minCapacity || 4,
-      availableSpots: tourData.availableSpots || 10,
-      nextDate: tourData.nextDate || new Date().toISOString().split('T')[0],
-      categories: tourData.categories || [],
-      tags: tourData.tags || [],
-      highlights: tourData.highlights || [],
-      itinerary: tourData.itinerary || [],
-      includedItems: tourData.includedItems || [],
-      excludedItems: tourData.excludedItems || [],
-      requirements: tourData.requirements || [],
-      translations: tourData.translations || [],
-      defaultLanguage: tourData.defaultLanguage || 'sv',
-      isFeatured: tourData.isFeatured || false,
-      allowWaitlist: tourData.allowWaitlist !== undefined ? tourData.allowWaitlist : true,
-      autoConfirm: tourData.autoConfirm || false,
-      requireApproval: tourData.requireApproval !== undefined ? tourData.requireApproval : true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      totalBookings: 0,
-      revenue: 0
-    };
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      const payload = {
+        title: tourData.title,
+        slug: tourData.slug || generateSlug(tourData.title || 'New Tour'),
+        imageUrl: tourData.imageUrl,
+        shortDescription: tourData.shortDescription,
+        description: tourData.description,
+        status: tourData.status || TourStatus.ACTIVE,
+        price: tourData.price || 0,
+        depositPrice: tourData.depositPrice || (tourData.price || 0) * 0.2,
+        currency: tourData.currency || 'USD',
+        durationDays: tourData.durationDays || 1,
+        difficulty: tourData.difficulty || TourDifficulty.MODERATE,
+        location: tourData.location,
+        country: tourData.country,
+        region: tourData.region,
+        maxCapacity: tourData.maxCapacity || 10,
+        nextDate: tourData.nextDate || new Date().toISOString().split('T')[0]
+      };
 
     MOCK_TOURS.push(newTour);
     return newTour;
@@ -790,10 +885,96 @@ export const TourService = {
    * Update an existing tour
    */
   update: async (id: string, tourData: Partial<Tour>): Promise<Tour> => {
-    await delay(500);
-    const index = MOCK_TOURS.findIndex(t => t.id === id);
-    if (index === -1) {
-      throw new Error(`Tour with ID ${id} not found`);
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      const payload: any = { id };
+      
+      if (tourData.title !== undefined) payload.title = tourData.title;
+      if (tourData.slug !== undefined) payload.slug = tourData.slug;
+      if (tourData.imageUrl !== undefined) payload.imageUrl = tourData.imageUrl;
+      if (tourData.shortDescription !== undefined) payload.shortDescription = tourData.shortDescription;
+      if (tourData.description !== undefined) payload.description = tourData.description;
+      if (tourData.status !== undefined) payload.status = tourData.status;
+      if (tourData.price !== undefined) payload.price = tourData.price;
+      if (tourData.depositPrice !== undefined) payload.depositPrice = tourData.depositPrice;
+      if (tourData.durationDays !== undefined) payload.durationDays = tourData.durationDays;
+      if (tourData.difficulty !== undefined) payload.difficulty = tourData.difficulty;
+      if (tourData.location !== undefined) payload.location = tourData.location;
+      if (tourData.country !== undefined) payload.country = tourData.country;
+      if (tourData.maxCapacity !== undefined) payload.maxCapacity = tourData.maxCapacity;
+      if (tourData.nextDate !== undefined) payload.nextDate = tourData.nextDate;
+
+      const response = await fetch(`${API_URL}/api/tours-update.php`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      console.log('Tour update response status:', response.status);
+      const data = await response.json();
+      console.log('Tour update response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('Tour update API error:', data);
+        throw new Error(data.error || `API Error: ${response.status}`);
+      }
+
+      // Convert API response to Tour object
+      const apiTour = data.data;
+      const tour: Tour = {
+        id: apiTour.id,
+        title: apiTour.title,
+        slug: apiTour.slug,
+        shortDescription: apiTour.shortDescription,
+        description: apiTour.description,
+        status: TourStatus.ACTIVE,
+        price: apiTour.price,
+        depositPrice: apiTour.depositPrice,
+        currency: apiTour.currency,
+        durationDays: apiTour.durationDays,
+        difficulty: apiTour.difficulty as TourDifficulty,
+        imageUrl: apiTour.imageUrl,
+        images: [
+          { id: 'img-1', url: apiTour.imageUrl, alt: apiTour.title, isPrimary: true, order: 1 }
+        ],
+        location: apiTour.location,
+        country: apiTour.country,
+        region: apiTour.region,
+        maxCapacity: apiTour.maxCapacity,
+        minCapacity: 1,
+        availableSpots: apiTour.availableSpots,
+        nextDate: apiTour.nextDate,
+        categories: [],
+        tags: [],
+        highlights: [
+          `${apiTour.durationDays} days in ${apiTour.location}`,
+          `Located in ${apiTour.country}`,
+          `${apiTour.difficulty} difficulty level`,
+          `Starting from ${apiTour.currency} ${apiTour.price}`
+        ],
+        itinerary: [],
+        includedItems: [],
+        excludedItems: [],
+        requirements: [],
+        translations: [],
+        defaultLanguage: 'sv',
+        isFeatured: false,
+        allowWaitlist: true,
+        autoConfirm: false,
+        requireApproval: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        totalBookings: 0,
+        revenue: 0
+      };
+
+      return tour;
+    } catch (error) {
+      console.error('Error updating tour:', error);
+      throw error;
     }
 
     const updatedTour = {
@@ -811,10 +992,28 @@ export const TourService = {
    * Delete a tour
    */
   delete: async (id: string): Promise<void> => {
-    await delay(300);
-    const index = MOCK_TOURS.findIndex(t => t.id === id);
-    if (index === -1) {
-      throw new Error(`Tour with ID ${id} not found`);
+    try {
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      
+      const response = await fetch(`${API_URL}/api/tours-delete.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id, _method: 'DELETE' })
+      });
+
+      console.log('Tour delete response status:', response.status);
+      const data = await response.json();
+      console.log('Tour delete response data:', data);
+
+      if (!data.success || !response.ok) {
+        console.error('Tour delete API error:', data);
+        throw new Error(data.error || `API Error: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error deleting tour:', error);
+      throw error;
     }
     MOCK_TOURS.splice(index, 1);
   },

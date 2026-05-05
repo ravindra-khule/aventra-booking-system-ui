@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, UserRole, UserStatus } from '../types';
-import { AuthService } from '../services/api';
+import { AuthService } from '../src/shared/services/auth.service';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, role: UserRole, password?: string) => Promise<void>;
-  logout: () => void;
+  login: (email: string, password: string, role?: UserRole) => Promise<void>;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
@@ -15,31 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // LocalStorage keys
 const USER_STORAGE_KEY = 'aventra_auth_user';
-
-// Demo user data for each role
-const getDemoUserData = (email: string, role: UserRole): User => {
-  const roleNames: Record<UserRole, string> = {
-    [UserRole.SUPER_ADMIN]: 'Super Admin',
-    [UserRole.ADMIN]: 'Admin User',
-    [UserRole.SUPPORT]: 'Support Agent',
-    [UserRole.ACCOUNTANT]: 'Accountant',
-    [UserRole.DEVELOPER]: 'Developer',
-    [UserRole.CUSTOMER]: 'Guest User',
-    [UserRole.GUEST]: 'Guest',
-  };
-
-  return {
-    id: `demo_${role}_${Date.now()}`,
-    name: roleNames[role] || email.split('@')[0],
-    email: email,
-    role: role,
-    status: UserStatus.ACTIVE,
-    createdAt: new Date(),
-    lastLogin: new Date(),
-    twoFactorEnabled: false,
-    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${role}`,
-  };
-};
+const TOKEN_STORAGE_KEY = 'auth_token';
 
 // Helper function to restore user from localStorage
 const restoreUserFromStorage = (): User | null => {
@@ -64,31 +40,74 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
 
   // Initialize user from localStorage on mount
   useEffect(() => {
-    const restoredUser = restoreUserFromStorage();
-    if (restoredUser) {
-      setUser(restoredUser);
-    }
-    setIsLoading(false);
+    const restoreAuth = () => {
+      try {
+        const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+        const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+        
+        if (token && storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            setUser(userData);
+          } catch (parseError) {
+            console.error('Failed to parse user data:', parseError);
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            localStorage.removeItem(USER_STORAGE_KEY);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to restore auth state:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    restoreAuth();
   }, []);
 
-  const login = async (email: string, role: UserRole, password?: string) => {
+  const login = async (email: string, password: string, role?: UserRole) => {
     try {
-      // For demo purposes, we accept any password or no password
-      // In production, this would validate with backend
-      const userData = getDemoUserData(email, role);
+      // Call real backend login API with JWT
+      const response = await AuthService.login(email, password);
+      
+      // Convert response to User object format
+      const userData: User = {
+        id: response.id,
+        name: response.name,
+        email: response.email,
+        role: response.role as UserRole,
+        status: UserStatus.ACTIVE,
+        createdAt: new Date(),
+        lastLogin: new Date(),
+        twoFactorEnabled: false,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${response.role}`,
+      };
+      
       setUser(userData);
-      // Persist to localStorage
+      
+      // Token is already stored in localStorage by AuthService
+      // But we also store user data for quick access
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+      
     } catch (error) {
       console.error("Login failed", error);
       throw error;
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    // Clear from localStorage
-    localStorage.removeItem(USER_STORAGE_KEY);
+  const logout = async () => {
+    try {
+      // Call logout API to blacklist token
+      await AuthService.logout();
+    } catch (error) {
+      console.error("Logout error", error);
+      // Continue with local logout even if API fails
+    } finally {
+      setUser(null);
+      // Clear localStorage
+      localStorage.removeItem(USER_STORAGE_KEY);
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
   };
 
   const isAdmin = user?.role === UserRole.SUPER_ADMIN || 
