@@ -77,6 +77,10 @@ export const CustomerService = {
     });
 
     return Array.from(customerMap.values());
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      return [];
+    }
   },
 
   /**

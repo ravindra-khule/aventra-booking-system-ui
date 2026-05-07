@@ -703,6 +703,8 @@ export const TourService = {
     try {
       // Fetch from PHP backend API
       const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      console.log('[DEBUG] API_URL:', API_URL);
+      console.log('[DEBUG] ENV:', import.meta.env.VITE_REACT_APP_API_URL);
       
       // Use admin API if isAdmin flag is set, otherwise use public API
       const endpoint = filters?.isAdmin ? '/api/tours-admin-list.php' : '/api/tours.php';
@@ -779,6 +781,10 @@ export const TourService = {
     }
 
     return result;
+    } catch (error) {
+      console.error('Error fetching tours:', error);
+      return [];
+    }
   },
 
   /**
@@ -877,8 +883,78 @@ export const TourService = {
         nextDate: tourData.nextDate || new Date().toISOString().split('T')[0]
       };
 
-    MOCK_TOURS.push(newTour);
-    return newTour;
+      const response = await fetch(`${API_URL}/api/tours-create.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create tour');
+      }
+
+      // Convert API response to Tour object
+      const apiTour = data.data;
+      const newTour: Tour = {
+        id: apiTour.id,
+        title: apiTour.title,
+        slug: apiTour.slug,
+        shortDescription: apiTour.shortDescription,
+        description: apiTour.description,
+        status: apiTour.status ? (apiTour.status as TourStatus) : TourStatus.ACTIVE,
+        price: apiTour.price,
+        depositPrice: apiTour.depositPrice,
+        currency: apiTour.currency,
+        durationDays: apiTour.durationDays,
+        difficulty: apiTour.difficulty as TourDifficulty,
+        imageUrl: apiTour.imageUrl,
+        images: [
+          { id: 'img-1', url: apiTour.imageUrl, alt: apiTour.title, isPrimary: true, order: 1 }
+        ],
+        location: apiTour.location,
+        country: apiTour.country,
+        region: apiTour.region || apiTour.location,
+        maxCapacity: apiTour.maxCapacity,
+        minCapacity: 1,
+        availableSpots: apiTour.availableSpots,
+        nextDate: apiTour.nextDate,
+        categories: [],
+        tags: [],
+        highlights: [
+          `${apiTour.durationDays} days in ${apiTour.location}`,
+          `Located in ${apiTour.country}`,
+          `${apiTour.difficulty} difficulty level`,
+          `Starting from ${apiTour.currency} ${apiTour.price}`
+        ],
+        itinerary: [],
+        includedItems: [],
+        excludedItems: [],
+        requirements: [],
+        translations: [],
+        defaultLanguage: 'sv',
+        isFeatured: false,
+        allowWaitlist: true,
+        autoConfirm: false,
+        requireApproval: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        totalBookings: 0,
+        revenue: 0
+      };
+
+      return newTour;
+    } catch (error) {
+      console.error('Error creating tour:', error);
+      throw error;
+    }
   },
 
   /**
@@ -976,16 +1052,6 @@ export const TourService = {
       console.error('Error updating tour:', error);
       throw error;
     }
-
-    const updatedTour = {
-      ...MOCK_TOURS[index],
-      ...tourData,
-      id, // Ensure ID doesn't change
-      updatedAt: new Date().toISOString()
-    };
-
-    MOCK_TOURS[index] = updatedTour;
-    return updatedTour;
   },
 
   /**
@@ -1015,7 +1081,6 @@ export const TourService = {
       console.error('Error deleting tour:', error);
       throw error;
     }
-    MOCK_TOURS.splice(index, 1);
   },
 
   /**
