@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.REACT_APP_STRIPE_KEY': JSON.stringify(env.VITE_REACT_APP_STRIPE_KEY),
         'import.meta.env.VITE_REACT_APP_STRIPE_KEY': JSON.stringify(env.VITE_REACT_APP_STRIPE_KEY),
-        'import.meta.env.VITE_REACT_APP_API_URL': JSON.stringify(env.VITE_REACT_APP_API_URL || 'http://localhost:5500'),
+        'import.meta.env.VITE_REACT_APP_API_URL': JSON.stringify(env.VITE_REACT_APP_API_URL || 'https://booking.prismadot.com/api/public'),
       },
       resolve: {
         alias: {

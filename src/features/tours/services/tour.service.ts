@@ -703,6 +703,8 @@ export const TourService = {
     try {
       // Fetch from PHP backend API
       const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      console.log('[DEBUG] API_URL:', API_URL);
+      console.log('[DEBUG] ENV:', import.meta.env.VITE_REACT_APP_API_URL);
       
       // Use admin API if isAdmin flag is set, otherwise use public API
       const endpoint = filters?.isAdmin ? '/api/tours-admin-list.php' : '/api/tours.php';
