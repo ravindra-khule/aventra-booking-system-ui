@@ -6,7 +6,7 @@
 
 import { User, UserRole } from '../types/common.types';
 
-const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
+const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500');
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'user';
 const TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000; // 12 hours in milliseconds

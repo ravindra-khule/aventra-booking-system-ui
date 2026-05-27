@@ -21,7 +21,7 @@ export const CustomerService = {
    */
   getAll: async (): Promise<Customer[]> => {
     try {
-      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       console.log('[CustomerService.getAll] API_BASE:', API_BASE);
       
       const response = await fetch(`${API_BASE}/api/customers-list.php`, {
@@ -88,7 +88,7 @@ export const CustomerService = {
    */
   getById: async (id: string): Promise<Customer | undefined> => {
     try {
-      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       const response = await fetch(`${API_BASE}/api/customers-get.php?id=${id}`, {
         method: 'GET',
         headers: {
@@ -122,7 +122,7 @@ export const CustomerService = {
    */
   create: async (customer: Omit<Customer, 'id' | 'totalBookings' | 'totalSpent' | 'createdDate'>): Promise<Customer> => {
     try {
-      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       // Map camelCase to snake_case for API
       const payload = {
         firstName: customer.firstName,
@@ -166,7 +166,7 @@ export const CustomerService = {
    */
   update: async (id: string, updates: Partial<Customer>): Promise<Customer> => {
     try {
-      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       // Map camelCase to snake_case for API
       const payload: any = { id };
       
@@ -211,7 +211,7 @@ export const CustomerService = {
    */
   delete: async (id: string): Promise<void> => {
     try {
-      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       const response = await fetch(`${API_BASE}/api/customers-delete.php`, {
         method: 'DELETE',
         headers: {
