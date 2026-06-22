@@ -25,7 +25,7 @@ class EmailTemplateService {
   private apiBaseUrl: string;
 
   constructor() {
-    this.apiBaseUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500';
+    this.apiBaseUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500';
   }
 
   private async apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {

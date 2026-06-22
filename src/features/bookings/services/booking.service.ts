@@ -209,7 +209,7 @@ export const BookingService = {
   create: async (bookingData: Partial<Booking>): Promise<Booking> => {
     try {
       // Define API_URL at runtime
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       
       // Get auth token
       const token = localStorage.getItem('auth_token');
@@ -286,7 +286,7 @@ export const BookingService = {
   getById: async (id: string): Promise<Booking | undefined> => {
     try {
       // Define API_URL at runtime
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       
       const token = localStorage.getItem('auth_token');
 
@@ -353,7 +353,7 @@ export const BookingService = {
    */
   getAll: async (userId?: string): Promise<Booking[]> => {
     try {
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       const token = localStorage.getItem('auth_token');
       const queryParam = userId ? `?userId=${userId}` : '?admin=true';
 
@@ -425,7 +425,7 @@ export const BookingService = {
   update: async (id: string, updates: Partial<Booking>): Promise<Booking> => {
     try {
       // Define API_URL at runtime
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       
       const token = localStorage.getItem('auth_token');
 
@@ -472,7 +472,7 @@ export const BookingService = {
   delete: async (id: string): Promise<void> => {
     try {
       // Define API_URL at runtime
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
       
       const token = localStorage.getItem('auth_token');
 
