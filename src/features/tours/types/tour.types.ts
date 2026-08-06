@@ -12,10 +12,9 @@ export enum TourStatus {
 
 // Tour Difficulty
 export enum TourDifficulty {
-  EASY = 'Easy',
-  MEDIUM = 'Medium',
-  HARD = 'Hard',
-  EXTREME = 'Extreme'
+  EASY = 'easy',
+  MODERATE = 'moderate',
+  HARD = 'hard'
 }
 
 // Multi-language content

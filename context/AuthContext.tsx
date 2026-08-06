@@ -17,23 +17,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const USER_STORAGE_KEY = 'aventra_auth_user';
 const TOKEN_STORAGE_KEY = 'auth_token';
 
-// Helper function to restore user from localStorage
-const restoreUserFromStorage = (): User | null => {
-  try {
-    const stored = localStorage.getItem(USER_STORAGE_KEY);
-    if (stored) {
-      const userData = JSON.parse(stored);
-      // Restore date objects
-      userData.createdAt = new Date(userData.createdAt);
-      userData.lastLogin = new Date(userData.lastLogin);
-      return userData;
-    }
-  } catch (error) {
-    console.error('Failed to restore user from storage:', error);
-  }
-  return null;
-};
-
 export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);

@@ -364,7 +364,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
                   <span className="font-medium">{t('admin:languages')}:</span>
                   {template.content.map((content) => (
                     <span key={content.language} className="px-2 py-1 bg-gray-100 rounded text-xs">
-                      {content.i18n.language === 'en' ? '🇬🇧 EN' : '🇸🇪 SV'}
+                      {content.language === 'en' ? '🇬🇧 EN' : '🇸🇪 SV'}
                     </span>
                   ))}
                 </div>

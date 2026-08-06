@@ -83,9 +83,11 @@ export const BookingManager = () => {
 
   const fetchBookings = () => {
     BookingService.getAll().then((data) => {
+      console.log('Bookings loaded:', data.length);
       setBookings(data);
-      // Re-apply filters if needed, but for simplicity we can just set filtered here initially
-      // A better way is to have the useEffect dependent on 'bookings' handle the filtering
+    }).catch((error) => {
+      console.error('Failed to load bookings:', error);
+      toast.error('Failed to load bookings. Please refresh the page.');
     });
   };
 
@@ -229,7 +231,7 @@ export const BookingManager = () => {
     ).size;
 
     return createPortal(
-      <div style={{ 
+      <div style={ {
         position: 'fixed', 
         top: 0, 
         left: 0, 

@@ -8,6 +8,7 @@ interface AddUserModalProps {
   onSave: (userData: {
     name: string;
     email: string;
+    password: string;
     phone?: string;
     role: UserRole;
     status: UserStatus;
@@ -20,6 +21,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onS
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     phone: '',
     role: UserRole.SUPPORT,
     status: UserStatus.ACTIVE,
@@ -44,6 +46,12 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onS
       newErrors.email = 'Invalid email format';
     }
     
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,10 +65,22 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onS
     
     setLoading(true);
     try {
+      console.log('Creating user with data:', { ...formData, password: '****' });
       await onSave({
         ...formData,
         phone: formData.phone || undefined,
         notes: formData.notes || undefined
+      });
+      // Reset form after successful creation
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        phone: '',
+        role: UserRole.SUPPORT,
+        status: UserStatus.ACTIVE,
+        twoFactorEnabled: false,
+        notes: ''
       });
       onClose();
     } catch (error) {
@@ -129,6 +149,25 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onS
                 {errors.email && (
                   <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                 )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password *
+                </label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                    errors.password ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter initial password"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">Min 8 characters</p>
               </div>
 
               <div>

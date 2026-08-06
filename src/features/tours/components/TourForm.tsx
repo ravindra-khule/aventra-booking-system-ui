@@ -25,12 +25,12 @@ export const TourForm: React.FC<TourFormProps> = ({
       slug: '',
       shortDescription: '',
       description: '',
-      status: TourStatus.DRAFT,
+      status: TourStatus.ACTIVE,
       price: 0,
       depositPrice: 0,
       currency: 'SEK',
       durationDays: 0,
-      difficulty: TourDifficulty.MEDIUM,
+      difficulty: TourDifficulty.MODERATE,
       location: '',
       country: '',
       region: '',
@@ -282,7 +282,14 @@ export const TourForm: React.FC<TourFormProps> = ({
                   </div>
                   {formData.imageUrl && (
                     <div className="image-preview">
-                      <img src={formData.imageUrl} alt="Preview" />
+                      <img 
+                        src={formData.imageUrl} 
+                        alt="Preview"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23ddd" width="800" height="600"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="24" font-family="sans-serif" fill="%23666"%3ETour Image%3C/text%3E%3C/svg%3E';
+                        }}
+                      />
                     </div>
                   )}
                 </div>
@@ -333,13 +340,12 @@ export const TourForm: React.FC<TourFormProps> = ({
                   <div className="form-group">
                     <label>Difficulty *</label>
                     <select
-                      value={formData.difficulty || TourDifficulty.MEDIUM}
+                      value={formData.difficulty || TourDifficulty.MODERATE}
                       onChange={(e) => handleInputChange('difficulty', e.target.value)}
                     >
                       <option value={TourDifficulty.EASY}>Easy</option>
-                      <option value={TourDifficulty.MEDIUM}>Medium</option>
+                      <option value={TourDifficulty.MODERATE}>Moderate</option>
                       <option value={TourDifficulty.HARD}>Hard</option>
-                      <option value={TourDifficulty.EXTREME}>Extreme</option>
                     </select>
                   </div>
                 </div>
@@ -348,7 +354,7 @@ export const TourForm: React.FC<TourFormProps> = ({
                   <div className="form-group">
                     <label>Status</label>
                     <select
-                      value={formData.status || TourStatus.DRAFT}
+                        value={formData.status || TourStatus.ACTIVE}
                       onChange={(e) => handleInputChange('status', e.target.value)}
                     >
                       <option value={TourStatus.DRAFT}>Draft</option>

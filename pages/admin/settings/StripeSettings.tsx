@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, CheckCircle, X, Eye, EyeOff, Copy, Check } from 'lucide-react';
+import { SettingsService, SETTINGS_CATEGORIES } from '../../../src/shared/services/settings.service';
 import {
   StripeSettings,
   StripeAccountType,
@@ -31,6 +32,7 @@ export const StripePaymentSettings: React.FC = () => {
   const [saveMessage, setSaveMessage] = useState('');
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
   const [copyStatus, setCopyStatus] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   // Initialize with default data
   const [settings, setSettings] = useState<StripeSettings>({
@@ -56,6 +58,38 @@ export const StripePaymentSettings: React.FC = () => {
     connectionStatus: 'connected',
     connectionError: undefined,
   });
+
+  // Load Stripe settings from backend on mount
+  useEffect(() => {
+    loadStripeSettings();
+  }, []);
+
+  const loadStripeSettings = async () => {
+    try {
+      setIsLoading(true);
+      const paymentSettings = await SettingsService.getByCategory(SETTINGS_CATEGORIES.PAYMENT);
+      
+      if (paymentSettings && paymentSettings.length > 0) {
+        const settingsMap = paymentSettings.reduce((acc, setting) => {
+          acc[setting.key] = setting.value;
+          return acc;
+        }, {} as Record<string, string>);
+
+        setSettings(prev => ({
+          ...prev,
+          testPublishableKey: settingsMap['stripe_public_key'] || prev.testPublishableKey,
+          testSecretKey: settingsMap['stripe_secret_key'] || '',
+          webhookSecret: settingsMap['stripe_webhook_secret'] || '',
+          accountType: settingsMap['stripe_mode'] as StripeAccountType || 'test',
+          defaultCurrency: settingsMap['currency'] || 'USD',
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load Stripe settings:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleKeyChange = (
     field: 'testPublishableKey' | 'testSecretKey' | 'livePublishableKey' | 'liveSecretKey',
@@ -97,8 +131,6 @@ export const StripePaymentSettings: React.FC = () => {
     setSaveMessage('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
       // Validate required fields
       const errors = [];
       if (!settings.testPublishableKey.trim()) errors.push('Test Publishable Key is required');
@@ -110,21 +142,30 @@ export const StripePaymentSettings: React.FC = () => {
         return;
       }
 
-      setSaveStatus('success');
-      setSaveMessage('Stripe settings saved successfully!');
+      // Prepare updates for backend
+      const updates = [
+        { category: SETTINGS_CATEGORIES.PAYMENT, key: 'stripe_public_key', value: settings.testPublishableKey },
+        { category: SETTINGS_CATEGORIES.PAYMENT, key: 'stripe_secret_key', value: settings.testSecretKey },
+        { category: SETTINGS_CATEGORIES.PAYMENT, key: 'stripe_webhook_secret', value: settings.webhookSecret },
+        { category: SETTINGS_CATEGORIES.PAYMENT, key: 'stripe_mode', value: settings.accountType },
+        { category: SETTINGS_CATEGORIES.PAYMENT, key: 'currency', value: settings.defaultCurrency },
+      ];
 
-      // Log data to console (simulating API call)
-      console.log('Stripe Settings:', {
-        ...settings,
-        testSecretKey: undefined,
-        liveSecretKey: undefined,
-      });
+      const success = await SettingsService.updateMultiple(updates);
 
-      setTimeout(() => {
-        setSaveStatus('idle');
-        setSaveMessage('');
-      }, 3000);
+      if (success) {
+        setSaveStatus('success');
+        setSaveMessage('Stripe settings saved successfully!');
+        setTimeout(() => {
+          setSaveStatus('idle');
+          setSaveMessage('');
+        }, 3000);
+      } else {
+        setSaveStatus('error');
+        setSaveMessage('Failed to save Stripe settings. Please try again.');
+      }
     } catch (error) {
+      console.error('Error saving Stripe settings:', error);
       setSaveStatus('error');
       setSaveMessage('Failed to save. Please try again.');
     }

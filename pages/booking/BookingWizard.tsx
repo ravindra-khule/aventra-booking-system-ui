@@ -348,41 +348,64 @@ export const BookingWizard = () => {
         const finalTotal = subtotal - discountAmount;
         const depositTotal = Math.round((tour?.depositPrice || 0) * participants * (finalTotal / baseTotal));
         
-        // Create booking without payment processing (development mode)
-        // TODO: In production, integrate Stripe payment processing here
-        console.log('Creating booking with deposit:', depositTotal);
+        // Create booking with API-compatible data structure
+        console.log('Creating booking with tour:', tour?.id, 'participants:', participants);
         
-        const newBooking = await BookingService.create({
-              tourId: tour?.id,
-              tourTitle: tour?.title,
-              participants: participants,
-              payer: payer,
-              travelers: travelers,
-              totalAmount: finalTotal,
-              paidAmount: depositTotal,
-              tripDate: date,
-              tourImageUrl: tour?.imageUrl,
-              transactionId: 'DEV-MODE-' + Date.now(),
-              promoCode: appliedPromoCode || undefined,
-              discountAmount: discountAmount || undefined,
-              selectedAddOns: Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => ({
-                addOnId: addOn.id,
-                addOn: addOn,
-                quantity: quantity,
-                totalPrice: addOn.pricePerPerson ? addOn.price * quantity * participants : addOn.price * quantity,
-              })),
-          });
-
-        // Continue with rest of booking process
-        if (appliedPromoCode) {
-          await PromoCodeService.incrementUsage(appliedPromoCode);
+        // Validate required fields
+        if (!tour?.id) {
+          throw new Error('Tour information is missing. Please go back and select a tour again.');
+        }
+        if (!payer.firstName || !payer.lastName) {
+          throw new Error('Payer first and last name are required.');
+        }
+        if (!payer.email) {
+          throw new Error('Payer email is required.');
+        }
+        if (participants < 1) {
+          throw new Error('Number of participants must be at least 1.');
         }
         
-        // Save booking to localStorage
+        const newBooking = await BookingService.create({
+          userId: 1, // TODO: Get from auth context
+          tourId: tour.id,
+          numberOfPeople: participants,
+          customerName: `${payer.firstName} ${payer.lastName}`.trim(),
+          customerEmail: payer.email,
+          customerPhone: payer.phone || '',
+        });
+
+        console.log('Booking created successfully:', newBooking);
+
+        // Store full booking details in localStorage for reference
         try {
+          const baseTotal = (tour?.price || 0) * participants;
+          const addOnsTotal = calculateAddOnsTotal();
+          const subtotal = baseTotal + addOnsTotal;
+          const finalTotal = subtotal - discountAmount;
+          
+          const completeBooking = {
+            ...newBooking,
+            tourTitle: tour?.title,
+            participants: participants,
+            payer: payer,
+            travelers: travelers,
+            totalAmount: finalTotal,
+            paidAmount: (tour?.depositPrice || 0) * participants * (finalTotal / baseTotal),
+            tripDate: date,
+            tourImageUrl: tour?.imageUrl,
+            promoCode: appliedPromoCode || undefined,
+            discountAmount: discountAmount || undefined,
+            selectedAddOns: Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => ({
+              addOnId: addOn.id,
+              addOn: addOn,
+              quantity: quantity,
+              totalPrice: addOn.pricePerPerson ? addOn.price * quantity * participants : addOn.price * quantity,
+            })),
+          };
+          
           const existingBookings = localStorage.getItem('userBookings');
           const bookings = existingBookings ? JSON.parse(existingBookings) : [];
-          bookings.push(newBooking);
+          bookings.push(completeBooking);
           localStorage.setItem('userBookings', JSON.stringify(bookings));
         } catch (storageError) {
           console.error('Failed to save booking to localStorage', storageError);
@@ -390,7 +413,17 @@ export const BookingWizard = () => {
         
         setCurrentStep(3); 
       } catch (e) {
-        alert(t('common:error') || 'Booking failed. Please try again.');
+        console.error('Booking creation error:', e);
+        console.error('Error details:', {
+          tour: tour?.id,
+          tourId: tour?.id || 0,
+          participants,
+          payer: payer.email,
+          errorMessage: e instanceof Error ? e.message : String(e),
+          errorStack: e instanceof Error ? e.stack : 'N/A'
+        });
+        const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+        alert(`Booking failed: ${errorMsg}`);
       } finally {
         setIsProcessing(false);
       }
@@ -1028,7 +1061,15 @@ export const BookingWizard = () => {
                               quantity > 0 ? 'bg-orange-100' : 'bg-gray-100'
                             }`}>
                               {addOn.imageUrl ? (
-                                <img src={addOn.imageUrl} alt={addOn.name} className="w-full h-full object-cover rounded-lg" />
+                                <img 
+                                  src={addOn.imageUrl} 
+                                  alt={addOn.name} 
+                                  className="w-full h-full object-cover rounded-lg"
+                                  onError={(e) => {
+                                    const img = e.currentTarget;
+                                    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23eee" width="100" height="100"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="12" font-family="sans-serif" fill="%23999"%3EImage%3C/text%3E%3C/svg%3E';
+                                  }}
+                                />
                               ) : (
                                 <div className={quantity > 0 ? 'text-orange-600' : 'text-gray-400'}>
                                   {ADDON_TYPE_ICONS[addOn.type]}

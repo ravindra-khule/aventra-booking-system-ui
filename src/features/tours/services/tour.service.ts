@@ -49,7 +49,7 @@ let MOCK_TOURS: Tour[] = [
     depositPrice: 5000,
     currency: 'SEK',
     durationDays: 10,
-    difficulty: TourDifficulty.EXTREME,
+    difficulty: TourDifficulty.HARD,
     imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1000&auto=format&fit=cropcrop',
     images: [
       { id: 'img-1', url: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1000&auto=format&fit=cropcrop', alt: 'Kilimanjaro Summit', isPrimary: true, order: 1 }
@@ -379,7 +379,7 @@ let MOCK_TOURS: Tour[] = [
     depositPrice: 3500,
     currency: 'SEK',
     durationDays: 9,
-    difficulty: TourDifficulty.MEDIUM,
+    difficulty: TourDifficulty.MODERATE,
     imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000&auto=format&fit=crop',
     images: [
       { id: 'img-6', url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000&auto=format&fit=crop', alt: 'Petra', isPrimary: true, order: 1 }
@@ -568,7 +568,7 @@ let MOCK_TOURS: Tour[] = [
     depositPrice: 2200,
     currency: 'SEK',
     durationDays: 8,
-    difficulty: TourDifficulty.MEDIUM,
+    difficulty: TourDifficulty.MODERATE,
     imageUrl: 'https://images.unsplash.com/photo-1511575661531-b34d7da5d0bb?q=80&w=1000&auto=format&fit=crop',
     images: [
       { id: 'img-9', url: 'https://images.unsplash.com/photo-1511575661531-b34d7da5d0bb?q=80&w=1000&auto=format&fit=crop', alt: 'Camino Trail', isPrimary: true, order: 1 }
@@ -699,6 +699,7 @@ export const TourService = {
     categoryId?: string;
     tagId?: string;
     search?: string;
+    isAdmin?: boolean;
   }): Promise<Tour[]> => {
     try {
       // Fetch from PHP backend API
@@ -757,27 +758,30 @@ export const TourService = {
         excludedItems: []
       }));
 
-    if (filters) {
-      if (filters.status) {
-        result = result.filter(t => t.status === filters.status);
+      // Apply client-side filters if provided
+      if (filters) {
+        if (filters.status) {
+          result = result.filter(t => t.status === filters.status);
+        }
+        if (filters.difficulty) {
+          result = result.filter(t => t.difficulty === filters.difficulty);
+        }
+        if (filters.search) {
+          const q = filters.search.toLowerCase();
+          result = result.filter(t => 
+            t.title.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.location.toLowerCase().includes(q)
+          );
+        }
       }
-      if (filters.difficulty) {
-        result = result.filter(t => t.difficulty === filters.difficulty);
-      }
-      if (filters.categoryId) {
-        result = result.filter(t => t.categories.includes(filters.categoryId));
-      }
-      if (filters.tagId) {
-        result = result.filter(t => t.tags.includes(filters.tagId));
-      }
-      if (filters.search) {
-        const q = filters.search.toLowerCase();
-        result = result.filter(t => 
-          t.title.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.location.toLowerCase().includes(q)
-        );
-      }
+
+      return result;
+    } catch (error) {
+      console.error('Error fetching tours:', error);
+      // Fallback to mock data if API fails
+      await delay(500);
+      return MOCK_TOURS;
     }
 
     return result;
