@@ -11,6 +11,8 @@ export type PaymentType = 'FULL' | 'ADVANCE';
 
 export interface PaymentConfig {
   advancePercentage: number;
+  /** Explicit advance/deposit amount; when set, it overrides advancePercentage */
+  advanceAmount?: number;
   currency: string;
 }
 
@@ -45,7 +47,9 @@ export const calculatePaymentAmounts = (
   config: Partial<PaymentConfig> = {}
 ): PaymentCalculation => {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
-  const advanceAmount = Math.round(totalAmount * finalConfig.advancePercentage);
+  const advanceAmount = finalConfig.advanceAmount !== undefined
+    ? Math.round(Math.min(Math.max(finalConfig.advanceAmount, 0), totalAmount))
+    : Math.round(totalAmount * finalConfig.advancePercentage);
 
   if (paymentType === 'FULL') {
     return {
@@ -198,7 +202,7 @@ export const processPaymentDevelopmentMode = (
  * Format payment type for display
  */
 export const formatPaymentType = (paymentType: PaymentType): string => {
-  return paymentType === 'FULL' ? 'Full Payment' : 'Advance Payment (20%)';
+  return paymentType === 'FULL' ? 'Full Payment' : 'Deposit Payment';
 };
 
 /**

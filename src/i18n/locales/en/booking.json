@@ -43,7 +43,10 @@
   "payment": {
     "title": "Payment Details",
     "scheduleTitle": "Payment Schedule",
-    "payNow": "Pay Now (Deposit)",
+    "payNow": "Pay Now",
+    "payNowDeposit": "Pay Now (Deposit)",
+    "payNowFull": "Pay Now (Full Payment)",
+    "fullPayment": "Full payment",
     "payLater": "Remaining Balance",
     "dueToday": "Due Today",
     "dueLater": "Due 60 days before trip",
@@ -55,7 +58,7 @@
     "agree": "I agree to the",
     "terms": "Booking Terms",
     "privacy": "Privacy Policy",
-    "payBtn": "Pay Deposit",
+    "payBtn": "Pay",
     "nextStep": "Next Step"
   },
   "confirmation": {

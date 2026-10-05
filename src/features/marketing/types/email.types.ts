@@ -142,6 +142,8 @@ export interface TestEmailPayload {
 export interface EmailSendResult {
   success: boolean;
   messageId?: string;
+  message?: string;
+  simulated?: boolean; // true when the email wasn't actually sent (no mail transport)
   error?: string;
   sentAt?: string;
 }

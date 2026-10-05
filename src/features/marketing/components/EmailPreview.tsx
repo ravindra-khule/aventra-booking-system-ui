@@ -47,15 +47,17 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({ template, onClose })
     }
   };
 
+  const templateContent = template.content || [];
+
   // Check if template has content for selected language
-  const hasLanguage = template.content.some(c => c.language === selectedLanguage);
+  const hasLanguage = templateContent.some(c => c.language === selectedLanguage);
   
   // Auto-switch to available language if selected language is not available
   useEffect(() => {
-    if (!hasLanguage && template.content.length > 0) {
-      setSelectedLanguage(template.content[0].language);
+    if (!hasLanguage && templateContent.length > 0) {
+      setSelectedLanguage(templateContent[0].language);
     }
-  }, [hasLanguage, template]);
+  }, [hasLanguage, templateContent]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -76,7 +78,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({ template, onClose })
                 onChange={(e) => setSelectedLanguage(e.target.value as TemplateLanguage)}
                 className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {template.content.map((content) => (
+                {templateContent.map((content) => (
                   <option key={content.language} value={content.language}>
                     {content.language === 'en' ? '🇬🇧 English' : '🇸🇪 Swedish'}
                   </option>

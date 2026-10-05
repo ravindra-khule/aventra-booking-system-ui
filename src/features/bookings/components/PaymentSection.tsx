@@ -11,6 +11,12 @@ const STRIPE_CONFIGURED = !!import.meta.env.VITE_REACT_APP_STRIPE_KEY;
 interface PaymentSectionProps {
   booking: Booking;
   isDevelopmentMode: boolean;
+  /** Controlled payment type selected by the user */
+  paymentType: PaymentType;
+  onPaymentTypeChange: (type: PaymentType) => void;
+  /** Explicit advance/deposit amount (e.g. tour deposit); falls back to 20% of total */
+  advanceAmount?: number;
+  currency?: string;
   onPaymentSuccess?: (result: {
     success: boolean;
     transactionId: string;
@@ -26,14 +32,18 @@ interface PaymentSectionProps {
 export const PaymentSection: React.FC<PaymentSectionProps> = ({
   booking,
   isDevelopmentMode,
+  paymentType,
+  onPaymentTypeChange,
+  advanceAmount,
+  currency = 'SEK',
   onPaymentSuccess = (result) => {},
 }) => {
-  const [paymentType, setPaymentType] = useState<PaymentType>('FULL');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const calculation = calculatePaymentAmounts(booking.totalAmount, paymentType);
-  const { payableAmount, remainingBalance, advanceAmount } = calculation;
+  const paymentConfig = { advanceAmount };
+  const calculation = calculatePaymentAmounts(booking.totalAmount, paymentType, paymentConfig);
+  const { payableAmount, remainingBalance } = calculation;
 
   const handlePaymentSuccess = (paymentIntentId: string) => {
     setIsSubmitted(true);
@@ -83,7 +93,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
 
         <div className="space-y-3">
           {(['FULL', 'ADVANCE'] as const).map((type) => {
-            const typeCalc = calculatePaymentAmounts(booking.totalAmount, type);
+            const typeCalc = calculatePaymentAmounts(booking.totalAmount, type, paymentConfig);
             return (
               <label
                 key={type}
@@ -99,7 +109,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
                   value={type}
                   checked={paymentType === type}
                   onChange={() => {
-                    setPaymentType(type);
+                    onPaymentTypeChange(type);
                     setError(null);
                   }}
                   className="w-5 h-5 mt-0.5 text-blue-600"
@@ -109,10 +119,10 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
                   <div className="text-sm text-gray-600 mt-1">
                     {type === 'FULL'
                       ? 'Pay full booking amount now'
-                      : `Pay 20% deposit now (${typeCalc.payableAmount} SEK), remaining ${typeCalc.remainingBalance} SEK due later`}
+                      : `Pay deposit now (${typeCalc.payableAmount} ${currency}), remaining ${typeCalc.remainingBalance} ${currency} due later`}
                   </div>
                   <div className="mt-2 font-semibold text-blue-600 text-lg">
-                    {typeCalc.payableAmount} SEK {type === 'ADVANCE' && `(of ${booking.totalAmount} SEK)`}
+                    {typeCalc.payableAmount} {currency} {type === 'ADVANCE' && `(of ${booking.totalAmount} ${currency})`}
                   </div>
                 </div>
               </label>
@@ -136,6 +146,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
           <StripePaymentForm
             booking={booking}
             paymentType={paymentType}
+            advanceAmount={advanceAmount}
             onSuccess={handlePaymentSuccess}
             isDevelopmentMode={isDevelopmentMode}
           />
@@ -146,7 +157,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               e.preventDefault();
               const mockId = `mock_payment_${Date.now()}`;
               await EmailService.sendBookingConfirmation(booking);
-              const calc = calculatePaymentAmounts(booking.totalAmount, paymentType);
+              const calc = calculatePaymentAmounts(booking.totalAmount, paymentType, paymentConfig);
               if (calc.remainingBalance > 0) {
                 await EmailService.scheduleReminderEmail(booking, 30);
               }
@@ -163,8 +174,14 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <div className="flex justify-between text-sm font-semibold">
                 <span className="text-gray-900">Amount due now:</span>
-                <span className="text-blue-600 text-lg">{payableAmount} SEK</span>
+                <span className="text-blue-600 text-lg">{payableAmount} {currency}</span>
               </div>
+              {remainingBalance > 0 && (
+                <div className="flex justify-between text-sm mt-1">
+                  <span className="text-gray-600">Due later:</span>
+                  <span className="text-gray-700">{remainingBalance} {currency}</span>
+                </div>
+              )}
             </div>
             <button
               type="submit"

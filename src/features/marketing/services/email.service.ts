@@ -268,12 +268,13 @@ class EmailTemplateService {
    */
   async sendTestEmail(payload: TestEmailPayload): Promise<EmailSendResult> {
     try {
-      await this.apiCall<any>('email-templates-send-test.php', {
+      const data = await this.apiCall<{ message?: string; simulated?: boolean }>('email-templates-send-test.php', {
         method: 'POST',
         body: JSON.stringify({
           templateId: payload.templateId,
           language: payload.language,
           testEmail: payload.recipientEmail,
+          placeholders: payload.testData,
           createdBy: 'admin'
         })
       });
@@ -281,6 +282,8 @@ class EmailTemplateService {
       return {
         success: true,
         messageId: `msg-${Date.now()}`,
+        message: data?.message,
+        simulated: data?.simulated,
         sentAt: new Date().toISOString()
       };
     } catch (error) {
@@ -350,7 +353,7 @@ class EmailTemplateService {
         draftTemplates: 0,
         archivedTemplates: 0,
         totalSent: 0,
-        byCategory: {}
+        byCategory: {} as Record<EmailTemplateCategory, number>
       };
     }
   }

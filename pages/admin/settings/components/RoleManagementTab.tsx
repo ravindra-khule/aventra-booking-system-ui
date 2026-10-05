@@ -91,6 +91,7 @@ export const RoleManagementTab: React.FC<RoleManagementTabProps> = ({
             />
           </div>
           <button
+            id="create-role-btn"
             onClick={() => setActiveModal('create')}
             className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
           >

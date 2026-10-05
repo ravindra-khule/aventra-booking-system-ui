@@ -274,7 +274,7 @@ export const replacePlaceholders = (
   
   Object.entries(data).forEach(([key, value]) => {
     const placeholder = formatPlaceholder(key as PlaceholderType);
-    result = result.replace(new RegExp(placeholder, 'g'), String(value));
+    result = result.split(placeholder).join(String(value));
   });
   
   return result;

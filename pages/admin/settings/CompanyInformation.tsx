@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { SettingsService, SETTINGS_CATEGORIES } from '../../../src/shared/services/settings.service';
-import {
-  CompanyInformationData,
-  BusinessHour,
-  LanguageContent,
-} from './types/companyInfo';
+import { CompanyInformationData } from './types/companyInfo';
 import { CompanyIdentity } from './components/CompanyIdentitySection';
 import { ContactInformationSection } from './components/ContactInformationSection';
 import { BusinessRegistrationSection } from './components/BusinessRegistrationSection';
@@ -37,6 +33,60 @@ const tabs: { id: TabType; label: string; icon: string }[] = [
   { id: 'languages', label: 'Languages', icon: '🌍' },
 ];
 
+const getDefaultData = (): CompanyInformationData => ({
+  identity: {
+    companyName: 'Swett Booking System',
+    logo: null,
+  },
+  contact: {
+    address: '',
+    phoneNumber: '',
+    emailAddress: '',
+  },
+  businessRegistration: {
+    businessRegistrationNumber: '',
+    vatTaxId: '',
+    additionalStatutoryIds: '',
+  },
+  banking: {
+    bankName: '',
+    accountNumber: '',
+    ifscSwift: '',
+    branchName: '',
+  },
+  socialMedia: [],
+  businessHours: [
+    { day: 'monday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
+    { day: 'tuesday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
+    { day: 'wednesday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
+    { day: 'thursday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
+    { day: 'friday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
+    { day: 'saturday', openingTime: '10:00', closingTime: '16:00', isClosed: false },
+    { day: 'sunday', openingTime: '00:00', closingTime: '00:00', isClosed: true },
+  ],
+  description: {
+    aboutText: '',
+  },
+  languageContent: [
+    {
+      language: 'en',
+      companyName: 'Swett Booking System',
+      aboutText: '',
+      description: '',
+    },
+  ],
+});
+
+const parseJsonSetting = <T,>(value: string | undefined, fallback: T): T => {
+  if (!value) return fallback;
+  try {
+    const parsed = JSON.parse(value);
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export const CompanyInformationSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('identity');
   const [logoModalOpen, setLogoModalOpen] = useState(false);
@@ -45,49 +95,7 @@ export const CompanyInformationSettings: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize with default data
-  const [data, setData] = useState<CompanyInformationData>({
-    identity: {
-      companyName: 'Swett Booking System',
-      logo: null,
-    },
-    contact: {
-      address: '',
-      phoneNumber: '',
-      emailAddress: '',
-    },
-    businessRegistration: {
-      businessRegistrationNumber: '',
-      vatTaxId: '',
-      additionalStatutoryIds: '',
-    },
-    banking: {
-      bankName: '',
-      accountNumber: '',
-      ifscSwift: '',
-      branchName: '',
-    },
-    socialMedia: [],
-    businessHours: [
-      { day: 'monday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-      { day: 'tuesday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-      { day: 'wednesday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-      { day: 'thursday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-      { day: 'friday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-      { day: 'saturday', openingTime: '10:00', closingTime: '16:00', isClosed: false },
-      { day: 'sunday', openingTime: '00:00', closingTime: '00:00', isClosed: true },
-    ],
-    description: {
-      aboutText: '',
-    },
-    languageContent: [
-      {
-        language: 'en',
-        companyName: 'Swett Booking System',
-        aboutText: '',
-        description: '',
-      },
-    ],
-  });
+  const [data, setData] = useState<CompanyInformationData>(getDefaultData);
 
   // Load settings from backend on mount
   useEffect(() => {
@@ -112,6 +120,7 @@ export const CompanyInformationSettings: React.FC = () => {
             ...prev.identity,
             companyName: settingsMap['name'] || prev.identity.companyName,
             logo: settingsMap['logo_url'] ? settingsMap['logo_url'] : null,
+            logoFileName: settingsMap['logo_filename'] || prev.identity.logoFileName,
           },
           contact: {
             ...prev.contact,
@@ -121,8 +130,25 @@ export const CompanyInformationSettings: React.FC = () => {
           },
           businessRegistration: {
             ...prev.businessRegistration,
+            businessRegistrationNumber: settingsMap['registration_number'] || prev.businessRegistration.businessRegistrationNumber,
             vatTaxId: settingsMap['vat_number'] || prev.businessRegistration.vatTaxId,
+            additionalStatutoryIds: settingsMap['statutory_ids'] || prev.businessRegistration.additionalStatutoryIds,
           },
+          banking: {
+            bankName: settingsMap['bank_name'] || prev.banking.bankName,
+            accountNumber: settingsMap['bank_account_number'] || prev.banking.accountNumber,
+            ifscSwift: settingsMap['bank_swift_code'] || prev.banking.ifscSwift,
+            branchName: settingsMap['bank_branch_name'] || prev.banking.branchName,
+          },
+          socialMedia: parseJsonSetting(settingsMap['social_media'], prev.socialMedia),
+          businessHours: parseJsonSetting(settingsMap['business_hours'], prev.businessHours),
+          description: {
+            aboutText: settingsMap['about_text'] ?? prev.description.aboutText,
+          },
+          languageContent: (() => {
+            const parsed = parseJsonSetting(settingsMap['language_content'], prev.languageContent);
+            return parsed.length > 0 ? parsed : prev.languageContent;
+          })(),
         }));
       }
     } catch (error) {
@@ -155,9 +181,12 @@ export const CompanyInformationSettings: React.FC = () => {
       // Validate required fields
       const errors = [];
       if (!data.identity.companyName.trim()) errors.push('Company name is required');
-      if (!data.contact.address.trim()) errors.push('Address is required');
-      if (!data.contact.phoneNumber.trim()) errors.push('Phone number is required');
-      if (!data.contact.emailAddress.trim()) errors.push('Email address is required');
+      if (
+        data.contact.emailAddress.trim() &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contact.emailAddress.trim())
+      ) {
+        errors.push('Email address is invalid');
+      }
 
       if (errors.length > 0) {
         setSaveStatus('error');
@@ -172,7 +201,18 @@ export const CompanyInformationSettings: React.FC = () => {
         { category: SETTINGS_CATEGORIES.COMPANY, key: 'phone', value: data.contact.phoneNumber },
         { category: SETTINGS_CATEGORIES.COMPANY, key: 'email', value: data.contact.emailAddress },
         { category: SETTINGS_CATEGORIES.COMPANY, key: 'vat_number', value: data.businessRegistration.vatTaxId },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'registration_number', value: data.businessRegistration.businessRegistrationNumber },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'statutory_ids', value: data.businessRegistration.additionalStatutoryIds || '' },
         { category: SETTINGS_CATEGORIES.COMPANY, key: 'logo_url', value: data.identity.logo || '' },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'logo_filename', value: data.identity.logoFileName || '' },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'bank_name', value: data.banking.bankName },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'bank_account_number', value: data.banking.accountNumber },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'bank_swift_code', value: data.banking.ifscSwift },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'bank_branch_name', value: data.banking.branchName },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'social_media', value: JSON.stringify(data.socialMedia) },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'business_hours', value: JSON.stringify(data.businessHours) },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'about_text', value: data.description.aboutText },
+        { category: SETTINGS_CATEGORIES.COMPANY, key: 'language_content', value: JSON.stringify(data.languageContent) },
       ];
 
       // Save to backend
@@ -198,49 +238,10 @@ export const CompanyInformationSettings: React.FC = () => {
 
   const handleReset = () => {
     if (window.confirm('Are you sure you want to discard all changes?')) {
-      setData({
-        identity: {
-          companyName: 'Swett Booking System',
-          logo: null,
-        },
-        contact: {
-          address: '',
-          phoneNumber: '',
-          emailAddress: '',
-        },
-        businessRegistration: {
-          businessRegistrationNumber: '',
-          vatTaxId: '',
-          additionalStatutoryIds: '',
-        },
-        banking: {
-          bankName: '',
-          accountNumber: '',
-          ifscSwift: '',
-          branchName: '',
-        },
-        socialMedia: [],
-        businessHours: [
-          { day: 'monday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-          { day: 'tuesday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-          { day: 'wednesday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-          { day: 'thursday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-          { day: 'friday', openingTime: '09:00', closingTime: '18:00', isClosed: false },
-          { day: 'saturday', openingTime: '10:00', closingTime: '16:00', isClosed: false },
-          { day: 'sunday', openingTime: '00:00', closingTime: '00:00', isClosed: true },
-        ],
-        description: {
-          aboutText: '',
-        },
-        languageContent: [
-          {
-            language: 'en',
-            companyName: 'Swett Booking System',
-            aboutText: '',
-            description: '',
-          },
-        ],
-      });
+      // Restore defaults first so unsaved local edits are discarded,
+      // then reload the last saved values from the backend
+      setData(getDefaultData());
+      loadCompanySettings();
     }
   };
 

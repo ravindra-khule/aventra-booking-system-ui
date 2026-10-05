@@ -19,6 +19,8 @@ import {
 interface StripePaymentFormProps {
   booking: Booking;
   paymentType: PaymentType;
+  /** Explicit advance/deposit amount; falls back to 20% of total */
+  advanceAmount?: number;
   onSuccess: (paymentIntentId: string) => void;
   isDevelopmentMode: boolean;
 }
@@ -26,6 +28,7 @@ interface StripePaymentFormProps {
 export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   booking,
   paymentType,
+  advanceAmount,
   onSuccess,
   isDevelopmentMode,
 }) => {
@@ -46,7 +49,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
           
           // Send emails in dev mode too (for testing)
           await EmailService.sendBookingConfirmation(booking);
-          const paymentAmounts = calculatePaymentAmounts(booking.totalAmount, paymentType);
+          const paymentAmounts = calculatePaymentAmounts(booking.totalAmount, paymentType, { advanceAmount });
           if (paymentAmounts.remainingBalance > 0) {
             await EmailService.scheduleReminderEmail(booking, 30);
           }
@@ -85,7 +88,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
     );
   }
 
-  const calculation = calculatePaymentAmounts(booking.totalAmount, paymentType);
+  const calculation = calculatePaymentAmounts(booking.totalAmount, paymentType, { advanceAmount });
   const { payableAmount } = calculation;
 
   // Create PaymentIntent when component mounts
@@ -155,7 +158,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         const intentId = clientSecret.split('_secret_')[0];
 
         // Send confirmation email and schedule reminder
-        const paymentAmounts = calculatePaymentAmounts(booking.totalAmount, paymentType);
+        const paymentAmounts = calculatePaymentAmounts(booking.totalAmount, paymentType, { advanceAmount });
         const paidAmount = paymentAmounts.payableAmount;
         const remainingAmount = paymentAmounts.remainingBalance;
 
@@ -163,7 +166,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         await EmailService.sendBookingConfirmation(booking);
 
         // If this is partial payment, schedule a reminder for remaining balance
-        if (remainingAmount > 0 && (paymentType === 'ADVANCE_PAYMENT' || paymentType === 'PARTIAL')) {
+        if (remainingAmount > 0 && paymentType === 'ADVANCE') {
           await EmailService.scheduleReminderEmail(booking, 30); // 30 days before trip
         }
 

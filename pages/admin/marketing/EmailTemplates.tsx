@@ -9,6 +9,7 @@ import { EmailTemplateForm } from '../../../src/features/marketing/components/Em
 import { EmailPreview } from '../../../src/features/marketing/components/EmailPreview';
 import { SendTestEmail } from '../../../src/features/marketing/components/SendTestEmail';
 import { EmailTemplateHistory } from '../../../src/features/marketing/components/EmailTemplateHistory';
+import { emailTemplateService } from '../../../src/features/marketing/services/email.service';
 
 type ModalType = 'create' | 'edit' | 'preview' | 'test' | 'history' | null;
 
@@ -22,18 +23,29 @@ export const EmailTemplates: React.FC = () => {
     setActiveModal('create');
   };
 
-  const handleEdit = (template: EmailTemplate) => {
-    setSelectedTemplate(template);
+  // Fetch the full template (with all language content) before opening a modal,
+  // so modals never rely on potentially stale/incomplete list data.
+  const loadFullTemplate = async (template: EmailTemplate): Promise<EmailTemplate> => {
+    try {
+      const full = await emailTemplateService.getTemplateById(template.id);
+      return full || template;
+    } catch {
+      return template;
+    }
+  };
+
+  const handleEdit = async (template: EmailTemplate) => {
+    setSelectedTemplate(await loadFullTemplate(template));
     setActiveModal('edit');
   };
 
-  const handlePreview = (template: EmailTemplate) => {
-    setSelectedTemplate(template);
+  const handlePreview = async (template: EmailTemplate) => {
+    setSelectedTemplate(await loadFullTemplate(template));
     setActiveModal('preview');
   };
 
-  const handleSendTest = (template: EmailTemplate) => {
-    setSelectedTemplate(template);
+  const handleSendTest = async (template: EmailTemplate) => {
+    setSelectedTemplate(await loadFullTemplate(template));
     setActiveModal('test');
   };
 

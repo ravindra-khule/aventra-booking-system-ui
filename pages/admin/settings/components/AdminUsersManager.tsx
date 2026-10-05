@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Search,
   Plus,
@@ -26,94 +26,73 @@ import { PasswordPoliciesPanel } from './PasswordPoliciesPanel';
 import { UserStatusIndicator } from './UserStatusIndicator';
 import { UserPermissionsModal, PermissionModule } from './UserPermissionsModal';
 
-// Mock data - includes all demo login users from DemoLoginModal
-const MOCK_USERS: AdminUser[] = [
-  {
-    id: 'user_superadmin',
-    name: 'Super Admin',
-    email: 'superadmin@swett.com',
-    phone: '+46 70 100 0001',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPER_ADMIN',
-    roles: ['Super Admin'],
-    status: 'active',
-    lastLogin: new Date('2025-12-21T14:30:00'),
-    lastLoginBrowser: 'Chrome 131',
-    lastLoginIP: '192.168.1.100',
-    lastLoginDevice: 'MacBook Pro',
-    twoFactorEnabled: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2025-12-21'),
-  },
-  {
-    id: 'user_admin',
-    name: 'Admin User',
-    email: 'admin@swett.com',
-    phone: '+46 70 100 0002',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ADMIN',
-    roles: ['Admin'],
-    status: 'active',
-    lastLogin: new Date('2025-12-21T09:15:00'),
-    lastLoginBrowser: 'Firefox 120',
-    lastLoginIP: '192.168.1.101',
-    lastLoginDevice: 'Windows PC',
-    twoFactorEnabled: true,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2025-12-21'),
-  },
-  {
-    id: 'user_support',
-    name: 'Support Agent',
-    email: 'support@swett.com',
-    phone: '+46 70 100 0003',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SUPPORT',
-    roles: ['Support'],
-    status: 'active',
-    lastLogin: new Date('2025-12-21T10:45:00'),
-    lastLoginBrowser: 'Safari 17',
-    lastLoginIP: '192.168.1.102',
-    lastLoginDevice: 'iPhone 14',
-    twoFactorEnabled: false,
-    createdAt: new Date('2024-02-20'),
-    updatedAt: new Date('2025-12-21'),
-  },
-  {
-    id: 'user_accountant',
-    name: 'Accountant',
-    email: 'accountant@swett.com',
-    phone: '+46 70 100 0004',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ACCOUNTANT',
-    roles: ['Accountant'],
-    status: 'active',
-    lastLogin: new Date('2025-12-20T15:20:00'),
-    lastLoginBrowser: 'Chrome 131',
-    lastLoginIP: '192.168.1.103',
-    lastLoginDevice: 'MacBook Air',
-    twoFactorEnabled: true,
-    createdAt: new Date('2024-03-10'),
-    updatedAt: new Date('2025-12-20'),
-  },
-  {
-    id: 'user_developer',
-    name: 'Developer',
-    email: 'developer@swett.com',
-    phone: '+46 70 100 0005',
-    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DEVELOPER',
-    roles: ['Developer'],
-    status: 'active',
-    lastLogin: new Date('2025-12-20T18:30:00'),
-    lastLoginBrowser: 'Chrome 131',
-    lastLoginIP: '192.168.1.104',
-    lastLoginDevice: 'Ubuntu Desktop',
-    twoFactorEnabled: true,
-    createdAt: new Date('2024-04-05'),
-    updatedAt: new Date('2025-12-20'),
-  },
-];
+
+const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+
+// Map DB role codes <-> UI role labels
+const DB_ROLE_TO_LABEL: Record<string, UserRole> = {
+  SUPER_ADMIN: 'Super Admin',
+  ADMIN: 'Admin',
+  MANAGER: 'Manager',
+  SUPPORT: 'Support',
+  ACCOUNTANT: 'Accountant',
+  DEVELOPER: 'Developer',
+  CUSTOMER: 'Customer',
+};
+
+const ROLE_LABEL_TO_DB: Record<UserRole, string> = {
+  'Super Admin': 'SUPER_ADMIN',
+  'Admin': 'ADMIN',
+  'Manager': 'MANAGER',
+  'Support': 'SUPPORT',
+  'Accountant': 'ACCOUNTANT',
+  'Developer': 'DEVELOPER',
+  'Customer': 'CUSTOMER',
+};
+
+const dbStatusToUi = (status: string): UserStatus => {
+  switch ((status || '').toUpperCase()) {
+    case 'ACTIVE': return 'active';
+    case 'PENDING': return 'pending';
+    default: return 'inactive'; // INACTIVE, SUSPENDED
+  }
+};
+
+const uiStatusToDb = (status: UserStatus): string => status.toUpperCase();
+
+const dbUserToAdminUser = (row: any): AdminUser => ({
+  id: String(row.id),
+  name: row.name || row.email,
+  email: row.email,
+  phone: row.phone || undefined,
+  profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(row.email || row.id)}`,
+  roles: [DB_ROLE_TO_LABEL[row.role] || 'Customer'],
+  status: dbStatusToUi(row.status),
+  lastLogin: row.lastLogin ? new Date(row.lastLogin) : null,
+  twoFactorEnabled: !!row.twoFactorEnabled,
+  createdAt: row.createdAt ? new Date(row.createdAt) : new Date(),
+  updatedAt: row.updatedAt ? new Date(row.updatedAt) : new Date(),
+});
+
+const apiPost = async (endpoint: string, body: unknown) => {
+  const response = await fetch(`${API_URL}/api/${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || `Request failed (${response.status})`);
+  }
+  return data;
+};
 
 const ROWS_PER_PAGE = 10;
 
 export const AdminUsersManager: React.FC = () => {
-  const [users, setUsers] = useState<AdminUser[]>(MOCK_USERS);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState<UserFilterOptions>({
     search: '',
@@ -146,6 +125,32 @@ export const AdminUsersManager: React.FC = () => {
   // Store user permissions (in production, this would be in backend)
   const [userPermissions, setUserPermissions] = useState<Record<string, PermissionModule[]>>({});
 
+  // Load users from backend
+  const loadUsers = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch(`${API_URL}/api/users-list.php`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load users');
+      }
+      setUsers((data.data || []).map(dbUserToAdminUser));
+    } catch (err) {
+      console.error('Error loading users:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load users');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
   // Filtered and paginated users
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -177,32 +182,53 @@ export const AdminUsersManager: React.FC = () => {
   const totalPages = Math.ceil(filteredUsers.length / pagination.pageSize);
 
   // Handlers
-  const handleAddUser = (formData: any) => {
-    const newUser: AdminUser = {
-      id: Date.now().toString(),
-      ...formData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setUsers([...users, newUser]);
-    setShowAddEditModal(false);
+  const handleAddUser = async (formData: any) => {
+    try {
+      await apiPost('users-create.php', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.temporaryPassword || 'TempPassword123!',
+        role: ROLE_LABEL_TO_DB[formData.roles[0] as UserRole] || 'CUSTOMER',
+        status: uiStatusToDb(formData.status),
+        phone: formData.phone || null,
+      });
+      setShowAddEditModal(false);
+      await loadUsers();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to create user');
+    }
   };
 
-  const handleEditUser = (formData: any) => {
-    setUsers(
-      users.map((u) =>
-        u.id === editingUser?.id
-          ? { ...u, ...formData, updatedAt: new Date() }
-          : u
-      )
-    );
-    setEditingUser(null);
-    setShowAddEditModal(false);
+  const handleEditUser = async (formData: any) => {
+    if (!editingUser) return;
+    try {
+      await apiPost('users-update.php', {
+        id: editingUser.id,
+        name: formData.name,
+        phone: formData.phone || null,
+        role: ROLE_LABEL_TO_DB[formData.roles[0] as UserRole] || 'CUSTOMER',
+        status: uiStatusToDb(formData.status),
+      });
+      setEditingUser(null);
+      setShowAddEditModal(false);
+      await loadUsers();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update user');
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+  const handleDeleteUser = async (userId: string) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await apiPost('users-delete.php', { id: userId });
       setUsers(users.filter((u) => u.id !== userId));
+      setSelectedUsers(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete user');
     }
   };
 
@@ -224,63 +250,63 @@ export const AdminUsersManager: React.FC = () => {
     }
   };
 
-  const handleBulkAction = (action: any) => {
+  const handleBulkAction = async (action: any) => {
     const userIds = Array.from(selectedUsers);
 
-    if (action.action === 'delete') {
-      if (window.confirm(`Are you sure you want to delete ${userIds.length} users?`)) {
-        setUsers(users.filter((u) => !userIds.includes(u.id)));
-        setSelectedUsers(new Set());
+    try {
+      if (action.action === 'delete') {
+        if (!window.confirm(`Are you sure you want to delete ${userIds.length} users?`)) {
+          setShowBulkActionsModal(false);
+          return;
+        }
+        await Promise.all(userIds.map(id => apiPost('users-delete.php', { id })));
+      } else if (action.action === 'activate' || action.action === 'deactivate') {
+        const status = action.action === 'activate' ? 'ACTIVE' : 'INACTIVE';
+        await Promise.all(userIds.map(id => apiPost('users-status.php', { id, status })));
+      } else if (action.action === 'assignRole') {
+        const role = ROLE_LABEL_TO_DB[action.roleToAssign as UserRole] || 'CUSTOMER';
+        await Promise.all(userIds.map(id => apiPost('users-update.php', { id, role })));
       }
-    } else if (action.action === 'activate') {
-      setUsers(
-        users.map((u) =>
-          userIds.includes(u.id) ? { ...u, status: 'active' as UserStatus } : u
-        )
-      );
+
       setSelectedUsers(new Set());
-    } else if (action.action === 'deactivate') {
-      setUsers(
-        users.map((u) =>
-          userIds.includes(u.id) ? { ...u, status: 'inactive' as UserStatus } : u
-        )
-      );
-      setSelectedUsers(new Set());
-    } else if (action.action === 'assignRole') {
-      setUsers(
-        users.map((u) =>
-          userIds.includes(u.id)
-            ? { ...u, roles: [...u.roles, action.roleToAssign] }
-            : u
-        )
-      );
-      setSelectedUsers(new Set());
+      await loadUsers();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Bulk action failed');
+    } finally {
+      setShowBulkActionsModal(false);
     }
-
-    setShowBulkActionsModal(false);
   };
 
-  const handleToggleStatus = (userId: string) => {
-    setUsers(
-      users.map((u) =>
-        u.id === userId
-          ? {
-              ...u,
-              status: u.status === 'active' ? 'inactive' : 'active',
-            }
-          : u
-      )
-    );
+  const handleToggleStatus = async (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    const newStatus = user.status === 'active' ? 'INACTIVE' : 'ACTIVE';
+    try {
+      await apiPost('users-status.php', { id: userId, status: newStatus });
+      setUsers(
+        users.map((u) =>
+          u.id === userId ? { ...u, status: dbStatusToUi(newStatus) } : u
+        )
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update status');
+    }
   };
 
-  const handleToggle2FA = (userId: string) => {
-    setUsers(
-      users.map((u) =>
-        u.id === userId
-          ? { ...u, twoFactorEnabled: !u.twoFactorEnabled }
-          : u
-      )
-    );
+  const handleToggle2FA = async (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    const enabled = !user.twoFactorEnabled;
+    try {
+      await apiPost('users-2fa.php', { id: userId, enabled });
+      setUsers(
+        users.map((u) =>
+          u.id === userId ? { ...u, twoFactorEnabled: enabled } : u
+        )
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to toggle 2FA');
+    }
   };
   
   const handleSaveUserPermissions = (userId: string, modules: PermissionModule[]) => {
@@ -435,36 +461,55 @@ export const AdminUsersManager: React.FC = () => {
       {/* Password Policies Panel */}
       {showPasswordPolicies && <PasswordPoliciesPanel />}
 
+      {/* Error Banner */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={loadUsers} className="text-sm font-medium text-red-700 hover:underline">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
       {/* Users Table */}
-      <UserTable
-        users={paginatedUsers}
-        selectedUsers={selectedUsers}
-        onSelectUser={handleToggleSelection}
-        onSelectAll={handleSelectAll}
-        onEditUser={(user) => {
-          setEditingUser(user);
-          setShowAddEditModal(true);
-        }}
-        onDeleteUser={handleDeleteUser}
-        onViewPermissions={(user) => {
-          setSelectedUserForPermissions(user);
-          setShowRolePermissionsModal(true);
-        }}
-        onViewActivityLogs={(user) => {
-          setSelectedUserForLogs(user);
-          setShowActivityLogsModal(true);
-        }}
-        onViewSessions={(user) => {
-          setSelectedUserForSession(user);
-          setShowSessionModal(true);
-        }}
-        onToggleStatus={handleToggleStatus}
-        onToggle2FA={handleToggle2FA}
-        onManageModulePermissions={(user) => {
-          setSelectedUserForModulePermissions(user);
-          setShowUserPermissionsModal(true);
-        }}
-      />
+      {!isLoading && (
+        <UserTable
+          users={paginatedUsers}
+          selectedUsers={selectedUsers}
+          onSelectUser={handleToggleSelection}
+          onSelectAll={handleSelectAll}
+          onEditUser={(user) => {
+            setEditingUser(user);
+            setShowAddEditModal(true);
+          }}
+          onDeleteUser={handleDeleteUser}
+          onViewPermissions={(user) => {
+            setSelectedUserForPermissions(user);
+            setShowRolePermissionsModal(true);
+          }}
+          onViewActivityLogs={(user) => {
+            setSelectedUserForLogs(user);
+            setShowActivityLogsModal(true);
+          }}
+          onViewSessions={(user) => {
+            setSelectedUserForSession(user);
+            setShowSessionModal(true);
+          }}
+          onToggleStatus={handleToggleStatus}
+          onToggle2FA={handleToggle2FA}
+          onManageModulePermissions={(user) => {
+            setSelectedUserForModulePermissions(user);
+            setShowUserPermissionsModal(true);
+          }}
+        />
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
@@ -551,9 +596,16 @@ export const AdminUsersManager: React.FC = () => {
 
       {showInvitationModal && (
         <UserInvitationModal
-          onSend={(email, roles) => {
-            console.log('Invitation sent to:', email, 'with roles:', roles);
-            setShowInvitationModal(false);
+          onSend={async (email, roles) => {
+            try {
+              await apiPost('users-invite.php', {
+                email,
+                role: ROLE_LABEL_TO_DB[roles[0] as UserRole] || 'CUSTOMER',
+              });
+              await loadUsers();
+            } catch (err) {
+              alert(err instanceof Error ? err.message : 'Failed to send invitation');
+            }
           }}
           onClose={() => setShowInvitationModal(false)}
         />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tour, Traveler, PayerDetails } from '../../types';
 import { TourAddOn, SelectedAddOn, AddOnType } from '../../src/features/tours/types/tour.types';
@@ -26,6 +26,8 @@ import {
 import { Button, Input, Select } from '../../src/shared/components/ui';
 import { formatCurrency } from '../../src/shared/utils';
 import { PaymentSection } from '../../src/features/bookings/components/PaymentSection';
+import { PaymentType } from '../../src/features/bookings/services/payment.service';
+import { Booking } from '../../src/features/bookings/types/booking.types';
 
 // Icon mapping for different add-on types
 const ADDON_TYPE_ICONS: Record<AddOnType, React.ReactNode> = {
@@ -73,6 +75,11 @@ export const BookingWizard = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Payment state (lifted so summary/breakdown stay in sync with the chosen option)
+  const [paymentType, setPaymentType] = useState<PaymentType>('FULL');
+  const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
+  const [amountPaid, setAmountPaid] = useState(0);
   
   // Booking State
   const [date, setDate] = useState('');
@@ -336,98 +343,105 @@ export const BookingWizard = () => {
     );
   };
 
+  // Create the booking once a payment succeeds (real or mock).
+  // Shared by the PaymentSection submit and the bottom "Pay" button.
+  const isProcessingRef = useRef(false);
+  const completeBooking = async (type: PaymentType) => {
+    if (isProcessingRef.current) return; // guard against double-submit (two pay buttons)
+    isProcessingRef.current = true;
+    setIsProcessing(true);
+    try {
+      const baseTotal = (tour?.price || 0) * participants;
+      const addOnsTotal = calculateAddOnsTotal();
+      const subtotal = baseTotal + addOnsTotal;
+      const finalTotal = subtotal - discountAmount;
+      const advanceTotal = Math.round((tour?.depositPrice || 0) * participants * (finalTotal / (baseTotal || 1)));
+      const paidNow = type === 'FULL' ? finalTotal : advanceTotal;
+
+      // Validate required fields
+      if (!tour?.id) {
+        throw new Error('Tour information is missing. Please go back and select a tour again.');
+      }
+      if (!payer.firstName || !payer.lastName) {
+        throw new Error('Payer first and last name are required.');
+      }
+      if (!payer.email) {
+        throw new Error('Payer email is required.');
+      }
+      if (participants < 1) {
+        throw new Error('Number of participants must be at least 1.');
+      }
+
+      const newBooking = await BookingService.create({
+        userId: 1, // TODO: Get from auth context
+        tourId: tour.id,
+        numberOfPeople: participants,
+        customerName: `${payer.firstName} ${payer.lastName}`.trim(),
+        customerEmail: payer.email,
+        customerPhone: payer.phone || '',
+        tripDate: date,
+        promoCode: appliedPromoCode || undefined,
+        discountAmount: discountAmount || undefined,
+        paymentType: type,
+        travelers: travelers,
+        selectedAddOns: Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => ({
+          addOnId: addOn.id,
+          addOn: addOn,
+          quantity: quantity,
+          totalPrice: addOn.pricePerPerson ? addOn.price * quantity * participants : addOn.price * quantity,
+        })),
+        tourTitle: tour.title,
+        payer: payer,
+      });
+
+      console.log('Booking created successfully:', newBooking);
+      setCreatedBooking(newBooking);
+      setAmountPaid(newBooking.paidAmount ?? paidNow);
+
+      // Store full booking details in localStorage for reference
+      try {
+        const completeBookingData = {
+          ...newBooking,
+          tourTitle: tour?.title,
+          participants: participants,
+          payer: payer,
+          travelers: travelers,
+          totalAmount: finalTotal,
+          paidAmount: paidNow,
+          tripDate: date,
+          tourImageUrl: tour?.imageUrl,
+          promoCode: appliedPromoCode || undefined,
+          discountAmount: discountAmount || undefined,
+          selectedAddOns: Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => ({
+            addOnId: addOn.id,
+            addOn: addOn,
+            quantity: quantity,
+            totalPrice: addOn.pricePerPerson ? addOn.price * quantity * participants : addOn.price * quantity,
+          })),
+        };
+
+        const existingBookings = localStorage.getItem('userBookings');
+        const bookings = existingBookings ? JSON.parse(existingBookings) : [];
+        bookings.push(completeBookingData);
+        localStorage.setItem('userBookings', JSON.stringify(bookings));
+      } catch (storageError) {
+        console.error('Failed to save booking to localStorage', storageError);
+      }
+
+      setCurrentStep(3);
+    } catch (e) {
+      console.error('Booking creation error:', e);
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      alert(`Booking failed: ${errorMsg}`);
+    } finally {
+      isProcessingRef.current = false;
+      setIsProcessing(false);
+    }
+  };
+
   const handleNext = async () => {
     if (currentStep === 2) {
-      // Payment & Submit
-      // In development mode, create booking directly
-      // For production, add Stripe payment processing here
-      setIsProcessing(true);
-      try {
-        const baseTotal = (tour?.price || 0) * participants;
-        const addOnsTotal = calculateAddOnsTotal();
-        const subtotal = baseTotal + addOnsTotal;
-        const finalTotal = subtotal - discountAmount;
-        const depositTotal = Math.round((tour?.depositPrice || 0) * participants * (finalTotal / baseTotal));
-        
-        // Create booking with API-compatible data structure
-        console.log('Creating booking with tour:', tour?.id, 'participants:', participants);
-        
-        // Validate required fields
-        if (!tour?.id) {
-          throw new Error('Tour information is missing. Please go back and select a tour again.');
-        }
-        if (!payer.firstName || !payer.lastName) {
-          throw new Error('Payer first and last name are required.');
-        }
-        if (!payer.email) {
-          throw new Error('Payer email is required.');
-        }
-        if (participants < 1) {
-          throw new Error('Number of participants must be at least 1.');
-        }
-        
-        const newBooking = await BookingService.create({
-          userId: 1, // TODO: Get from auth context
-          tourId: tour.id,
-          numberOfPeople: participants,
-          customerName: `${payer.firstName} ${payer.lastName}`.trim(),
-          customerEmail: payer.email,
-          customerPhone: payer.phone || '',
-        });
-
-        console.log('Booking created successfully:', newBooking);
-
-        // Store full booking details in localStorage for reference
-        try {
-          const baseTotal = (tour?.price || 0) * participants;
-          const addOnsTotal = calculateAddOnsTotal();
-          const subtotal = baseTotal + addOnsTotal;
-          const finalTotal = subtotal - discountAmount;
-          
-          const completeBooking = {
-            ...newBooking,
-            tourTitle: tour?.title,
-            participants: participants,
-            payer: payer,
-            travelers: travelers,
-            totalAmount: finalTotal,
-            paidAmount: (tour?.depositPrice || 0) * participants * (finalTotal / baseTotal),
-            tripDate: date,
-            tourImageUrl: tour?.imageUrl,
-            promoCode: appliedPromoCode || undefined,
-            discountAmount: discountAmount || undefined,
-            selectedAddOns: Array.from(selectedAddOns.values()).map(({ addOn, quantity }) => ({
-              addOnId: addOn.id,
-              addOn: addOn,
-              quantity: quantity,
-              totalPrice: addOn.pricePerPerson ? addOn.price * quantity * participants : addOn.price * quantity,
-            })),
-          };
-          
-          const existingBookings = localStorage.getItem('userBookings');
-          const bookings = existingBookings ? JSON.parse(existingBookings) : [];
-          bookings.push(completeBooking);
-          localStorage.setItem('userBookings', JSON.stringify(bookings));
-        } catch (storageError) {
-          console.error('Failed to save booking to localStorage', storageError);
-        }
-        
-        setCurrentStep(3); 
-      } catch (e) {
-        console.error('Booking creation error:', e);
-        console.error('Error details:', {
-          tour: tour?.id,
-          tourId: tour?.id || 0,
-          participants,
-          payer: payer.email,
-          errorMessage: e instanceof Error ? e.message : String(e),
-          errorStack: e instanceof Error ? e.stack : 'N/A'
-        });
-        const errorMsg = e instanceof Error ? e.message : 'Unknown error';
-        alert(`Booking failed: ${errorMsg}`);
-      } finally {
-        setIsProcessing(false);
-      }
+      await completeBooking(paymentType);
     } else {
       setCurrentStep((prev) => prev + 1);
       window.scrollTo(0, 0);
@@ -496,8 +510,11 @@ export const BookingWizard = () => {
   const addOnsTotal = calculateAddOnsTotal();
   const subtotal = baseAmount + addOnsTotal;
   const finalAmount = subtotal - discountAmount;
+  // Advance/deposit amount based on the tour's deposit price, scaled by any discount
   const depositTotal = Math.round((tour.depositPrice * participants) * (finalAmount / (baseAmount || 1)));
-  const remainingAmount = finalAmount - depositTotal;
+  // What the customer pays now depends on the selected payment option
+  const payNowAmount = paymentType === 'FULL' ? finalAmount : depositTotal;
+  const payLaterAmount = finalAmount - payNowAmount;
 
   // Confirmation Summary for Sidebar
   const ConfirmationSummary = () => (
@@ -514,7 +531,7 @@ export const BookingWizard = () => {
 
       <div className="bg-white rounded-lg p-4 mb-4 border border-green-100">
         <p className="text-xs text-gray-500 mb-1">{t('booking:confirmation.referenceNumber')}</p>
-        <p className="text-xl font-mono font-bold text-gray-900">#BK-{Math.floor(Math.random() * 100000)}</p>
+        <p className="text-xl font-mono font-bold text-gray-900">{createdBooking?.transactionId || createdBooking?.id || '—'}</p>
       </div>
 
       <div className="space-y-3 mb-4">
@@ -537,11 +554,11 @@ export const BookingWizard = () => {
       <div className="bg-green-600 text-white rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium">{t('booking:confirmation.amountPaid')}</span>
-          <span className="text-2xl font-bold">{formatCurrency(depositTotal, tour.currency)}</span>
+          <span className="text-2xl font-bold">{formatCurrency(amountPaid || payNowAmount, tour.currency)}</span>
         </div>
         <div className="flex justify-between items-center text-green-100 text-xs">
           <span>{t('booking:payment.payLater')}</span>
-          <span className="font-semibold">{formatCurrency(remainingAmount, tour.currency)}</span>
+          <span className="font-semibold">{formatCurrency(payLaterAmount, tour.currency)}</span>
         </div>
       </div>
 
@@ -650,19 +667,19 @@ export const BookingWizard = () => {
         )}
         
         <div className="flex justify-between text-sm font-semibold text-gray-900 pt-2 border-t border-orange-200">
-           <span>{t('booking:payment.payNow')}</span>
-           <span>{depositTotal.toLocaleString()} {tour.currency}</span>
+           <span>{paymentType === 'FULL' ? t('booking:payment.payNowFull') : t('booking:payment.payNowDeposit')}</span>
+           <span>{payNowAmount.toLocaleString()} {tour.currency}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-500">
            <span>{t('booking:payment.payLater')}</span>
-           <span>{remainingAmount.toLocaleString()} {tour.currency}</span>
+           <span>{payLaterAmount.toLocaleString()} {tour.currency}</span>
         </div>
       </div>
 
       <div className="border-t border-orange-200 pt-4 mb-2">
          <div className="flex justify-between items-end">
             <span className="font-bold text-lg text-gray-900">{t('booking:summary.toPay')}</span>
-            <span className="font-bold text-2xl text-blue-600">{depositTotal.toLocaleString()} {tour.currency}</span>
+            <span className="font-bold text-2xl text-blue-600">{payNowAmount.toLocaleString()} {tour.currency}</span>
          </div>
          <p className="text-xs text-gray-500 mt-2">{t('booking:summary.vatMsg')}</p>
       </div>
@@ -1205,13 +1222,17 @@ export const BookingWizard = () => {
                      <h3 className="text-lg font-bold text-gray-900 mb-4">{t('booking:payment.scheduleTitle')}</h3>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm flex flex-col">
-                            <span className="text-sm text-gray-500">{t('booking:payment.payNow')}</span>
-                            <span className="text-xl font-bold text-gray-900">{depositTotal.toLocaleString()} {tour.currency}</span>
-                            <span className="text-xs text-green-600 mt-1">{t('booking:payment.dueToday')}</span>
+                            <span className="text-sm text-gray-500">
+                              {paymentType === 'FULL' ? t('booking:payment.payNowFull') : t('booking:payment.payNowDeposit')}
+                            </span>
+                            <span className="text-xl font-bold text-gray-900">{payNowAmount.toLocaleString()} {tour.currency}</span>
+                            <span className="text-xs text-green-600 mt-1">
+                              {paymentType === 'FULL' ? t('booking:payment.fullPayment') : t('booking:payment.dueToday')}
+                            </span>
                         </div>
                         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-col opacity-75">
                             <span className="text-sm text-gray-500">{t('booking:payment.payLater')}</span>
-                            <span className="text-xl font-bold text-gray-900">{remainingAmount.toLocaleString()} {tour.currency}</span>
+                            <span className="text-xl font-bold text-gray-900">{payLaterAmount.toLocaleString()} {tour.currency}</span>
                             <span className="text-xs text-gray-500 mt-1">{t('booking:payment.dueLater')}</span>
                         </div>
                      </div>
@@ -1281,14 +1302,20 @@ export const BookingWizard = () => {
                   {/* New Payment Form Component */}
                   <PaymentSection
                      booking={{
-                        id: `booking-${Date.now()}`,
+                        id: `pending-${tour.id}`,
                         totalAmount: finalAmount,
                         payer: payer,
+                        customerName: `${payer.firstName} ${payer.lastName}`.trim(),
+                        tourTitle: tour.title,
+                        tripDate: date,
                      } as any}
                      isDevelopmentMode={isDevelopmentMode}
+                     paymentType={paymentType}
+                     onPaymentTypeChange={setPaymentType}
+                     advanceAmount={depositTotal}
+                     currency={tour.currency}
                      onPaymentSuccess={(result) => {
-                        setCurrentStep(3);
-                        window.scrollTo(0, 0);
+                        completeBooking(result.paymentType);
                      }}
                   />
                </div>
@@ -1313,7 +1340,7 @@ export const BookingWizard = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.ref')}</p>
-                                <p className="text-3xl font-mono font-bold text-gray-900">#BK-{Math.floor(Math.random() * 100000)}</p>
+                                <p className="text-3xl font-mono font-bold text-gray-900">{createdBooking?.transactionId || '—'}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.bookingDate')}</p>
@@ -1436,15 +1463,17 @@ export const BookingWizard = () => {
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
                                 <div className="flex justify-between mb-2">
                                     <span className="font-semibold text-green-800">{t('booking:confirmation.paidToday')}:</span>
-                                    <span className="font-bold text-green-800">{formatCurrency(depositTotal, tour.currency)}</span>
+                                    <span className="font-bold text-green-800">{formatCurrency(amountPaid || payNowAmount, tour.currency)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-green-700">{t('booking:payment.payLater')}:</span>
-                                    <span className="font-semibold text-green-700">{formatCurrency(remainingAmount, tour.currency)}</span>
+                                    <span className="font-semibold text-green-700">{formatCurrency(payLaterAmount, tour.currency)}</span>
                                 </div>
-                                <p className="text-xs text-green-700 mt-2">
-                                    {t('booking:confirmation.remainingBalanceDue')}
-                                </p>
+                                {payLaterAmount > 0 && (
+                                    <p className="text-xs text-green-700 mt-2">
+                                        {t('booking:confirmation.remainingBalanceDue')}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1596,7 +1625,7 @@ export const BookingWizard = () => {
                 fullWidth
                 className="md:w-auto shadow-lg"
               >
-                {isProcessing ? t('common:processing') : `${t('booking:payment.payBtn')} ${formatCurrency(depositTotal, tour.currency)}`}
+                {isProcessing ? t('common:processing') : `${t('booking:payment.payBtn')} ${formatCurrency(payNowAmount, tour.currency)}`}
               </Button>
             ) : (
               <Button

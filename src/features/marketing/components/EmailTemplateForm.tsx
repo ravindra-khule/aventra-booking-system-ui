@@ -2,7 +2,7 @@
  * EmailTemplateForm - Create and edit email templates
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Save, AlertCircle, Globe } from 'lucide-react';
 import {
   EmailTemplate,
@@ -40,18 +40,19 @@ export const EmailTemplateForm: React.FC<EmailTemplateFormProps> = ({
   const [tagInput, setTagInput] = useState('');
   
   // Multi-language content
+  const existingContent = template?.content || [];
   const [activeLanguage, setActiveLanguage] = useState<TemplateLanguage>('en');
   const [contentEN, setContentEN] = useState<TemplateContent>({
     language: 'en',
-    subject: template?.content.find(c => c.language === 'en')?.subject || '',
-    preheader: template?.content.find(c => c.language === 'en')?.preheader || '',
-    htmlContent: template?.content.find(c => c.language === 'en')?.htmlContent || ''
+    subject: existingContent.find(c => c.language === 'en')?.subject || '',
+    preheader: existingContent.find(c => c.language === 'en')?.preheader || '',
+    htmlContent: existingContent.find(c => c.language === 'en')?.htmlContent || ''
   });
   const [contentSV, setContentSV] = useState<TemplateContent>({
     language: 'sv',
-    subject: template?.content.find(c => c.language === 'sv')?.subject || '',
-    preheader: template?.content.find(c => c.language === 'sv')?.preheader || '',
-    htmlContent: template?.content.find(c => c.language === 'sv')?.htmlContent || ''
+    subject: existingContent.find(c => c.language === 'sv')?.subject || '',
+    preheader: existingContent.find(c => c.language === 'sv')?.preheader || '',
+    htmlContent: existingContent.find(c => c.language === 'sv')?.htmlContent || ''
   });
 
   const [saving, setSaving] = useState(false);
