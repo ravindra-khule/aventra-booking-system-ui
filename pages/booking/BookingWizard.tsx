@@ -93,7 +93,8 @@ export const BookingWizard = () => {
   const [selectedAddOns, setSelectedAddOns] = useState<Map<string, { addOn: TourAddOn; quantity: number }>>(new Map());
   const [isLoadingAddOns, setIsLoadingAddOns] = useState(false);
   
-  const isDevelopmentMode = import.meta.env.DEV;
+  // Also treat as dev/mock mode when Stripe key is absent (no <Elements> context available)
+  const isDevelopmentMode = import.meta.env.DEV || !import.meta.env.VITE_REACT_APP_STRIPE_KEY;
   
   const steps = [
     t('booking:steps.travelersAddons'),

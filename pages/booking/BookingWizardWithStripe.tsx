@@ -9,15 +9,12 @@ import { BookingWizard } from './BookingWizard';
  */
 export const BookingWizardWithStripe: React.FC = () => {
   const stripeKey = import.meta.env.VITE_REACT_APP_STRIPE_KEY;
-  const isDevelopmentMode = import.meta.env.DEV;
   const [stripe, setStripe] = useState<Stripe | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!stripeKey) {
-      const errorMsg = 'Stripe key not configured. Check .env.local: VITE_REACT_APP_STRIPE_KEY';
-      console.error(errorMsg);
-      setLoadError(errorMsg);
+      console.warn('[Stripe] No key configured (VITE_REACT_APP_STRIPE_KEY). Payment step will be unavailable.');
       return;
     }
 
@@ -43,9 +40,9 @@ export const BookingWizardWithStripe: React.FC = () => {
     loadStripeAsync();
   }, [stripeKey]);
 
-  const wizardElement = <BookingWizard isDevelopmentMode={isDevelopmentMode} />;
+  const wizardElement = <BookingWizard />;
 
-  // Show error if Stripe key missing
+  // Show error if Stripe failed to initialize (key present but init failed)
   if (loadError) {
     return (
       <div className="p-8 bg-red-50 border border-red-200 rounded-lg">

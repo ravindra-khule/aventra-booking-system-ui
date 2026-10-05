@@ -72,6 +72,24 @@ export interface Booking {
   selectedAddOns?: SelectedAddOn[]; // Tour add-ons selected
 }
 
+// Input type for creating a new booking via the API
+// Separate from Booking to match the PHP backend's expected payload fields
+export interface CreateBookingInput {
+  userId?: number;
+  tourId: string;
+  numberOfPeople: number;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  specialRequirements?: string;
+  // Optional extra context fields forwarded to the returned Booking object
+  tourTitle?: string;
+  payer?: PayerDetails;
+  travelers?: Traveler[];
+  tripDate?: string;
+  selectedAddOns?: SelectedAddOn[];
+}
+
 // Waitlist interface
 export interface Waitlist {
   id: string;

@@ -3,7 +3,7 @@
  * Integrates with PHP backend APIs at localhost:5500
  */
 
-import { Booking, BookingStatus, PaymentStatus, PayerDetails, Waitlist } from '../types/booking.types';
+import { Booking, BookingStatus, PaymentStatus, PayerDetails, Waitlist, CreateBookingInput } from '../types/booking.types';
 import { DashboardStats } from '../../../shared/types/common.types';
 import { delay, generateId, generateTransactionId } from '../../../shared/utils/api.utils';
 
@@ -206,7 +206,7 @@ export const BookingService = {
   /**
    * Create a new booking
    */
-  create: async (bookingData: Partial<Booking>): Promise<Booking> => {
+  create: async (bookingData: CreateBookingInput): Promise<Booking> => {
     try {
       // Define API_URL at runtime
       const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;

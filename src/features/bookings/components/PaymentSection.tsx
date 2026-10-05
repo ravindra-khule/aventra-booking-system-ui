@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { CreditCard, Loader } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { StripePaymentForm } from './StripePaymentForm';
 import { Booking } from '../types/booking.types';
 import { PaymentType, calculatePaymentAmounts, formatPaymentType } from '../services/payment.service';
+import { EmailService } from '../services/email.service';
+
+// Stripe is only available when the publishable key is configured
+const STRIPE_CONFIGURED = !!import.meta.env.VITE_REACT_APP_STRIPE_KEY;
 
 interface PaymentSectionProps {
   booking: Booking;
@@ -117,7 +121,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
         </div>
       </div>
 
-      {/* Stripe Payment Form */}
+      {/* Payment Form */}
       <div className="bg-white border border-gray-300 rounded-xl p-6">
         <h3 className="font-bold text-gray-900 text-lg mb-4">Payment Details</h3>
         {error && (
@@ -125,12 +129,51 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             {error}
           </div>
         )}
-        <StripePaymentForm
-          booking={booking}
-          paymentType={paymentType}
-          onSuccess={handlePaymentSuccess}
-          isDevelopmentMode={isDevelopmentMode}
-        />
+
+        {/* Only mount StripePaymentForm when <Elements> context is available (key configured).
+            useStripe() throws if rendered outside <Elements>, so we gate it here. */}
+        {STRIPE_CONFIGURED ? (
+          <StripePaymentForm
+            booking={booking}
+            paymentType={paymentType}
+            onSuccess={handlePaymentSuccess}
+            isDevelopmentMode={isDevelopmentMode}
+          />
+        ) : (
+          /* Stripe not configured — mock payment so the booking flow still works */
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const mockId = `mock_payment_${Date.now()}`;
+              await EmailService.sendBookingConfirmation(booking);
+              const calc = calculatePaymentAmounts(booking.totalAmount, paymentType);
+              if (calc.remainingBalance > 0) {
+                await EmailService.scheduleReminderEmail(booking, 30);
+              }
+              handlePaymentSuccess(mockId);
+            }}
+            className="space-y-6"
+          >
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+              <p className="text-sm text-yellow-800 font-semibold mb-1">Payment not configured</p>
+              <p className="text-xs text-yellow-700">
+                Stripe is not set up yet. Click "Complete Booking" to proceed with a simulated payment.
+              </p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-gray-900">Amount due now:</span>
+                <span className="text-blue-600 text-lg">{payableAmount} SEK</span>
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"
+            >
+              Complete Booking
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

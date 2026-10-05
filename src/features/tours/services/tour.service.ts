@@ -783,12 +783,6 @@ export const TourService = {
       await delay(500);
       return MOCK_TOURS;
     }
-
-    return result;
-    } catch (error) {
-      console.error('Error fetching tours:', error);
-      return [];
-    }
   },
 
   /**
@@ -850,7 +844,16 @@ export const TourService = {
         ],
         itinerary: [],
         includedItems: [],
-        excludedItems: []
+        excludedItems: [],
+        requirements: [],
+        translations: [],
+        defaultLanguage: 'en',
+        isFeatured: apiTour.isFeatured ?? false,
+        allowWaitlist: apiTour.allowWaitlist ?? false,
+        autoConfirm: apiTour.autoConfirm ?? false,
+        requireApproval: apiTour.requireApproval ?? false,
+        createdAt: apiTour.createdAt || '',
+        updatedAt: apiTour.updatedAt || ''
       };
       
       return tour;
