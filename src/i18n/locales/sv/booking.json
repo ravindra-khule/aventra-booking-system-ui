@@ -43,7 +43,10 @@
   "payment": {
     "title": "Betalningsuppgifter",
     "scheduleTitle": "Betalningsplan",
-    "payNow": "Betala nu (Anmälningsavgift)",
+    "payNow": "Betala nu",
+    "payNowDeposit": "Betala nu (Anmälningsavgift)",
+    "payNowFull": "Betala nu (Hela beloppet)",
+    "fullPayment": "Hela beloppet",
     "payLater": "Kvarstående belopp",
     "dueToday": "Betalas idag",
     "dueLater": "Betalas 60 dagar innan avresa",
@@ -55,7 +58,7 @@
     "agree": "Jag godkänner",
     "terms": "Bokningsvillkor",
     "privacy": "Integritetspolicy",
-    "payBtn": "Betala Anmälningsavgift",
+    "payBtn": "Betala",
     "nextStep": "Nästa Steg"
   },
   "confirmation": {

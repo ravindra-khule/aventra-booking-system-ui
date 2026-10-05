@@ -1,7 +1,6 @@
 /**
  * Role and Permission Service
  * Handles all role and permission related API calls
- * This is a mock service - will be replaced with actual API calls
  */
 
 import {
@@ -17,84 +16,50 @@ import {
   RoleFormData,
 } from '../types/role-permission.types';
 
-// Mock data for roles
-const MOCK_ROLES: Role[] = [
-  {
-    id: 'role_admin',
-    name: 'Administrator',
-    description: 'Full system access with all permissions',
-    isBuiltIn: true,
-    isTemplate: false,
-    permissions: Object.values(PermissionFeature),
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-    createdBy: 'system',
-    userCount: 2,
-  },
-  {
-    id: 'role_manager',
-    name: 'Manager',
-    description: 'Can manage bookings, customers, and generate reports',
-    isBuiltIn: true,
-    isTemplate: false,
-    permissions: [
-      PermissionFeature.BOOKING_VIEW,
-      PermissionFeature.BOOKING_CREATE,
-      PermissionFeature.BOOKING_EDIT,
-      PermissionFeature.BOOKING_CONFIRM,
-      PermissionFeature.BOOKING_CANCEL,
-      PermissionFeature.CUSTOMER_VIEW,
-      PermissionFeature.CUSTOMER_EXPORT,
-      PermissionFeature.CUSTOMER_COMMUNICATION,
-      PermissionFeature.REPORT_VIEW,
-      PermissionFeature.REPORT_EXPORT,
-      PermissionFeature.TOUR_VIEW,
-      PermissionFeature.FINANCE_VIEW,
-    ],
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-    createdBy: 'system',
-    userCount: 1,
-  },
-  {
-    id: 'role_support',
-    name: 'Support Agent',
-    description: 'Can view bookings and customer information, handle customer communications',
-    isBuiltIn: true,
-    isTemplate: false,
-    permissions: [
-      PermissionFeature.BOOKING_VIEW,
-      PermissionFeature.CUSTOMER_VIEW,
-      PermissionFeature.CUSTOMER_COMMUNICATION,
-      PermissionFeature.TOUR_VIEW,
-    ],
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-    createdBy: 'system',
-    userCount: 0,
-  },
-  {
-    id: 'role_accountant',
-    name: 'Accountant',
-    description: 'Can manage invoices, payments, and financial reports',
-    isBuiltIn: true,
-    isTemplate: false,
-    permissions: [
-      PermissionFeature.FINANCE_VIEW,
-      PermissionFeature.FINANCE_PAYMENTS,
-      PermissionFeature.FINANCE_REFUNDS,
-      PermissionFeature.FINANCE_INVOICES,
-      PermissionFeature.FINANCE_REPORTS,
-      PermissionFeature.REPORT_VIEW,
-      PermissionFeature.BOOKING_VIEW,
-      PermissionFeature.CUSTOMER_VIEW,
-    ],
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-    createdBy: 'system',
-    userCount: 0,
-  },
-];
+const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500') as string;
+
+const VALID_FEATURES = new Set<string>(Object.values(PermissionFeature));
+
+// Map a DB role row (rbac-roles-list.php) to the Role interface
+const mapDbRole = (row: any): Role => ({
+  id: String(row.id),
+  name: row.name,
+  description: row.description || '',
+  isBuiltIn: !!row.is_default,
+  isTemplate: false,
+  permissions: (row.permissions || [])
+    .map((p: any) => p.name)
+    .filter((name: string) => VALID_FEATURES.has(name)) as PermissionFeature[],
+  createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+  updatedAt: row.updated_at ? new Date(row.updated_at) : new Date(),
+  createdBy: 'system',
+  userCount: row.user_count ?? 0,
+});
+
+const apiPost = async (endpoint: string, body: unknown): Promise<any> => {
+  const response = await fetch(`${API_URL}/api/${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || `Request failed (${response.status})`);
+  }
+  return data;
+};
+
+const apiGet = async (endpoint: string): Promise<any> => {
+  const response = await fetch(`${API_URL}/api/${endpoint}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || `Request failed (${response.status})`);
+  }
+  return data;
+};
 
 // Role Templates for quick setup
 const ROLE_TEMPLATES: RoleTemplate[] = [
@@ -212,136 +177,63 @@ const PERMISSIONS: Permission[] = [
   { id: 'perm_settings_logs', feature: PermissionFeature.SETTINGS_LOGS, category: PermissionCategory.SETTINGS, action: PermissionAction.VIEW, label: 'System Logs', description: 'Can view system logs' },
 ];
 
-// Mock audit logs
-const MOCK_AUDIT_LOGS: PermissionAuditLog[] = [
-  {
-    id: 'log_1',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    action: 'ROLE_CREATED',
-    targetType: 'role',
-    targetId: 'role_custom_1',
-    targetName: 'Custom Role 1',
-    changedBy: 'user_1',
-    changedByName: 'Admin User',
-    details: 'Created new custom role with 15 permissions',
-    affectedUsers: 0,
-  },
-  {
-    id: 'log_2',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30),
-    action: 'PERMISSION_GRANTED',
-    targetType: 'permission',
-    targetId: 'perm_booking_create',
-    targetName: 'Create Bookings',
-    changedBy: 'user_1',
-    changedByName: 'Admin User',
-    details: 'Granted permission to role_manager',
-    affectedUsers: 1,
-  },
-  {
-    id: 'log_3',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60),
-    action: 'ROLE_ASSIGNED',
-    targetType: 'user',
-    targetId: 'user_5',
-    targetName: 'John Doe',
-    changedBy: 'user_1',
-    changedByName: 'Admin User',
-    details: 'Assigned Manager role to John Doe',
-    affectedUsers: 1,
-  },
-];
-
 // Service class
 export class RolePermissionService {
   static async getRoles(): Promise<Role[]> {
-    // Simulate API delay
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([...MOCK_ROLES]), 300);
-    });
+    const data = await apiGet('rbac-roles-list.php');
+    return (data.data || []).map(mapDbRole);
   }
 
   static async getRoleById(id: string): Promise<Role | null> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const role = MOCK_ROLES.find((r) => r.id === id);
-        resolve(role || null);
-      }, 200);
-    });
+    const roles = await RolePermissionService.getRoles();
+    return roles.find((r) => r.id === id) || null;
   }
 
   static async createRole(data: RoleFormData): Promise<Role> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newRole: Role = {
-          id: `role_custom_${Date.now()}`,
-          name: data.name,
-          description: data.description,
-          isBuiltIn: false,
-          isTemplate: false,
-          parentRoleId: data.parentRoleId,
-          permissions: data.permissions,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          createdBy: 'current_user',
-          userCount: 0,
-        };
-        MOCK_ROLES.push(newRole);
-        resolve(newRole);
-      }, 300);
+    const result = await apiPost('roles-create.php', {
+      name: data.name,
+      description: data.description,
+      permissions: data.permissions,
     });
+    return {
+      id: String(result.data.id),
+      name: data.name,
+      description: data.description,
+      isBuiltIn: false,
+      isTemplate: false,
+      parentRoleId: data.parentRoleId,
+      permissions: data.permissions,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: 'current_user',
+      userCount: 0,
+    };
   }
 
   static async updateRole(id: string, data: RoleFormData): Promise<Role> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const role = MOCK_ROLES.find((r) => r.id === id);
-        if (role && !role.isBuiltIn) {
-          role.name = data.name;
-          role.description = data.description;
-          role.permissions = data.permissions;
-          role.updatedAt = new Date();
-        }
-        resolve(role!);
-      }, 300);
+    await apiPost('roles-update.php', {
+      id,
+      name: data.name,
+      description: data.description,
+      permissions: data.permissions,
     });
+    const role = await RolePermissionService.getRoleById(id);
+    if (!role) throw new Error('Role not found after update');
+    return role;
   }
 
   static async deleteRole(id: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = MOCK_ROLES.findIndex((r) => r.id === id);
-        if (index !== -1 && !MOCK_ROLES[index].isBuiltIn) {
-          MOCK_ROLES.splice(index, 1);
-          resolve(true);
-        }
-        resolve(false);
-      }, 300);
-    });
+    await apiPost('roles-delete.php', { id });
+    return true;
   }
 
   static async duplicateRole(sourceId: string, newName: string): Promise<Role> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const sourceRole = MOCK_ROLES.find((r) => r.id === sourceId);
-        if (sourceRole) {
-          const newRole: Role = {
-            id: `role_custom_${Date.now()}`,
-            name: newName,
-            description: `Copy of ${sourceRole.description}`,
-            isBuiltIn: false,
-            isTemplate: false,
-            permissions: [...sourceRole.permissions],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            createdBy: 'current_user',
-            userCount: 0,
-          };
-          MOCK_ROLES.push(newRole);
-          resolve(newRole);
-        }
-        resolve(null!);
-      }, 300);
+    const sourceRole = await RolePermissionService.getRoleById(sourceId);
+    if (!sourceRole) throw new Error('Source role not found');
+    return RolePermissionService.createRole({
+      name: newName,
+      description: `Copy of ${sourceRole.description}`,
+      permissions: [...sourceRole.permissions],
     });
   }
 
@@ -424,21 +316,29 @@ export class RolePermissionService {
   }
 
   static async getAuditLogs(limit = 50): Promise<PermissionAuditLog[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([...MOCK_AUDIT_LOGS].slice(0, limit));
-      }, 300);
-    });
+    try {
+      const data = await apiGet(`rbac-audit-logs.php?limit=${limit}`);
+      return (data.data || []).map((row: any): PermissionAuditLog => ({
+        id: String(row.id),
+        timestamp: new Date(row.timestamp),
+        action: row.action,
+        targetType: row.targetType === 'role' ? 'role' : row.targetType === 'permission' ? 'permission' : 'user',
+        targetId: String(row.targetId ?? ''),
+        targetName: row.targetName || '',
+        changedBy: row.changedBy || 'system',
+        changedByName: row.changedBy || 'System',
+        details: row.details || '',
+      }));
+    } catch (err) {
+      console.error('Failed to load audit logs:', err);
+      return [];
+    }
   }
 
   static async getAuditLogsByRole(roleId: string): Promise<PermissionAuditLog[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const logs = MOCK_AUDIT_LOGS.filter(
-          (log) => (log.action.includes('ROLE') && log.targetId === roleId) || log.details.includes(roleId)
-        );
-        resolve(logs);
-      }, 300);
-    });
+    const logs = await RolePermissionService.getAuditLogs();
+    return logs.filter(
+      (log) => (log.action.includes('ROLE') && log.targetId === roleId) || log.details.includes(roleId)
+    );
   }
 }

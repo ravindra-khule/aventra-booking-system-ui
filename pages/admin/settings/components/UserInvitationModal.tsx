@@ -168,7 +168,7 @@ export const UserInvitationModal: React.FC<UserInvitationModalProps> = ({
                     {role}
                     <button
                       type="button"
-                      onClick={() => handleRoleToggle}
+                      onClick={() => handleRoleToggle(role)}
                       className="text-blue-700 hover:text-blue-900"
                     >
                       ×

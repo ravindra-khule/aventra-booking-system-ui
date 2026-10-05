@@ -15,6 +15,16 @@ const generateSlug = (title: string): string => {
     .replace(/^-+|-+$/g, '');
 };
 
+// Map DB (lowercase) tour status to the frontend TourStatus enum
+const mapTourStatus = (status: string | undefined | null): TourStatus => {
+  switch ((status || '').toLowerCase()) {
+    case 'inactive': return TourStatus.INACTIVE;
+    case 'draft': return TourStatus.DRAFT;
+    case 'archived': return TourStatus.ARCHIVED;
+    default: return TourStatus.ACTIVE;
+  }
+};
+
 // Mock Categories
 export const MOCK_CATEGORIES: TourCategory[] = [
   { id: 'cat-1', name: 'Mountain Trekking', slug: 'mountain-trekking', description: 'High altitude mountain expeditions', color: '#3b82f6' },
@@ -728,7 +738,7 @@ export const TourService = {
         slug: apiTour.slug,
         shortDescription: apiTour.shortDescription,
         description: apiTour.description,
-        status: apiTour.status ? (apiTour.status as TourStatus) : TourStatus.ACTIVE,
+        status: mapTourStatus(apiTour.status),
         price: apiTour.price,
         depositPrice: apiTour.depositPrice || (apiTour.price * 0.2), // 20% deposit
         currency: apiTour.currency,
@@ -747,6 +757,8 @@ export const TourService = {
         nextDate: apiTour.nextDate,
         categories: [],
         tags: [],
+        totalBookings: apiTour.totalBookings || 0,
+        revenue: apiTour.revenue || 0,
         highlights: [
           `${apiTour.durationDays} days in ${apiTour.location}`,
           `Located in ${apiTour.country}`,
@@ -817,7 +829,7 @@ export const TourService = {
         slug: apiTour.slug,
         shortDescription: apiTour.shortDescription,
         description: apiTour.description,
-        status: TourStatus.ACTIVE,
+        status: mapTourStatus(apiTour.status),
         price: apiTour.price,
         depositPrice: apiTour.depositPrice || apiTour.price * 0.2,
         currency: apiTour.currency,
@@ -877,7 +889,7 @@ export const TourService = {
         imageUrl: tourData.imageUrl,
         shortDescription: tourData.shortDescription,
         description: tourData.description,
-        status: tourData.status || TourStatus.ACTIVE,
+        status: (tourData.status || TourStatus.ACTIVE).toLowerCase(),
         price: tourData.price || 0,
         depositPrice: tourData.depositPrice || (tourData.price || 0) * 0.2,
         currency: tourData.currency || 'USD',
@@ -916,7 +928,7 @@ export const TourService = {
         slug: apiTour.slug,
         shortDescription: apiTour.shortDescription,
         description: apiTour.description,
-        status: apiTour.status ? (apiTour.status as TourStatus) : TourStatus.ACTIVE,
+        status: mapTourStatus(apiTour.status),
         price: apiTour.price,
         depositPrice: apiTour.depositPrice,
         currency: apiTour.currency,
@@ -978,13 +990,15 @@ export const TourService = {
       if (tourData.imageUrl !== undefined) payload.imageUrl = tourData.imageUrl;
       if (tourData.shortDescription !== undefined) payload.shortDescription = tourData.shortDescription;
       if (tourData.description !== undefined) payload.description = tourData.description;
-      if (tourData.status !== undefined) payload.status = tourData.status;
+      if (tourData.status !== undefined) payload.status = String(tourData.status).toLowerCase();
       if (tourData.price !== undefined) payload.price = tourData.price;
       if (tourData.depositPrice !== undefined) payload.depositPrice = tourData.depositPrice;
       if (tourData.durationDays !== undefined) payload.durationDays = tourData.durationDays;
       if (tourData.difficulty !== undefined) payload.difficulty = tourData.difficulty;
       if (tourData.location !== undefined) payload.location = tourData.location;
       if (tourData.country !== undefined) payload.country = tourData.country;
+      if (tourData.region !== undefined) payload.region = tourData.region;
+      if (tourData.currency !== undefined) payload.currency = tourData.currency;
       if (tourData.maxCapacity !== undefined) payload.maxCapacity = tourData.maxCapacity;
       if (tourData.nextDate !== undefined) payload.nextDate = tourData.nextDate;
 
@@ -1013,7 +1027,7 @@ export const TourService = {
         slug: apiTour.slug,
         shortDescription: apiTour.shortDescription,
         description: apiTour.description,
-        status: TourStatus.ACTIVE,
+        status: mapTourStatus(apiTour.status),
         price: apiTour.price,
         depositPrice: apiTour.depositPrice,
         currency: apiTour.currency,

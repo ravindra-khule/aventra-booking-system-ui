@@ -81,10 +81,10 @@ export const TourManagement: React.FC = () => {
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(t => 
-        t.title.toLowerCase().includes(q) || 
-        t.location.toLowerCase().includes(q) ||
-        t.country.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q)
+        (t.title || '').toLowerCase().includes(q) || 
+        (t.location || '').toLowerCase().includes(q) ||
+        (t.country || '').toLowerCase().includes(q) ||
+        (t.description || '').toLowerCase().includes(q)
       );
     }
 
@@ -100,7 +100,7 @@ export const TourManagement: React.FC = () => {
 
     // Category filter
     if (categoryFilter !== 'ALL') {
-      result = result.filter(t => t.categories.includes(categoryFilter));
+      result = result.filter(t => (t.categories || []).includes(categoryFilter));
     }
 
     setFilteredTours(result);
@@ -203,7 +203,7 @@ export const TourManagement: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <Button 
-              variant="outline" 
+              variant="secondary" 
               icon={<Download className="h-4 w-4" />}
               onClick={() => alert('Export functionality to be implemented')}
             >

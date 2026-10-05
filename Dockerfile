@@ -13,6 +13,10 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# API URL is baked into the bundle at build time
+ARG VITE_REACT_APP_API_URL=http://localhost:5500
+ENV VITE_REACT_APP_API_URL=$VITE_REACT_APP_API_URL
+
 # Build the application
 RUN npm run build
 

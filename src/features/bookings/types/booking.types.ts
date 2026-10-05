@@ -82,6 +82,10 @@ export interface CreateBookingInput {
   customerEmail: string;
   customerPhone: string;
   specialRequirements?: string;
+  promoCode?: string;
+  discountAmount?: number;
+  /** 'FULL' = pay entire amount now; 'ADVANCE' = pay deposit only */
+  paymentType?: 'FULL' | 'ADVANCE';
   // Optional extra context fields forwarded to the returned Booking object
   tourTitle?: string;
   payer?: PayerDetails;

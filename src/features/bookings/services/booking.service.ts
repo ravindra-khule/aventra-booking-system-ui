@@ -8,6 +8,48 @@ import { DashboardStats } from '../../../shared/types/common.types';
 import { delay, generateId, generateTransactionId } from '../../../shared/utils/api.utils';
 
 /**
+ * Map API (DB) booking status values to the frontend BookingStatus enum.
+ * DB stores lowercase values; the UI uses uppercase enum members.
+ */
+const mapBookingStatus = (status: string): BookingStatus => {
+  switch ((status || '').toLowerCase()) {
+    case 'confirmed': return BookingStatus.CONFIRMED;
+    case 'completed': return BookingStatus.COMPLETED;
+    case 'cancelled':
+    case 'refunded': return BookingStatus.CANCELLED;
+    default: return BookingStatus.PENDING;
+  }
+};
+
+/**
+ * Map API (DB) payment status values to the frontend PaymentStatus enum.
+ * DB uses 'pending' for unpaid bookings; the UI calls it UNPAID.
+ */
+const mapPaymentStatus = (status: string): PaymentStatus => {
+  switch ((status || '').toLowerCase()) {
+    case 'partial': return PaymentStatus.PARTIAL;
+    case 'paid': return PaymentStatus.PAID;
+    case 'refunded': return PaymentStatus.REFUNDED;
+    default: return PaymentStatus.UNPAID;
+  }
+};
+
+/** Convert a frontend BookingStatus back to the lowercase DB value */
+const toApiBookingStatus = (status?: string): string | undefined => {
+  if (!status) return undefined;
+  const s = status.toLowerCase();
+  return ['pending', 'confirmed', 'completed', 'cancelled', 'refunded'].includes(s) ? s : undefined;
+};
+
+/** Convert a frontend PaymentStatus back to the lowercase DB value ('unpaid' -> 'pending') */
+const toApiPaymentStatus = (status?: string): string | undefined => {
+  if (!status) return undefined;
+  const s = status.toLowerCase();
+  if (s === 'unpaid') return 'pending';
+  return ['pending', 'partial', 'paid', 'refunded'].includes(s) ? s : undefined;
+};
+
+/**
  * Get current date in local timezone formatted as YYYY-MM-DD
  */
 const getCurrentDate = (): string => {
@@ -222,7 +264,21 @@ export const BookingService = {
         customerName: bookingData.customerName || 'Guest',
         customerEmail: bookingData.customerEmail || '',
         customerPhone: bookingData.customerPhone || '',
-        specialRequirements: bookingData.specialRequirements || ''
+        specialRequirements: bookingData.specialRequirements || '',
+        departureDate: bookingData.tripDate || null,
+        promoCode: bookingData.promoCode || null,
+        discountAmount: bookingData.discountAmount || 0,
+        paymentType: bookingData.paymentType === 'FULL' ? 'full' : 'advance',
+        travelers: (bookingData.travelers || []).map(t => ({
+          firstName: t.firstName,
+          lastName: t.lastName
+        })),
+        addOns: (bookingData.selectedAddOns || []).map(s => ({
+          name: s.addOn?.name || 'Add-on',
+          quantity: s.quantity,
+          unitPrice: s.addOn?.price || 0,
+          perPerson: !!s.addOn?.pricePerPerson
+        }))
       };
 
       console.log('Creating booking with payload:', payload);
@@ -256,8 +312,10 @@ export const BookingService = {
         totalPrice: apiBooking.totalPrice || 0,
         depositPaid: apiBooking.depositPaid || 0,
         balanceDue: apiBooking.balanceDue || 0,
-        status: apiBooking.status || 'pending' as any,
-        paymentStatus: apiBooking.paymentStatus || 'pending' as any,
+        status: mapBookingStatus(apiBooking.status || 'pending'),
+        paymentStatus: mapPaymentStatus(apiBooking.paymentStatus || 'pending'),
+        promoCode: apiBooking.promoCode || bookingData.promoCode,
+        discountAmount: apiBooking.discountAmount ?? bookingData.discountAmount,
         customerName: bookingData.customerName || '',
         customerEmail: bookingData.customerEmail || '',
         customerPhone: bookingData.customerPhone || '',
@@ -292,7 +350,7 @@ export const BookingService = {
 
       console.log('Fetching booking with ID:', id);
 
-      const response = await fetch(`${API_URL}/api/bookings-list.php?id=${id}&admin=true`, {
+      const response = await fetch(`${API_URL}/api/booking-detail.php?id=${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -304,43 +362,48 @@ export const BookingService = {
       const data = await response.json();
       console.log('Booking fetch response data:', data);
 
-      if (!data.success || !response.ok) {
+      if (!response.ok || !data.success) {
+        if (response.status === 404) {
+          return undefined;
+        }
         console.error('API Error:', data.error);
         throw new Error(data.error || 'Failed to fetch booking');
       }
 
-      if (!data.data || data.data.length === 0) {
+      if (!data.data) {
         console.log('Booking not found:', id);
         return undefined;
       }
 
-      // Convert API response to Booking type
-      const apiBooking = data.data[0];
+      // Convert API response (booking-detail.php returns camelCase) to Booking type
+      const apiBooking = data.data;
       return {
-        id: apiBooking.id,
-        tourId: apiBooking.tour_id,
-        tourTitle: apiBooking.tour_title || '',
-        customerId: apiBooking.user_id,
-        customerName: apiBooking.customer_name,
+        id: String(apiBooking.id),
+        tourId: String(apiBooking.tourId || ''),
+        tourTitle: apiBooking.tourTitle || '',
+        customerId: String(apiBooking.customerId || apiBooking.userId || ''),
+        customerName: apiBooking.customerName || '',
         payer: {
-          firstName: apiBooking.customer_name?.split(' ')[0] || '',
-          lastName: apiBooking.customer_name?.split(' ')[1] || '',
-          email: apiBooking.customer_email || '',
-          phone: apiBooking.customer_phone || '',
+          firstName: apiBooking.customerName?.split(' ')[0] || '',
+          lastName: apiBooking.customerName?.split(' ').slice(1).join(' ') || '',
+          email: apiBooking.customerEmail || '',
+          phone: apiBooking.customerPhone || '',
           address: '',
           zipCode: '',
           city: '',
           country: ''
         },
-        bookingDate: apiBooking.booking_date?.split('T')[0] || new Date().toISOString().split('T')[0],
-        tripDate: apiBooking.departure_date || '',
-        participants: apiBooking.number_of_people || 1,
+        bookingDate: apiBooking.bookingDate?.split('T')[0]?.split(' ')[0] || new Date().toISOString().split('T')[0],
+        tripDate: apiBooking.departureDate || apiBooking.tourNextDate || '',
+        participants: apiBooking.numberOfPeople || 1,
         travelers: [],
-        totalAmount: apiBooking.total_price || 0,
-        paidAmount: apiBooking.deposit_paid || 0,
-        status: apiBooking.status as any,
-        paymentStatus: apiBooking.payment_status as any,
-        transactionId: apiBooking.booking_reference
+        totalAmount: apiBooking.totalPrice || 0,
+        paidAmount: apiBooking.depositPaid || 0,
+        status: mapBookingStatus(apiBooking.status),
+        paymentStatus: mapPaymentStatus(apiBooking.paymentStatus),
+        specialRequests: apiBooking.specialRequirements || undefined,
+        tourImageUrl: apiBooking.tourImageUrl || undefined,
+        transactionId: apiBooking.bookingReference
       } as Booking;
     } catch (error) {
       console.error('Booking fetch error:', error);
@@ -387,8 +450,9 @@ export const BookingService = {
         totalPrice: apiBooking.total_price,
         depositPaid: apiBooking.deposit_paid,
         balanceDue: apiBooking.balance_due,
-        status: apiBooking.status,
-        paymentStatus: apiBooking.payment_status,
+        status: mapBookingStatus(apiBooking.status),
+        paymentStatus: mapPaymentStatus(apiBooking.payment_status),
+        specialRequests: apiBooking.special_requirements || undefined,
         customerName: apiBooking.customer_name,
         customerEmail: apiBooking.customer_email,
         customerPhone: apiBooking.customer_phone,
@@ -407,6 +471,7 @@ export const BookingService = {
         },
         bookingDate: apiBooking.booking_date?.split('T')[0] || new Date().toISOString().split('T')[0],
         tripDate: apiBooking.departure_date || apiBooking.next_date || '',
+        tourImageUrl: apiBooking.tour_image_url || undefined,
         participants: apiBooking.number_of_people || 1,
         travelers: [],
         totalAmount: apiBooking.total_price || 0,
@@ -431,8 +496,11 @@ export const BookingService = {
 
       const payload: any = { id };
       
-      if (updates.status) payload.status = updates.status;
-      if (updates.paymentStatus) payload.paymentStatus = updates.paymentStatus;
+      const apiStatus = toApiBookingStatus(updates.status as string);
+      const apiPaymentStatus = toApiPaymentStatus(updates.paymentStatus as string);
+      if (apiStatus) payload.status = apiStatus;
+      if (apiPaymentStatus) payload.paymentStatus = apiPaymentStatus;
+      if (updates.specialRequests !== undefined) payload.notes = updates.specialRequests;
 
       console.log('Updating booking with payload:', payload);
 
