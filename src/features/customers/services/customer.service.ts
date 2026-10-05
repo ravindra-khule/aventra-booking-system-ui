@@ -59,13 +59,7 @@ export const CustomerService = {
         return [];
       }
 
-      // Update created date if this booking is older
-      if (booking.bookingDate < customer.createdDate) {
-        customer.createdDate = booking.bookingDate;
-      }
-    });
-
-    return Array.from(customerMap.values());
+      return result.data.map(mapCustomerFromApi);
     } catch (error) {
       console.error('Error fetching customers:', error);
       return [];

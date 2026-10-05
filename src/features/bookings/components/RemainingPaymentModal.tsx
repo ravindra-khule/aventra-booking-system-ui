@@ -63,15 +63,15 @@ export const RemainingPaymentModal: React.FC<RemainingPaymentModalProps> = ({
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Total Amount:</span>
-                <span className="font-bold text-lg text-gray-900">{formatCurrency(booking.totalAmount, booking.currency)}</span>
+                <span className="font-bold text-lg text-gray-900">{formatCurrency(booking.totalAmount)}</span>
               </div>
               <div className="border-t border-blue-200 pt-3 flex justify-between items-center">
                 <span className="text-gray-700">Already Paid:</span>
-                <span className="font-bold text-green-600">{formatCurrency(booking.paidAmount, booking.currency)}</span>
+                <span className="font-bold text-green-600">{formatCurrency(booking.paidAmount)}</span>
               </div>
               <div className="flex justify-between items-center text-xl">
                 <span className="text-gray-900 font-bold">Remaining Balance:</span>
-                <span className="font-bold text-orange-600">{formatCurrency(remainingAmount, booking.currency)}</span>
+                <span className="font-bold text-orange-600">{formatCurrency(remainingAmount)}</span>
               </div>
             </div>
           </div>

@@ -86,19 +86,22 @@ const SettingsPage: React.FC = () => {
     setEditingSettings(initialEdits);
   };
 
-  const getInputType = (key: string): 'text' | 'email' | 'password' | 'number' = {
-    email: 'email',
-    phone: 'text',
-    'from_email': 'email',
-    'reply_to_email': 'email',
-    'sendgrid_api_key': 'password',
-    'stripe_secret_key': 'password',
-    'fortnox_client_id': 'password',
-    'fortnox_client_secret': 'password',
-    'smtp_password': 'password',
-    booking_reminder_days: 'number',
-    session_timeout: 'number'
-  }[key] || 'text';
+  const getInputType = (key: string): 'text' | 'email' | 'password' | 'number' => {
+    const typeMap: Record<string, 'text' | 'email' | 'password' | 'number'> = {
+      email: 'email',
+      phone: 'text',
+      'from_email': 'email',
+      'reply_to_email': 'email',
+      'sendgrid_api_key': 'password',
+      'stripe_secret_key': 'password',
+      'fortnox_client_id': 'password',
+      'fortnox_client_secret': 'password',
+      'smtp_password': 'password',
+      booking_reminder_days: 'number',
+      session_timeout: 'number'
+    };
+    return typeMap[key] || 'text';
+  };
 
   const isModified = () => {
     return settings.some(setting => editingSettings[setting.key] !== setting.value);

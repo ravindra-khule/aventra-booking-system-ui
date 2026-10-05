@@ -27,9 +27,7 @@ export const RemainingPaymentWithStripe: React.FC<RemainingPaymentWithStripeProp
 
   useEffect(() => {
     if (!stripeKey) {
-      const errorMsg = 'Stripe key not configured';
-      console.error(errorMsg);
-      setLoadError(errorMsg);
+      console.warn('[RemainingPayment] No Stripe key configured. Payment will run without Stripe.');
       return;
     }
 
@@ -67,6 +65,18 @@ export const RemainingPaymentWithStripe: React.FC<RemainingPaymentWithStripeProp
   }
 
   if (!stripe) {
+    // No Stripe key configured — render modal without Stripe payment
+    if (!stripeKey) {
+      return (
+        <RemainingPaymentModal
+          booking={booking}
+          remainingAmount={remainingAmount}
+          onClose={onClose}
+          onSuccess={onSuccess}
+        />
+      );
+    }
+    // Key present but Stripe still loading
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl p-8 text-center">
@@ -79,7 +89,7 @@ export const RemainingPaymentWithStripe: React.FC<RemainingPaymentWithStripeProp
 
   const elementsOptions = {
     mode: 'payment' as const,
-    currency: booking.currency?.toLowerCase() || 'sek',
+    currency: 'sek',
     amount: remainingAmount * 100, // Convert to cents/öre
     appearance: {
       theme: 'stripe' as const,
