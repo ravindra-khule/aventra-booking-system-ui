@@ -47,11 +47,15 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
           e.preventDefault();
           const mockId = `mock_payment_${Date.now()}`;
           
-          // Send emails in dev mode too (for testing)
-          await EmailService.sendBookingConfirmation(booking);
-          const paymentAmounts = calculatePaymentAmounts(booking.totalAmount, paymentType, { advanceAmount });
-          if (paymentAmounts.remainingBalance > 0) {
-            await EmailService.scheduleReminderEmail(booking, 30);
+          // Send emails in dev mode too (for testing) — non-blocking
+          try {
+            await EmailService.sendBookingConfirmation(booking);
+            const paymentAmounts = calculatePaymentAmounts(booking.totalAmount, paymentType, { advanceAmount });
+            if (paymentAmounts.remainingBalance > 0) {
+              await EmailService.scheduleReminderEmail(booking, 30);
+            }
+          } catch (emailError) {
+            console.error('Email sending failed (non-blocking):', emailError);
           }
           
           onSuccess(mockId);
@@ -162,12 +166,16 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         const paidAmount = paymentAmounts.payableAmount;
         const remainingAmount = paymentAmounts.remainingBalance;
 
-        // Send booking confirmation email
-        await EmailService.sendBookingConfirmation(booking);
+        // Send booking confirmation email — non-blocking, payment already succeeded
+        try {
+          await EmailService.sendBookingConfirmation(booking);
 
-        // If this is partial payment, schedule a reminder for remaining balance
-        if (remainingAmount > 0 && paymentType === 'ADVANCE') {
-          await EmailService.scheduleReminderEmail(booking, 30); // 30 days before trip
+          // If this is partial payment, schedule a reminder for remaining balance
+          if (remainingAmount > 0 && paymentType === 'ADVANCE') {
+            await EmailService.scheduleReminderEmail(booking, 30); // 30 days before trip
+          }
+        } catch (emailError) {
+          console.error('Email sending failed (non-blocking):', emailError);
         }
 
         console.log('[StripePaymentForm] Payment success and emails sent/scheduled');

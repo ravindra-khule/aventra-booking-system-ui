@@ -692,6 +692,123 @@ let MOCK_TOURS: Tour[] = [
     revenue: 577100,
     averageRating: 4.8,
     reviewCount: 27
+  },
+  {
+    id: '11',
+    title: 'Jämtlandsfjällen',
+    slug: 'jamtlandsfjallen',
+    shortDescription: '5 DAGAR. Fjällvandring bland kala toppar och glittrande fjällsjöar.',
+    description: 'Upptäck Jämtlandsfjällen med oss – en fjällvandring genom ett av Sveriges vackraste fjällområden. Vi vandrar på leder mellan fjällstationer och njuter av stillheten och den storslagna naturen.',
+    status: TourStatus.ACTIVE,
+    price: 12900,
+    depositPrice: 1500,
+    currency: 'SEK',
+    durationDays: 5,
+    difficulty: TourDifficulty.MODERATE,
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-11', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop', alt: 'Jämtlandsfjällen', isPrimary: true, order: 1 }
+    ],
+    location: 'Jämtland',
+    country: 'Sweden',
+    region: 'Scandinavia',
+    maxCapacity: 12,
+    minCapacity: 4,
+    availableSpots: 8,
+    nextDate: '2027-06-15',
+    categories: ['cat-5', 'cat-1'],
+    tags: ['tag-7', 'tag-4'],
+    highlights: [
+      'Hiking between mountain stations',
+      'Swedish fells and lakes',
+      'Sauna at the mountain station',
+      'Local mountain cuisine'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Experienced guide',
+      'Mountain station accommodation',
+      'All meals during trek',
+      'Sauna access'
+    ],
+    excludedItems: [
+      'Travel to/from Jämtland',
+      'Travel insurance',
+      'Personal equipment'
+    ],
+    requirements: [
+      'Normal fitness level',
+      'Comfortable walking several hours per day'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: true,
+    allowWaitlist: true,
+    autoConfirm: true,
+    requireApproval: false,
+    createdAt: '2024-10-01T00:00:00Z',
+    updatedAt: '2024-11-25T00:00:00Z',
+    totalBookings: 0,
+    revenue: 0
+  },
+  {
+    id: '12',
+    title: 'Touch av Sarek',
+    slug: 'touch-av-sarek',
+    shortDescription: '7 DAGAR. En smak av Sarek – vandring i Sveriges mest vilda nationalpark.',
+    description: 'Upplev Sareks nationalpark, Europas sista vildmark. Vi vandrar genom sagolika dalar omgivna av höga toppar och glaciärer. En äkta vildmarksupplevelse med erfarna guider.',
+    status: TourStatus.ACTIVE,
+    price: 18900,
+    depositPrice: 2000,
+    currency: 'SEK',
+    durationDays: 7,
+    difficulty: TourDifficulty.HARD,
+    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000&auto=format&fit=crop',
+    images: [
+      { id: 'img-12', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000&auto=format&fit=crop', alt: 'Sarek National Park', isPrimary: true, order: 1 }
+    ],
+    location: 'Sarek National Park',
+    country: 'Sweden',
+    region: 'Lapland',
+    maxCapacity: 10,
+    minCapacity: 4,
+    availableSpots: 6,
+    nextDate: '2027-07-10',
+    categories: ['cat-1', 'cat-5'],
+    tags: ['tag-7', 'tag-3'],
+    highlights: [
+      'Europe\'s last wilderness',
+      'Glaciers and high peaks',
+      'True off-trail adventure',
+      'Small group expedition'
+    ],
+    itinerary: [],
+    includedItems: [
+      'Experienced wilderness guide',
+      'Tent accommodation',
+      'All meals during trek',
+      'Safety equipment'
+    ],
+    excludedItems: [
+      'Travel to/from Lapland',
+      'Travel insurance',
+      'Personal equipment'
+    ],
+    requirements: [
+      'Good physical fitness',
+      'Previous hiking experience',
+      'Comfortable with tent camping'
+    ],
+    translations: [],
+    defaultLanguage: 'sv',
+    isFeatured: true,
+    allowWaitlist: true,
+    autoConfirm: false,
+    requireApproval: true,
+    createdAt: '2024-10-01T00:00:00Z',
+    updatedAt: '2024-11-25T00:00:00Z',
+    totalBookings: 0,
+    revenue: 0
   }
 ];
 

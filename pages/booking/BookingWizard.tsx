@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { 
   CheckCircle2, 
   ChevronRight, 
-  CreditCard, 
+  Printer,
   Shield, 
   Info, 
   ArrowLeft, 
@@ -80,6 +80,7 @@ export const BookingWizard = () => {
   const [paymentType, setPaymentType] = useState<PaymentType>('FULL');
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
   const [amountPaid, setAmountPaid] = useState(0);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   
   // Booking State
   const [date, setDate] = useState('');
@@ -350,6 +351,7 @@ export const BookingWizard = () => {
     if (isProcessingRef.current) return; // guard against double-submit (two pay buttons)
     isProcessingRef.current = true;
     setIsProcessing(true);
+    setBookingError(null);
     try {
       const baseTotal = (tour?.price || 0) * participants;
       const addOnsTotal = calculateAddOnsTotal();
@@ -429,10 +431,12 @@ export const BookingWizard = () => {
       }
 
       setCurrentStep(3);
+      window.scrollTo(0, 0);
     } catch (e) {
       console.error('Booking creation error:', e);
       const errorMsg = e instanceof Error ? e.message : 'Unknown error';
-      alert(`Booking failed: ${errorMsg}`);
+      // Keep the user informed on-screen — an alert alone is easy to miss on mobile
+      setBookingError(`Your payment went through, but we could not confirm your booking: ${errorMsg}. Please press the Pay button again to retry — you will not be charged twice.`);
     } finally {
       isProcessingRef.current = false;
       setIsProcessing(false);
@@ -577,7 +581,8 @@ export const BookingWizard = () => {
         </div>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-green-200">
+      {/* Buttons duplicated in the main confirmation content — hide on mobile where the sidebar stacks below it */}
+      <div className="mt-6 pt-4 border-t border-green-200 hidden lg:block">
         <Button 
           onClick={() => navigate('/my-bookings')} 
           variant="primary" 
@@ -588,7 +593,7 @@ export const BookingWizard = () => {
         </Button>
         <Button 
           onClick={() => navigate('/')} 
-          variant="secondary" 
+          variant="secondary-dark" 
           fullWidth
         >
           {t('booking:confirmation.browseMoreTours')}
@@ -750,10 +755,10 @@ export const BookingWizard = () => {
                     {steps.map((step, idx) => (
                         <div key={step} className="flex items-center">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-2 ${
-                                idx < currentStep ? 'bg-green-500 text-white' : 
+                                idx < currentStep || currentStep === steps.length - 1 ? 'bg-green-500 text-white' : 
                                 idx === currentStep ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400'
                             }`}>
-                                {idx < currentStep ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
+                                {idx < currentStep || currentStep === steps.length - 1 ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
                             </div>
                             <span className={`hidden md:block text-sm font-medium ${
                                 idx <= currentStep ? 'text-gray-900' : 'text-gray-400'
@@ -771,10 +776,12 @@ export const BookingWizard = () => {
           {/* Main Form Area */}
           <div className="lg:col-span-2 flex flex-col min-h-screen lg:min-h-auto">
             
-            {/* Debug: Show current step */}
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
-              Current Step: {currentStep} ({steps[currentStep]}) | Mode: {isDevelopmentMode ? 'Dev' : 'Prod'}
-            </div>
+            {/* Debug: Show current step (dev builds only) */}
+            {import.meta.env.DEV && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
+                Current Step: {currentStep} ({steps[currentStep]}) | Mode: {isDevelopmentMode ? 'Dev' : 'Prod'}
+              </div>
+            )}
             
             {/* Step 1: Payer & Traveler Details */}
             {currentStep === 1 && (
@@ -1318,6 +1325,13 @@ export const BookingWizard = () => {
                         completeBooking(result.paymentType);
                      }}
                   />
+
+                  {bookingError && (
+                     <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                        <X className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-red-700">{bookingError}</p>
+                     </div>
+                  )}
                </div>
             )}
 
@@ -1560,14 +1574,14 @@ export const BookingWizard = () => {
                     <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
                         <Button 
                             onClick={() => window.print()} 
-                            variant="secondary"
+                            variant="secondary-dark"
                             className="flex items-center gap-2"
                         >
-                            <CreditCard className="h-4 w-4" />
+                            <Printer className="h-4 w-4" />
                             {t('booking:confirmation.printConfirmation')}
                         </Button>
-            <Button 
-              onClick={() => navigate('/my-bookings')} 
+                        <Button 
+                            onClick={() => navigate('/my-bookings')} 
                             variant="primary"
                             className="flex items-center gap-2"
                         >
@@ -1575,7 +1589,7 @@ export const BookingWizard = () => {
                         </Button>
                         <Button 
                             onClick={() => navigate('/')} 
-                            variant="secondary"
+                            variant="secondary-dark"
                         >
                             {t('booking:confirmation.browseMoreTours')}
                         </Button>
@@ -1606,7 +1620,7 @@ export const BookingWizard = () => {
                 setCurrentStep((prev) => Math.max(prev - 1, 0));
                 window.scrollTo(0, 0);
               }}
-              variant="secondary"
+              variant="secondary-dark"
               size="lg"
               className="md:w-auto shadow-none"
               icon={<ArrowLeft className="h-5 w-5" />}

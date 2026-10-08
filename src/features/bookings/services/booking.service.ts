@@ -293,7 +293,17 @@ export const BookingService = {
       });
 
       console.log('Booking create response status:', response.status);
-      const data = await response.json();
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        console.error('Booking create returned non-JSON response:', responseText.slice(0, 500));
+        throw new Error(`Server returned an invalid response (HTTP ${response.status})`);
+      }
+      if (!responseText) {
+        throw new Error(`Server returned an empty response (HTTP ${response.status})`);
+      }
       console.log('Booking create response data:', data);
 
       if (!data.success || !response.ok) {

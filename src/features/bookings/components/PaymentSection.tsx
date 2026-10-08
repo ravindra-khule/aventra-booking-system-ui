@@ -156,10 +156,15 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             onSubmit={async (e) => {
               e.preventDefault();
               const mockId = `mock_payment_${Date.now()}`;
-              await EmailService.sendBookingConfirmation(booking);
-              const calc = calculatePaymentAmounts(booking.totalAmount, paymentType, paymentConfig);
-              if (calc.remainingBalance > 0) {
-                await EmailService.scheduleReminderEmail(booking, 30);
+              // Emails are non-critical — never let them block the booking flow
+              try {
+                await EmailService.sendBookingConfirmation(booking);
+                const calc = calculatePaymentAmounts(booking.totalAmount, paymentType, paymentConfig);
+                if (calc.remainingBalance > 0) {
+                  await EmailService.scheduleReminderEmail(booking, 30);
+                }
+              } catch (emailError) {
+                console.error('Email sending failed (non-blocking):', emailError);
               }
               handlePaymentSuccess(mockId);
             }}
