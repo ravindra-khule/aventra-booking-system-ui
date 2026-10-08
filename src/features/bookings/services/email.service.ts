@@ -168,37 +168,65 @@ class EmailServiceClass {
   }
 
   /**
+   * Map legacy template names to booking lifecycle events
+   */
+  private templateToEvent(templateName: string): string | null {
+    const map: Record<string, string> = {
+      'booking-confirmation': 'booking_approved',
+      'payment-confirmation': 'payment_success',
+      'payment-received': 'payment_success',
+      'remaining-payment-reminder': 'payment_reminder',
+      'payment-reminder': 'payment_reminder',
+      'payment-failed': 'payment_failed',
+      'payment-refunded': 'payment_refunded',
+      'booking-cancelled': 'booking_cancelled_user',
+      'booking-rescheduled': 'booking_rescheduled',
+      'booking-completed': 'booking_completed',
+    };
+    return map[templateName] ?? null;
+  }
+
+  /**
    * Generic email sending method
-   * Calls backend API to send emails
+   * Routes through bookings-notify.php so lifecycle emails reach
+   * customer + client + admin per the notification settings.
    */
   private async sendEmail(payload: EmailPayload): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      // Check if we're in mock/dev mode
-      const isDevelopmentMode = import.meta.env.DEV;
+      const bookingId = payload.data?.bookingId ?? payload.data?.booking_id;
+      const event = this.templateToEvent(payload.templateName);
 
-      if (isDevelopmentMode) {
-        // In dev mode, just log the email that would be sent
-        console.log('[EmailService] DEV MODE - Would send email:', {
-          to: payload.to,
-          subject: payload.subject,
-          template: payload.templateName,
-          data: payload.data,
+      // Lifecycle event with a booking -> notifications endpoint (multi-recipient)
+      if (event && bookingId) {
+        const response = await fetch(`${this.apiBaseUrl}/api/bookings-notify.php`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(this.getAuthToken() && { Authorization: `Bearer ${this.getAuthToken()}` }),
+          },
+          body: JSON.stringify({
+            bookingId,
+            event,
+            data: payload.data,
+          }),
         });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || `Notify API error: ${response.status}`);
+        }
 
         return {
           success: true,
-          messageId: `mock_${Date.now()}`,
+          messageId: `notify-${event}-${bookingId}-${Date.now()}`,
         };
       }
 
-      // In production, call the backend API
-      const endpoint = `${this.apiBaseUrl}/api/emails/send`;
-
-      const response = await fetch(endpoint, {
+      // Fallback: direct single-recipient send
+      const response = await fetch(`${this.apiBaseUrl}/api/emails/send.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Add auth token if available
           ...(this.getAuthToken() && { Authorization: `Bearer ${this.getAuthToken()}` }),
         },
         body: JSON.stringify(payload),
@@ -206,7 +234,7 @@ class EmailServiceClass {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Email API error: ${response.status}`);
+        throw new Error(errorData.error || errorData.message || `Email API error: ${response.status}`);
       }
 
       const data = await response.json();
