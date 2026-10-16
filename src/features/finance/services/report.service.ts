@@ -19,6 +19,7 @@ import {
   FinancialReport,
   ExportFormat
 } from '../types/report.types';
+import { getActiveCurrency } from '../../../shared/utils';
 
 // Mock data generators
 class ReportServiceClass {
@@ -100,7 +101,7 @@ class ReportServiceClass {
         averageBookingValue: 12450,
         totalBookings: 100,
         revenueGrowth: 15.3,
-        currency: filters.currency || 'SEK'
+        currency: filters.currency || getActiveCurrency()
       },
       breakdown: [
         {
@@ -110,7 +111,7 @@ class ReportServiceClass {
           addonRevenue: 45000,
           totalRevenue: 495000,
           bookingsCount: 35,
-          currency: 'SEK'
+          currency: getActiveCurrency()
         },
         {
           date: '2024-12',
@@ -119,7 +120,7 @@ class ReportServiceClass {
           addonRevenue: 60000,
           totalRevenue: 660000,
           bookingsCount: 45,
-          currency: 'SEK'
+          currency: getActiveCurrency()
         }
       ],
       byTour: [
@@ -196,7 +197,7 @@ class ReportServiceClass {
         taxRate: 21.4, // Swedish corporate tax rate
         taxAmount: 58850
       },
-      currency: filters.currency || 'SEK'
+      currency: filters.currency || getActiveCurrency()
     };
 
     return mockReport;
@@ -239,7 +240,7 @@ class ReportServiceClass {
         { month: '2024-11', cashIn: 495000, cashOut: 120000, netCashFlow: 375000 },
         { month: '2024-12', cashIn: 655000, cashOut: 160000, netCashFlow: 495000 }
       ],
-      currency: filters.currency || 'SEK'
+      currency: filters.currency || getActiveCurrency()
     };
 
     return mockReport;
@@ -278,7 +279,7 @@ class ReportServiceClass {
         totalExpectedRevenue: 2312500,
         averageMonthlyRevenue: 770833,
         growthTrend: 18.5,
-        currency: filters.currency || 'SEK'
+        currency: filters.currency || getActiveCurrency()
       }
     };
 
@@ -324,7 +325,7 @@ class ReportServiceClass {
           netVat: 36000
         }
       ],
-      currency: filters.currency || 'SEK'
+      currency: filters.currency || getActiveCurrency()
     };
 
     return mockReport;
@@ -368,7 +369,7 @@ class ReportServiceClass {
         unpaidCommissions: 27000,
         averageCommissionRate: 13.5
       },
-      currency: filters.currency || 'SEK'
+      currency: filters.currency || getActiveCurrency()
     };
 
     return mockReport;
@@ -413,7 +414,7 @@ class ReportServiceClass {
         totalAmount: 1245000,
         mostPopularMethod: 'Stripe'
       },
-      currency: filters.currency || 'SEK'
+      currency: filters.currency || getActiveCurrency()
     };
 
     return mockReport;
@@ -473,7 +474,7 @@ class ReportServiceClass {
         { month: '2024-11', refunds: 3, cancellations: 5, lostRevenue: 37350 },
         { month: '2024-12', refunds: 5, cancellations: 7, lostRevenue: 62250 }
       ],
-      currency: filters.currency || 'SEK'
+      currency: filters.currency || getActiveCurrency()
     };
 
     return mockReport;

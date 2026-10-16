@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { InvoiceStats as StatsType, InvoiceStatus } from '../types/invoice.types';
 import { InvoiceService } from '../services/invoice.service';
+import { getActiveCurrency } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks';
 
 interface InvoiceStatsProps {
   onFilterByStatus?: (status: InvoiceStatus) => void;
@@ -23,6 +25,7 @@ interface InvoiceStatsProps {
 export const InvoiceStats: React.FC<InvoiceStatsProps> = ({ onFilterByStatus }) => {
   const [stats, setStats] = useState<StatsType | null>(null);
   const [loading, setLoading] = useState(true);
+  useCurrency(); // re-render when the site currency changes
 
   useEffect(() => {
     loadStats();
@@ -43,7 +46,7 @@ export const InvoiceStats: React.FC<InvoiceStatsProps> = ({ onFilterByStatus }) 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('sv-SE', {
       style: 'currency',
-      currency: 'SEK',
+      currency: getActiveCurrency(),
       maximumFractionDigits: 0,
     }).format(amount);
   };

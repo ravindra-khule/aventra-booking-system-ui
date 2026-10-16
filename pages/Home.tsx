@@ -6,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { MapPin, Calendar, Clock, ArrowRight, Loader2 } from 'lucide-react';
 import { Button, Badge, Card } from '../src/shared/components/ui';
 import { formatCurrency, formatDate } from '../src/shared/utils';
+import { useCurrency } from '../src/shared/hooks';
 
 export const Home = () => {
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -123,7 +125,7 @@ export const Home = () => {
 
                   <div className="mt-auto flex items-center justify-between pt-4 border-t" style={{ borderColor: '#e5e7eb' }}>
                     <div>
-                      <span className="text-2xl font-bold" style={{ color: '#000' }}>{formatCurrency(tour.price, tour.currency)}</span>
+                      <span className="text-2xl font-bold" style={{ color: '#000' }}>{formatCurrency(tour.price, currency)}</span>
                     </div>
                     <Link 
                       to={`/tour/${tour.id}`} 

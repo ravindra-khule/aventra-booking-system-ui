@@ -7,11 +7,13 @@ import { WaitlistForm } from '../components/WaitlistForm';
 import { ArrowLeft, Check, Calendar, Users, Shield, AlertCircle } from 'lucide-react';
 import { Button, Badge, Card } from '../src/shared/components/ui';
 import { formatCurrency, formatDate } from '../src/shared/utils';
+import { useCurrency } from '../src/shared/hooks';
 
 export const TourDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [tour, setTour] = useState<Tour | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [showWaitlistForm, setShowWaitlistForm] = useState(false);
@@ -68,7 +70,7 @@ export const TourDetails = () => {
             </div>
             <div className="text-white md:text-right">
               <p className="text-sm opacity-90">{t('tourDetails:startingFrom')}</p>
-              <p className="text-3xl font-bold">{formatCurrency(tour.price, tour.currency)}</p>
+              <p className="text-3xl font-bold">{formatCurrency(tour.price, currency)}</p>
             </div>
           </div>
         </div>

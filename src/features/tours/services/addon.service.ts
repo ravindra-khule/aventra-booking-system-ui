@@ -4,6 +4,7 @@
  */
 
 import { TourAddOn, AddOnType, AddOnCategory } from '../types/tour.types';
+import { getActiveCurrency } from '../../../shared/utils';
 
 // Mock data storage (replace with actual API calls)
 const mockAddOns: TourAddOn[] = [
@@ -14,7 +15,7 @@ const mockAddOns: TourAddOn[] = [
     type: AddOnType.EXTRA_NIGHT,
     category: AddOnCategory.ACCOMMODATION,
     price: 1200,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     isAvailable: true,
     isMandatory: false,
     maxQuantity: 5,
@@ -32,7 +33,7 @@ const mockAddOns: TourAddOn[] = [
     type: AddOnType.INSURANCE,
     category: AddOnCategory.PROTECTION,
     price: 450,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     isAvailable: true,
     isMandatory: false,
     maxQuantity: 1,
@@ -50,7 +51,7 @@ const mockAddOns: TourAddOn[] = [
     type: AddOnType.EQUIPMENT,
     category: AddOnCategory.GEAR,
     price: 800,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     isAvailable: true,
     isMandatory: false,
     maxQuantity: 3,
@@ -68,7 +69,7 @@ const mockAddOns: TourAddOn[] = [
     type: AddOnType.MEAL,
     category: AddOnCategory.FOOD_BEVERAGE,
     price: 650,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     isAvailable: true,
     isMandatory: false,
     maxQuantity: 10,
@@ -86,7 +87,7 @@ const mockAddOns: TourAddOn[] = [
     type: AddOnType.TRANSPORT,
     category: AddOnCategory.SERVICES,
     price: 950,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     isAvailable: true,
     isMandatory: false,
     maxQuantity: 1,

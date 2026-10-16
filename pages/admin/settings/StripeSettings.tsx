@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, CheckCircle, X, Eye, EyeOff, Copy, Check } from 'lucide-react';
 import { SettingsService, SETTINGS_CATEGORIES } from '../../../src/shared/services/settings.service';
+import { SUPPORTED_CURRENCIES, setActiveCurrency } from '../../../src/shared/utils';
 import {
   StripeSettings,
   StripeAccountType,
@@ -17,14 +18,10 @@ const tabs: { id: TabType; label: string; icon: string }[] = [
   { id: 'status', label: 'Connection Status', icon: '✅' },
 ];
 
-const defaultCurrencies: StripeCurrency[] = [
-  { code: 'USD', name: 'US Dollar', symbol: '$', enabled: true },
-  { code: 'EUR', name: 'Euro', symbol: '€', enabled: false },
-  { code: 'GBP', name: 'British Pound', symbol: '£', enabled: false },
-  { code: 'SEK', name: 'Swedish Krona', symbol: 'kr', enabled: true },
-  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', enabled: false },
-  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', enabled: false },
-];
+const defaultCurrencies: StripeCurrency[] = SUPPORTED_CURRENCIES.map((currency) => ({
+  ...currency,
+  enabled: currency.code === 'SEK' || currency.code === 'USD',
+}));
 
 export const StripePaymentSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('keys');
@@ -51,7 +48,7 @@ export const StripePaymentSettings: React.FC = () => {
     webhookSecret: '',
 
     currencies: defaultCurrencies,
-    defaultCurrency: 'USD',
+    defaultCurrency: 'SEK',
 
     isEnabled: true,
     lastUpdated: new Date().toISOString(),
@@ -75,13 +72,24 @@ export const StripePaymentSettings: React.FC = () => {
           return acc;
         }, {} as Record<string, string>);
 
+        let enabledCurrencies: string[] = [];
+        try {
+          const parsed = JSON.parse(settingsMap['enabled_currencies'] || '[]');
+          if (Array.isArray(parsed)) enabledCurrencies = parsed;
+        } catch {
+          enabledCurrencies = [];
+        }
+
         setSettings(prev => ({
           ...prev,
           testPublishableKey: settingsMap['stripe_public_key'] || prev.testPublishableKey,
           testSecretKey: settingsMap['stripe_secret_key'] || '',
           webhookSecret: settingsMap['stripe_webhook_secret'] || '',
           accountType: settingsMap['stripe_mode'] as StripeAccountType || 'test',
-          defaultCurrency: settingsMap['currency'] || 'USD',
+          defaultCurrency: settingsMap['currency'] || 'SEK',
+          currencies: enabledCurrencies.length > 0
+            ? prev.currencies.map((curr) => ({ ...curr, enabled: enabledCurrencies.includes(curr.code) }))
+            : prev.currencies,
         }));
       }
     } catch (error) {
@@ -118,10 +126,26 @@ export const StripePaymentSettings: React.FC = () => {
   };
 
   const handleCurrencyToggle = (code: string) => {
+    const currencies = settings.currencies.map((curr) =>
+      curr.code === code ? { ...curr, enabled: !curr.enabled } : curr
+    );
+
+    // If the default currency was disabled, fall back to the first enabled currency
+    let { defaultCurrency } = settings;
+    if (!currencies.find((curr) => curr.code === defaultCurrency)?.enabled) {
+      defaultCurrency = currencies.find((curr) => curr.enabled)?.code || defaultCurrency;
+    }
+
+    setSettings({ ...settings, currencies, defaultCurrency });
+  };
+
+  const handleDefaultCurrencyChange = (code: string) => {
     setSettings({
       ...settings,
+      defaultCurrency: code,
+      // The default currency must stay enabled
       currencies: settings.currencies.map((curr) =>
-        curr.code === code ? { ...curr, enabled: !curr.enabled } : curr
+        curr.code === code ? { ...curr, enabled: true } : curr
       ),
     });
   };
@@ -149,11 +173,17 @@ export const StripePaymentSettings: React.FC = () => {
         { category: SETTINGS_CATEGORIES.PAYMENT, key: 'stripe_webhook_secret', value: settings.webhookSecret },
         { category: SETTINGS_CATEGORIES.PAYMENT, key: 'stripe_mode', value: settings.accountType },
         { category: SETTINGS_CATEGORIES.PAYMENT, key: 'currency', value: settings.defaultCurrency },
+        {
+          category: SETTINGS_CATEGORIES.PAYMENT,
+          key: 'enabled_currencies',
+          value: JSON.stringify(settings.currencies.filter((curr) => curr.enabled).map((curr) => curr.code)),
+        },
       ];
 
       const success = await SettingsService.updateMultiple(updates);
 
       if (success) {
+        setActiveCurrency(settings.defaultCurrency);
         setSaveStatus('success');
         setSaveMessage('Stripe settings saved successfully!');
         setTimeout(() => {
@@ -222,7 +252,7 @@ export const StripePaymentSettings: React.FC = () => {
         webhookEndpoint: null,
         webhookSecret: '',
         currencies: defaultCurrencies,
-        defaultCurrency: 'USD',
+        defaultCurrency: 'SEK',
         isEnabled: true,
         lastUpdated: new Date().toISOString(),
         connectionStatus: 'connected',
@@ -603,28 +633,44 @@ export const StripePaymentSettings: React.FC = () => {
               <div className="space-y-6">
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    Enable the currencies your business accepts. The default currency will be used for all transactions unless specified otherwise.
+                    Enable the currencies your business accepts. The currency marked as <strong>Default</strong> is the site currency - it is used for all prices and transactions across the website.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {settings.currencies.map((currency) => (
-                    <label
+                    <div
                       key={currency.code}
-                      className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors flex items-center gap-3"
+                      className={`p-4 border rounded-lg transition-colors flex items-center gap-3 ${
+                        settings.defaultCurrency === currency.code
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:bg-gray-50'
+                      }`}
                     >
-                      <input
-                        type="checkbox"
-                        checked={currency.enabled}
-                        onChange={() => handleCurrencyToggle(currency.code)}
-                        className="w-4 h-4 rounded border-gray-300"
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{currency.code}</p>
-                        <p className="text-sm text-gray-600">{currency.name}</p>
-                      </div>
-                      <span className="text-lg">{currency.symbol}</span>
-                    </label>
+                      <label className="flex items-center gap-3 flex-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={currency.enabled}
+                          onChange={() => handleCurrencyToggle(currency.code)}
+                          className="w-4 h-4 rounded border-gray-300"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{currency.code}</p>
+                          <p className="text-sm text-gray-600">{currency.name}</p>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-700">
+                        <input
+                          type="radio"
+                          name="defaultCurrency"
+                          checked={settings.defaultCurrency === currency.code}
+                          onChange={() => handleDefaultCurrencyChange(currency.code)}
+                          className="w-4 h-4"
+                        />
+                        Default
+                      </label>
+                      <span className="text-lg w-8 text-center">{currency.symbol}</span>
+                    </div>
                   ))}
                 </div>
               </div>

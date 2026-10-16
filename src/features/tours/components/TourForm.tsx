@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tour, TourStatus, TourDifficulty, TourCategory, TourTag } from '../types/tour.types';
 import { Button } from '../../../shared/components/ui';
+import { getActiveCurrency, SUPPORTED_CURRENCIES } from '../../../shared/utils';
 import { X, Plus, Trash2, Upload } from 'lucide-react';
 import './TourForm.css';
 
@@ -28,7 +29,7 @@ export const TourForm: React.FC<TourFormProps> = ({
       status: TourStatus.ACTIVE,
       price: 0,
       depositPrice: 0,
-      currency: 'SEK',
+      currency: getActiveCurrency(),
       durationDays: 0,
       difficulty: TourDifficulty.MODERATE,
       location: '',
@@ -411,7 +412,7 @@ export const TourForm: React.FC<TourFormProps> = ({
                 
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Price per Person (SEK) *</label>
+                    <label>Price per Person ({formData.currency || getActiveCurrency()}) *</label>
                     <input
                       type="number"
                       value={formData.price || 0}
@@ -422,7 +423,7 @@ export const TourForm: React.FC<TourFormProps> = ({
                     />
                   </div>
                   <div className="form-group">
-                    <label>Deposit Price (SEK) *</label>
+                    <label>Deposit Price ({formData.currency || getActiveCurrency()}) *</label>
                     <input
                       type="number"
                       value={formData.depositPrice || 0}
@@ -435,12 +436,12 @@ export const TourForm: React.FC<TourFormProps> = ({
                   <div className="form-group">
                     <label>Currency</label>
                     <select
-                      value={formData.currency || 'SEK'}
+                      value={formData.currency || getActiveCurrency()}
                       onChange={(e) => handleInputChange('currency', e.target.value)}
                     >
-                      <option value="SEK">SEK</option>
-                      <option value="EUR">EUR</option>
-                      <option value="USD">USD</option>
+                      {SUPPORTED_CURRENCIES.map((curr) => (
+                        <option key={curr.code} value={curr.code}>{curr.code}</option>
+                      ))}
                     </select>
                   </div>
                 </div>

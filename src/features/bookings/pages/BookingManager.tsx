@@ -7,10 +7,12 @@ import { Search, Filter, MoreHorizontal, Download, Eye, X, CreditCard, User, Use
 import { Button, Badge, Input, Select } from '../../../shared/components/ui';
 import { BulkActionsToolbar, BulkAction } from '../../../shared/components/BulkActionsToolbar';
 import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
+import { useCurrency } from '../../../shared/hooks/useCurrency';
 import { formatCurrency, formatDate } from '../../../shared/utils';
 import { useToast } from '../../../shared/context/ToastContext';
 
 export const BookingManager = () => {
+    useCurrency(); // re-render when the site currency changes
     // CSV Export Handler
     const handleExportCSV = () => {
       if (!filteredBookings.length) {

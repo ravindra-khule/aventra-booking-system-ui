@@ -1,6 +1,8 @@
 import React from 'react';
 import { Calendar, TrendingUp, TrendingDown } from 'lucide-react';
 import { ReportFilters, ReportPeriod } from '../types/report.types';
+import { getActiveCurrency } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks';
 
 interface ReportFiltersProps {
   filters: ReportFilters;
@@ -148,8 +150,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   changeLabel,
   icon,
   format = 'number',
-  currency = 'SEK'
+  currency = getActiveCurrency()
 }) => {
+  useCurrency(); // re-render when the site currency changes
   const formatValue = (val: string | number) => {
     if (typeof val === 'string') return val;
     
