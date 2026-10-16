@@ -46,7 +46,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
         {/* Header with Actions */}
         <div className="flex justify-between items-center p-4 border-b border-gray-200 print:hidden">
           <h2 className="text-xl font-bold text-gray-900">Invoice Preview</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {onSend && (
               <button
                 onClick={() => onSend(invoice)}
@@ -84,7 +84,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
         </div>
 
         {/* Invoice Content */}
-        <div className="flex-1 overflow-y-auto p-8" ref={printRef}>
+        <div className="flex-1 overflow-auto p-4 sm:p-8" ref={printRef}>
           <div className="max-w-3xl mx-auto bg-white">
             {/* Company Header */}
             <div className="mb-8">
@@ -93,7 +93,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
             </div>
 
             {/* Invoice Info */}
-            <div className="grid grid-cols-2 gap-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 uppercase mb-2">Bill To:</h3>
                 <div className="text-gray-900">
@@ -138,7 +138,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
             </div>
 
             {/* Line Items Table */}
-            <div className="mb-8">
+            <div className="mb-8 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-gray-300">
@@ -181,7 +181,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
 
             {/* Totals */}
             <div className="flex justify-end mb-8">
-              <div className="w-80">
+              <div className="w-full max-w-80">
                 <div className="space-y-2">
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal:</span>
@@ -238,7 +238,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
             {/* Payment Information */}
             <div className="border-t border-gray-200 pt-6">
               <h4 className="text-sm font-semibold text-gray-700 mb-3">Payment Information:</h4>
-              <div className="grid grid-cols-2 gap-6 text-sm text-gray-600">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-gray-600">
                 <div>
                   <p className="font-medium text-gray-700 mb-1">Bank Details:</p>
                   <p>Bank: Swedbank</p>

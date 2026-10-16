@@ -182,8 +182,8 @@ export const MyPages = () => {
 
                     {/* Compact Info */}
                     <div className="p-4 bg-white">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
+                      <div className="flex items-start justify-between flex-wrap gap-2">
+                        <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-bold text-gray-900 mb-2">{booking.tourTitle}</h3>
                           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                             <div className="flex items-center">
@@ -253,7 +253,7 @@ export const MyPages = () => {
                           {/* Booking Reference */}
                           <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
                             <p className="text-xs text-gray-500 mb-1">{t('myPages:bookingRef')}</p>
-                            <p className="text-lg font-mono font-bold text-gray-900">{booking.id}</p>
+                            <p className="text-lg font-mono font-bold text-gray-900 break-all">{booking.id}</p>
                           </div>
 
                           {/* Payer Information */}

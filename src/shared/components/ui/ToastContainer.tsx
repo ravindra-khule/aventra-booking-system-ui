@@ -9,11 +9,11 @@ interface ToastContainerProps {
 export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onClose }) => {
   return (
     <div 
-      className="fixed top-4 right-4 z-[9999] flex flex-col items-end pointer-events-none"
+      className="fixed top-4 right-4 left-4 sm:left-auto z-[9999] flex flex-col items-end pointer-events-none"
       aria-live="polite"
       aria-atomic="true"
     >
-      <div className="pointer-events-auto">
+      <div className="pointer-events-auto w-full sm:w-auto">
         {toasts.map((toast) => (
           <Toast
             key={toast.id}

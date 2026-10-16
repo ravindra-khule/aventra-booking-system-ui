@@ -154,14 +154,14 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap gap-3 items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Permission Management</h3>
           <p className="text-sm text-gray-600 mt-1">
             Select which modules this {selectedRole.toLowerCase().replace('_', ' ')} can access
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={selectDefaultPermissions}

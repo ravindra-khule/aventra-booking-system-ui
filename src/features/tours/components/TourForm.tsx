@@ -555,7 +555,7 @@ export const TourForm: React.FC<TourFormProps> = ({
 
           {/* Footer */}
           <div className="tour-form-footer">
-            <Button variant="outline" onClick={onCancel} disabled={isLoading}>
+            <Button variant="secondary-dark" onClick={onCancel} disabled={isLoading}>
               Cancel
             </Button>
             <Button variant="primary" type="submit" disabled={isLoading}>

@@ -15,7 +15,7 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleLogin = async (email: string, password: string, role: UserRole) => {
-    await login(email, role, password);
+    await login(email, password, role);
     
     // Navigate based on role
     if (role === UserRole.CUSTOMER || role === UserRole.GUEST) {

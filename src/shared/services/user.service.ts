@@ -204,7 +204,7 @@ export const UserService = {
   /**
    * Create a new user
    */
-  createUser: async (userData: Omit<User, 'id' | 'createdAt'>): Promise<User> => {
+  createUser: async (userData: Omit<User, 'id' | 'createdAt'> & { password?: string }): Promise<User> => {
     try {
       const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:5500');
       

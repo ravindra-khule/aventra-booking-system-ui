@@ -40,7 +40,7 @@ export const RemainingPaymentModal: React.FC<RemainingPaymentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="text-2xl font-bold text-gray-900">Pay Remaining Balance</h2>
@@ -59,7 +59,7 @@ export const RemainingPaymentModal: React.FC<RemainingPaymentModalProps> = ({
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Booking Reference:</span>
-                <span className="font-mono font-bold text-gray-900">{booking.id}</span>
+                <span className="font-mono font-bold text-gray-900 break-all">{booking.id}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Total Amount:</span>
