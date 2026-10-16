@@ -67,6 +67,7 @@
 .stage {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
   padding: 12px 0;
 }
@@ -102,7 +103,7 @@
 }
 
 .stageInfo {
-  min-width: 200px;
+  min-width: min(200px, 100%);
 }
 
 .stageName {
@@ -135,6 +136,7 @@
 
 .summary {
   display: flex;
+  flex-wrap: wrap;
   gap: 32px;
   padding: 16px;
   background-color: #f9fafb;

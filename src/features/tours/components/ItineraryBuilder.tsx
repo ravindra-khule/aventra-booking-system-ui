@@ -157,13 +157,8 @@ export const ItineraryBuilder: React.FC<ItineraryBuilderProps> = ({
 
     setIsSaving(true);
     try {
-      const savedItinerary = await ItineraryService.create({
-        ...itinerary,
-        id: undefined as any,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        version: undefined as any
-      });
+      const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, version: _version, ...itineraryData } = itinerary;
+      const savedItinerary = await ItineraryService.create(itineraryData);
       onSave(savedItinerary);
     } catch (error) {
       console.error('Failed to save itinerary:', error);
@@ -223,13 +218,13 @@ export const ItineraryBuilder: React.FC<ItineraryBuilderProps> = ({
 
         {/* Action Buttons */}
         <div className={styles.actionBar}>
-          <Button onClick={onBack} variant="ghost" size="sm">
+          <Button onClick={onBack} variant="secondary-dark" size="sm">
             Back
           </Button>
           <div className={styles.actionButtons}>
             <Button
               onClick={handleGeneratePDF}
-              variant="outline"
+              variant="secondary-dark"
               size="sm"
               icon={<Download className="h-4 w-4" />}
               disabled={isSaving}
@@ -238,7 +233,7 @@ export const ItineraryBuilder: React.FC<ItineraryBuilderProps> = ({
             </Button>
             <Button
               onClick={() => setShowShareModal(true)}
-              variant="outline"
+              variant="secondary-dark"
               size="sm"
               icon={<Share2 className="h-4 w-4" />}
               disabled={isSaving}
@@ -305,7 +300,7 @@ export const ItineraryBuilder: React.FC<ItineraryBuilderProps> = ({
               <h2>Days ({itinerary.days.length})</h2>
               <Button
                 onClick={addDay}
-                variant="outline"
+                variant="secondary-dark"
                 size="sm"
                 icon={<Plus className="h-4 w-4" />}
               >

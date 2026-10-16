@@ -113,7 +113,7 @@ export const TourDetails = () => {
 
         {/* Sidebar / Booking Card */}
         <div className="lg:col-span-1">
-          <Card shadow="xl" className="sticky top-24">
+          <Card shadow="lg" className="sticky top-24">
             <h3 className="text-xl font-bold mb-6" style={{ color: '#000' }}>{t('tourDetails:bookCardTitle')}</h3>
             
             <div className="space-y-4 mb-6">

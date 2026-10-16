@@ -159,7 +159,7 @@ export const EmailTemplateList: React.FC<EmailTemplateListProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap gap-3 items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">{t('admin:emailTemplates')}</h2>
           <p className="mt-1 text-sm text-gray-600">

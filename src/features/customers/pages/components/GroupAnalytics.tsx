@@ -52,15 +52,15 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
 
   if (!analytics) {
     return (
-      <div className="analytics-overlay">
-        <div className="analytics-dialog">
-          <div className="dialog-header">
+      <div className={styles['analytics-overlay']}>
+        <div className={styles['analytics-dialog']}>
+          <div className={styles['dialog-header']}>
             <h2>Group Analytics - {group.name}</h2>
-            <button className="close-btn" onClick={onClose}>
+            <button className={styles['close-btn']} onClick={onClose}>
               <X size={20} />
             </button>
           </div>
-          <div className="loading-state">
+          <div className={styles['loading-state']}>
             {loading ? 'Loading analytics...' : 'Failed to load analytics'}
           </div>
         </div>
@@ -78,56 +78,56 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
   ];
 
   const StatCard = ({ icon: Icon, title, value, unit, color }: any) => (
-    <div className="stat-card">
-      <div className="stat-icon" style={{ backgroundColor: color }}>
+    <div className={styles['stat-card']}>
+      <div className={styles['stat-icon']} style={{ backgroundColor: color }}>
         <Icon size={20} color="white" />
       </div>
-      <div className="stat-content">
-        <div className="stat-title">{title}</div>
-        <div className="stat-value">
+      <div className={styles['stat-content']}>
+        <div className={styles['stat-title']}>{title}</div>
+        <div className={styles['stat-value']}>
           {value}
-          {unit && <span className="stat-unit">{unit}</span>}
+          {unit && <span className={styles['stat-unit']}>{unit}</span>}
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="analytics-overlay">
-      <div className="analytics-dialog">
+    <div className={styles['analytics-overlay']}>
+      <div className={styles['analytics-dialog']}>
         {/* Header */}
-        <div className="dialog-header">
+        <div className={styles['dialog-header']}>
           <div>
             <h2>Group Analytics</h2>
             <p>{group.name}</p>
           </div>
-          <button className="close-btn" onClick={onClose}>
+          <button className={styles['close-btn']} onClick={onClose}>
             <X size={20} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="analytics-tabs">
+        <div className={styles['analytics-tabs']}>
           <button
-            className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
+            className={`${styles.tab} ${activeTab === 'overview' ? styles.active : ''}`}
             onClick={() => setActiveTab('overview')}
           >
             Overview
           </button>
           <button
-            className={`tab ${activeTab === 'revenue' ? 'active' : ''}`}
+            className={`${styles.tab} ${activeTab === 'revenue' ? styles.active : ''}`}
             onClick={() => setActiveTab('revenue')}
           >
             Revenue
           </button>
           <button
-            className={`tab ${activeTab === 'destinations' ? 'active' : ''}`}
+            className={`${styles.tab} ${activeTab === 'destinations' ? styles.active : ''}`}
             onClick={() => setActiveTab('destinations')}
           >
             Destinations
           </button>
           <button
-            className={`tab ${activeTab === 'growth' ? 'active' : ''}`}
+            className={`${styles.tab} ${activeTab === 'growth' ? styles.active : ''}`}
             onClick={() => setActiveTab('growth')}
           >
             Growth
@@ -135,10 +135,10 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
         </div>
 
         {/* Content */}
-        <div className="analytics-content">
+        <div className={styles['analytics-content']}>
           {activeTab === 'overview' && (
-            <div className="overview-section">
-              <div className="stats-grid">
+            <div className={styles['overview-section']}>
+              <div className={styles['stats-grid']}>
                 <StatCard
                   icon={Users}
                   title="Total Members"
@@ -166,24 +166,24 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
                 />
               </div>
 
-              <div className="metrics-grid">
-                <div className="metric-item">
-                  <div className="metric-label">Customer Lifetime Value</div>
-                  <div className="metric-value">
+              <div className={styles['metrics-grid']}>
+                <div className={styles['metric-item']}>
+                  <div className={styles['metric-label']}>Customer Lifetime Value</div>
+                  <div className={styles['metric-value']}>
                     ${analytics.customerLifetimeValue.toLocaleString()}
                   </div>
                 </div>
-                <div className="metric-item">
-                  <div className="metric-label">Churn Rate</div>
-                  <div className="metric-value">{analytics.churnRate}%</div>
+                <div className={styles['metric-item']}>
+                  <div className={styles['metric-label']}>Churn Rate</div>
+                  <div className={styles['metric-value']}>{analytics.churnRate}%</div>
                 </div>
-                <div className="metric-item">
-                  <div className="metric-label">Total Bookings</div>
-                  <div className="metric-value">{analytics.bookingCount}</div>
+                <div className={styles['metric-item']}>
+                  <div className={styles['metric-label']}>Total Bookings</div>
+                  <div className={styles['metric-value']}>{analytics.bookingCount}</div>
                 </div>
-                <div className="metric-item">
-                  <div className="metric-label">Avg Revenue Per Member</div>
-                  <div className="metric-value">
+                <div className={styles['metric-item']}>
+                  <div className={styles['metric-label']}>Avg Revenue Per Member</div>
+                  <div className={styles['metric-value']}>
                     ${Math.round(analytics.avgRevenuePerMember)}
                   </div>
                 </div>
@@ -192,9 +192,9 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
           )}
 
           {activeTab === 'revenue' && (
-            <div className="chart-section">
+            <div className={styles['chart-section']}>
               <h3>Revenue Overview</h3>
-              <div className="chart-container">
+              <div className={styles['chart-container']}>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={[analytics]}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -208,18 +208,18 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
                 </ResponsiveContainer>
               </div>
 
-              <div className="revenue-details">
-                <div className="detail-item">
+              <div className={styles['revenue-details']}>
+                <div className={styles['detail-item']}>
                   <span>Total Revenue</span>
                   <strong>${analytics.totalRevenue.toLocaleString()}</strong>
                 </div>
-                <div className="detail-item">
+                <div className={styles['detail-item']}>
                   <span>Avg Revenue Per Member</span>
                   <strong>
                     ${Math.round(analytics.avgRevenuePerMember)}
                   </strong>
                 </div>
-                <div className="detail-item">
+                <div className={styles['detail-item']}>
                   <span>Avg Booking Value</span>
                   <strong>${Math.round(analytics.avgBookingValue)}</strong>
                 </div>
@@ -228,20 +228,20 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
           )}
 
           {activeTab === 'destinations' && (
-            <div className="chart-section">
+            <div className={styles['chart-section']}>
               <h3>Top Destinations</h3>
-              <div className="destinations-list">
+              <div className={styles['destinations-list']}>
                 {analytics.topDestinations.map((dest, idx) => (
-                  <div key={dest.tourId} className="destination-item">
-                    <div className="dest-number">{idx + 1}</div>
-                    <div className="dest-info">
-                      <div className="dest-name">Tour {dest.tourId}</div>
-                      <div className="dest-stats">
+                  <div key={dest.tourId} className={styles['destination-item']}>
+                    <div className={styles['dest-number']}>{idx + 1}</div>
+                    <div className={styles['dest-info']}>
+                      <div className={styles['dest-name']}>Tour {dest.tourId}</div>
+                      <div className={styles['dest-stats']}>
                         {dest.bookingCount} bookings · $
                         {dest.revenue.toLocaleString()}
                       </div>
                     </div>
-                    <div className="dest-percentage">
+                    <div className={styles['dest-percentage']}>
                       {(
                         (dest.bookingCount /
                           analytics.topDestinations.reduce(
@@ -256,7 +256,7 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
                 ))}
               </div>
 
-              <div className="chart-container">
+              <div className={styles['chart-container']}>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -283,9 +283,9 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
           )}
 
           {activeTab === 'growth' && (
-            <div className="chart-section">
+            <div className={styles['chart-section']}>
               <h3>Growth Trend</h3>
-              <div className="chart-container">
+              <div className={styles['chart-container']}>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={analytics.growthTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -307,27 +307,26 @@ export const GroupAnalyticsDialog: React.FC<GroupAnalyticsDialogProps> = ({
                       dataKey="revenue"
                       stroke="#10b981"
                       name="Revenue"
-                      formatter={(value) => `$${value}`}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="growth-summary">
-                <div className="summary-item">
+              <div className={styles['growth-summary']}>
+                <div className={styles['summary-item']}>
                   <span>Starting Members</span>
                   <strong>
                     {analytics.growthTrend[0]?.memberCount || 0}
                   </strong>
                 </div>
-                <div className="summary-item">
+                <div className={styles['summary-item']}>
                   <span>Current Members</span>
                   <strong>
                     {analytics.growthTrend[analytics.growthTrend.length - 1]
                       ?.memberCount || 0}
                   </strong>
                 </div>
-                <div className="summary-item">
+                <div className={styles['summary-item']}>
                   <span>Growth</span>
                   <strong>
                     {(

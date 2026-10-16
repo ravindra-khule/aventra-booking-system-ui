@@ -164,7 +164,7 @@ export const CustomerManager = () => {
                   </h3>
                   
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">
                           {t('admin:firstName')}
@@ -245,7 +245,7 @@ export const CustomerManager = () => {
                             onChange={(e) => setFormData({...formData, address: e.target.value})}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2"
                           />
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <input
                               type="text"
                               placeholder={t('admin:zipCode')}
@@ -322,7 +322,7 @@ export const CustomerManager = () => {
                     <Calendar className="h-5 w-5 mr-2 text-blue-600" />
                     {t('admin:customerHistory')}
                   </h3>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-500">{t('admin:firstBooking')}:</span>
                       <p className="font-medium text-gray-900">{new Date(customer.createdDate).toLocaleDateString()}</p>
@@ -366,7 +366,7 @@ export const CustomerManager = () => {
                                   {booking.status}
                                 </span>
                               </div>
-                              <div className="grid grid-cols-2 gap-4 text-sm mt-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-3">
                                 <div>
                                   <span className="text-gray-500">{t('admin:bookingDate')}:</span>
                                   <p className="font-medium">{new Date(booking.bookingDate).toLocaleDateString()}</p>
@@ -408,11 +408,11 @@ export const CustomerManager = () => {
   };
 
   if (loading) {
-    return <div className="p-8">Loading customers...</div>;
+    return <div className="p-4 sm:p-8">Loading customers...</div>;
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:customerManager')}</h1>
         <p className="text-gray-600">{t('admin:manageCustomerProfilesDesc')}</p>
@@ -447,7 +447,7 @@ export const CustomerManager = () => {
                 id: 'export',
                 label: t('admin:exportCustomers'),
                 icon: <ShoppingBag className="h-4 w-4" />,
-                variant: 'outline',
+                variant: 'secondary',
                 onClick: () => console.log('Export selected customers')
               }
             ]}

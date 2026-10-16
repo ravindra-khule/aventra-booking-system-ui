@@ -175,11 +175,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap gap-3 justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">
           {invoice ? 'Edit Invoice' : 'Create New Invoice'}
         </h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {onCancel && (
             <button
               type="button"

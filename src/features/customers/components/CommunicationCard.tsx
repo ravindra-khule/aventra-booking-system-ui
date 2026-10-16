@@ -86,7 +86,7 @@ export const CommunicationCard: React.FC<CommunicationCardProps> = ({ communicat
         <div className="flex-shrink-0 flex items-center gap-2">
           {communication.status === 'read' && <Eye className="h-4 w-4 text-green-600" />}
           {communication.status === 'failed' && <AlertCircle className="h-4 w-4 text-red-600" />}
-          <Badge variant="secondary" className={`whitespace-nowrap text-xs ${getStatusColor(communication.status)}`}>
+          <Badge variant="default" className={`whitespace-nowrap text-xs ${getStatusColor(communication.status)}`}>
             {communication.status}
           </Badge>
         </div>

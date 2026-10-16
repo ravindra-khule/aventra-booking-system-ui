@@ -59,10 +59,10 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
 
   if (completed) {
     return (
-      <div className="bulk-overlay">
-        <div className="bulk-dialog">
-          <div className="success-state">
-            <div className="success-icon">
+      <div className={styles['bulk-overlay']}>
+        <div className={styles['bulk-dialog']}>
+          <div className={styles['success-state']}>
+            <div className={styles['success-icon']}>
               <Check size={32} />
             </div>
             <h3>Success!</h3>
@@ -91,76 +91,76 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
   };
 
   return (
-    <div className="bulk-overlay">
-      <div className="bulk-dialog">
+    <div className={styles['bulk-overlay']}>
+      <div className={styles['bulk-dialog']}>
         {/* Header */}
-        <div className="dialog-header">
+        <div className={styles['dialog-header']}>
           <h2>Bulk Actions</h2>
-          <button className="close-btn" onClick={onClose}>
+          <button className={styles['close-btn']} onClick={onClose}>
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="dialog-content">
+          <div className={styles['dialog-content']}>
             {!action ? (
-              <div className="action-grid">
+              <div className={styles['action-grid']}>
                 <button
                   type="button"
-                  className="action-card"
+                  className={styles['action-card']}
                   onClick={() => setAction('activate')}
                 >
-                  <div className="action-icon activate">✓</div>
-                  <div className="action-name">Activate</div>
-                  <div className="action-desc">Enable groups</div>
+                  <div className={`${styles['action-icon']} ${styles.activate}`}>✓</div>
+                  <div className={styles['action-name']}>Activate</div>
+                  <div className={styles['action-desc']}>Enable groups</div>
                 </button>
 
                 <button
                   type="button"
-                  className="action-card"
+                  className={styles['action-card']}
                   onClick={() => setAction('deactivate')}
                 >
-                  <div className="action-icon deactivate">✕</div>
-                  <div className="action-name">Deactivate</div>
-                  <div className="action-desc">Disable groups</div>
+                  <div className={`${styles['action-icon']} ${styles.deactivate}`}>✕</div>
+                  <div className={styles['action-name']}>Deactivate</div>
+                  <div className={styles['action-desc']}>Disable groups</div>
                 </button>
 
                 <button
                   type="button"
-                  className="action-card"
+                  className={styles['action-card']}
                   onClick={() => setAction('addTag')}
                 >
-                  <div className="action-icon addTag">#</div>
-                  <div className="action-name">Add Tag</div>
-                  <div className="action-desc">Tag groups</div>
+                  <div className={`${styles['action-icon']} ${styles.addTag}`}>#</div>
+                  <div className={styles['action-name']}>Add Tag</div>
+                  <div className={styles['action-desc']}>Tag groups</div>
                 </button>
 
                 <button
                   type="button"
-                  className="action-card"
+                  className={styles['action-card']}
                   onClick={() => setAction('applyDiscount')}
                 >
-                  <div className="action-icon discount">$</div>
-                  <div className="action-name">Discount</div>
-                  <div className="action-desc">Apply discount</div>
+                  <div className={`${styles['action-icon']} ${styles.discount}`}>$</div>
+                  <div className={styles['action-name']}>Discount</div>
+                  <div className={styles['action-desc']}>Apply discount</div>
                 </button>
 
                 <button
                   type="button"
-                  className="action-card delete"
+                  className={`${styles['action-card']} ${styles.delete}`}
                   onClick={() => setAction('delete')}
                 >
-                  <div className="action-icon delete">🗑</div>
-                  <div className="action-name">Delete</div>
-                  <div className="action-desc">Remove groups</div>
+                  <div className={`${styles['action-icon']} ${styles.delete}`}>🗑</div>
+                  <div className={styles['action-name']}>Delete</div>
+                  <div className={styles['action-desc']}>Remove groups</div>
                 </button>
               </div>
             ) : (
-              <div className="action-form">
-                <div className="form-header">
+              <div className={styles['action-form']}>
+                <div className={styles['form-header']}>
                   <button
                     type="button"
-                    className="back-btn"
+                    className={styles['back-btn']}
                     onClick={() => {
                       setAction(null);
                       setError(null);
@@ -172,7 +172,7 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                 </div>
 
                 {action === 'addTag' && (
-                  <div className="form-group">
+                  <div className={styles['form-group']}>
                     <label htmlFor="tag">Tag Name</label>
                     <input
                       type="text"
@@ -180,17 +180,17 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       placeholder="Enter tag name"
-                      className="form-input"
+                      className={styles['form-input']}
                       autoFocus
                     />
                   </div>
                 )}
 
                 {action === 'applyDiscount' && (
-                  <div className="form-group">
+                  <div className={styles['form-group']}>
                     <label>Discount Settings</label>
-                    <div className="form-row">
-                      <div className="form-col">
+                    <div className={styles['form-row']}>
+                      <div className={styles['form-col']}>
                         <label htmlFor="discountType">Type</label>
                         <select
                           id="discountType"
@@ -201,13 +201,13 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                               type: e.target.value as 'percentage' | 'fixed',
                             }))
                           }
-                          className="form-input"
+                          className={styles['form-input']}
                         >
                           <option value="percentage">Percentage (%)</option>
                           <option value="fixed">Fixed Amount ($)</option>
                         </select>
                       </div>
-                      <div className="form-col">
+                      <div className={styles['form-col']}>
                         <label htmlFor="discountValue">Value</label>
                         <input
                           type="number"
@@ -221,7 +221,7 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                           }
                           placeholder="0"
                           min="0"
-                          className="form-input"
+                          className={styles['form-input']}
                           autoFocus
                         />
                       </div>
@@ -230,7 +230,7 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                 )}
 
                 {action === 'delete' && (
-                  <div className="warning-box">
+                  <div className={styles['warning-box']}>
                     <AlertCircle size={20} />
                     <div>
                       <strong>This action cannot be undone</strong>
@@ -241,21 +241,21 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                   </div>
                 )}
 
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className={styles['error-message']}>{error}</div>}
               </div>
             )}
           </div>
 
           {/* Footer */}
           {action && (
-            <div className="dialog-footer">
+            <div className={styles['dialog-footer']}>
               <button
                 type="button"
                 onClick={() => {
                   setAction(null);
                   setError(null);
                 }}
-                className="btn btn-secondary"
+                className={`${styles.btn} ${styles['btn-secondary']}`}
               >
                 Cancel
               </button>
@@ -266,8 +266,8 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                   (action === 'addTag' && !tagInput) ||
                   (action === 'applyDiscount' && discountData.value <= 0)
                 }
-                className={`btn btn-${
-                  action === 'delete' ? 'danger' : 'primary'
+                className={`${styles.btn} ${
+                  action === 'delete' ? styles['btn-danger'] : styles['btn-primary']
                 }`}
               >
                 {loading ? 'Processing...' : 'Confirm'}

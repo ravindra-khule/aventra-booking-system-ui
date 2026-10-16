@@ -290,7 +290,7 @@ export const WaitlistManager = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:waitlistManagement')}</h1>
         <p className="text-gray-600">{t('admin:manageWaitlistRequests')}</p>
@@ -325,7 +325,7 @@ export const WaitlistManager = () => {
                   id: 'mark-contacted',
                   label: t('admin:markAsContacted'),
                   icon: <MessageSquare className="h-4 w-4" />,
-                  variant: 'outline',
+                  variant: 'secondary',
                   onClick: () => console.log('Mark selected as contacted')
                 }
               ]}

@@ -85,7 +85,7 @@ export const SendingLimitsComponent: React.FC<SendingLimitsComponentProps> = ({
         {/* Status */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="font-semibold text-blue-900 mb-2">Current Status</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-blue-700">
                 <span className="font-semibold">Per Hour Limit:</span> {limits.maxPerHour === 0 ? 'Unlimited' : limits.maxPerHour}

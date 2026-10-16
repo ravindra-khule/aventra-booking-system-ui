@@ -113,7 +113,7 @@ export const PaymentUI: React.FC<PaymentUIProps> = ({ booking, onPaymentSuccess 
       {/* Payment Options */}
       <div className="mb-6">
         <label className="block font-semibold mb-2 text-gray-700">Choose Payment Type:</label>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <button
             className={`px-4 py-2 rounded border ${paymentType === 'FULL' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300'}`}
             onClick={() => setPaymentType('FULL')}

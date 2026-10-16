@@ -17,6 +17,7 @@ export interface BadgeProps {
   size?: BadgeSize;
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   dot?: boolean;
 }
 
@@ -51,6 +52,7 @@ export const Badge: React.FC<BadgeProps> = ({
   size = 'md',
   children,
   className = '',
+  style,
   dot = false,
 }) => {
   const variantClasses = badgeVariants[variant];
@@ -59,6 +61,7 @@ export const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       className={`inline-flex items-center gap-1.5 font-semibold rounded-full border ${variantClasses} ${sizeClasses} ${className}`}
+      style={style}
     >
       {dot && (
         <span className="w-1.5 h-1.5 rounded-full bg-current" />

@@ -774,7 +774,7 @@ export const BookingWizard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           
           {/* Main Form Area */}
-          <div className="lg:col-span-2 flex flex-col min-h-screen lg:min-h-auto">
+          <div className="lg:col-span-2 flex flex-col lg:min-h-screen">
             
             {/* Debug: Show current step (dev builds only) */}
             {import.meta.env.DEV && (
@@ -793,7 +793,7 @@ export const BookingWizard = () => {
                         <h2 className="text-2xl font-bold text-gray-900 mr-3">{t('booking:payer.title')}</h2>
                         <div className="group relative">
                              <Info className="h-5 w-5 text-gray-400 cursor-help" />
-                             <div className="absolute hidden group-hover:block w-64 bg-gray-800 text-white text-xs rounded p-2 -top-10 left-6">
+                             <div className="absolute hidden group-hover:block w-64 max-w-[calc(100vw-3rem)] bg-gray-800 text-white text-xs rounded p-2 -top-10 left-0 z-10">
                                 {t('booking:payer.tooltip')}
                              </div>
                         </div>
@@ -1104,7 +1104,7 @@ export const BookingWizard = () => {
                             
                             {/* Content */}
                             <div className="flex-1">
-                              <div className="flex items-start justify-between mb-2">
+                              <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                                 <div>
                                   <h3 className="text-lg font-semibold text-gray-900">{addOn.name}</h3>
                                   <span className="text-xs text-gray-500 uppercase">{addOn.type.replace('_', ' ')}</span>
@@ -1253,7 +1253,7 @@ export const BookingWizard = () => {
                      </div>
                      
                      {!appliedPromoCode ? (
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                            <input 
                               type="text" 
                               placeholder={t('booking:payer.enterPromoCode')}
@@ -1351,10 +1351,10 @@ export const BookingWizard = () => {
 
                     {/* Booking Reference Card */}
                     <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 mb-6">
-                        <div className="flex items-center justify-between">
-                            <div>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div className="min-w-0">
                                 <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.ref')}</p>
-                                <p className="text-3xl font-mono font-bold text-gray-900">{createdBooking?.transactionId || '—'}</p>
+                                <p className="text-2xl sm:text-3xl font-mono font-bold text-gray-900 break-all">{createdBooking?.transactionId || '—'}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.bookingDate')}</p>

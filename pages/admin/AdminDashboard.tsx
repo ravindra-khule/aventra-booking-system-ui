@@ -327,7 +327,7 @@ export const AdminDashboard = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
             {bookingStatusData.map((item) => (
               <div key={item.name} className="flex items-center gap-2 text-sm">
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: item.fill }}></div>

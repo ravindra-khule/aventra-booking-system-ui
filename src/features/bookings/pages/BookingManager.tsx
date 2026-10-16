@@ -603,7 +603,7 @@ export const BookingManager = () => {
                                             {isEditing ? (
                                                 <div className="space-y-2">
                                                     <div className="font-bold text-xs text-gray-400 uppercase">Traveler {idx + 1}</div>
-                                                    <div className="grid grid-cols-2 gap-2">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                         <input type="text" placeholder="First Name" className="border p-1 rounded text-xs" value={traveler.firstName} onChange={e => handleTravelerChange(idx, 'firstName', e.target.value)} />
                                                         <input type="text" placeholder="Last Name" className="border p-1 rounded text-xs" value={traveler.lastName} onChange={e => handleTravelerChange(idx, 'lastName', e.target.value)} />
                                                     </div>
@@ -616,7 +616,7 @@ export const BookingManager = () => {
                                                         <span className="font-bold text-gray-900">{traveler.firstName} {traveler.lastName}</span>
                                                         {traveler.isPayer && <span className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">Payer</span>}
                                                     </div>
-                                                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600">
                                                         <div>
                                                             <span className="block text-gray-400">SSN/DOB</span>
                                                             {traveler.ssn}
@@ -657,8 +657,8 @@ export const BookingManager = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+      <div className="flex flex-wrap gap-3 justify-between items-center mb-8">
         <div>
             <h1 className="text-2xl font-bold text-gray-900">All Bookings</h1>
             <p className="text-gray-500">Manage customers, payments, and trip rosters.</p>

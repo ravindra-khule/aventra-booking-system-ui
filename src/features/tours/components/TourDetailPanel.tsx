@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tour, TourStatus, TourDifficulty, ItineraryDay } from '../types/tour.types';
 import { TourStatusBadge } from './TourStatusBadge';
 import { 
@@ -27,6 +27,51 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
   tags
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<Tour>(tour);
+
+  useEffect(() => {
+    setFormData(tour);
+  }, [tour]);
+
+  const handleChange = <K extends keyof Tour>(field: K, value: Tour[K]) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      categories: prev.categories.includes(categoryId)
+        ? prev.categories.filter(id => id !== categoryId)
+        : [...prev.categories, categoryId]
+    }));
+  };
+
+  const toggleTag = (tagId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tagId)
+        ? prev.tags.filter(id => id !== tagId)
+        : [...prev.tags, tagId]
+    }));
+  };
+
+  const removeFromArray = <K extends keyof Tour>(field: K, index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: (prev[field] as unknown as unknown[]).filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSave = () => {
+    onUpdate(formData);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setFormData(tour);
+    setIsEditing(false);
+  };
 
   const tabs: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
     { id: 'overview', label: 'Overview', icon: <FileText className="h-4 w-4" /> },
@@ -61,7 +106,7 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
                   <p className="text-purple-100 text-sm">{tour.location}, {tour.country}</p>
                   <p className="text-purple-200 text-xs mt-1">ID: {tour.id} · Slug: {tour.slug}</p>
                 </div>
-                <Button onClick={onClose} variant="ghost" className="text-purple-100 hover:text-white !p-2">
+                <Button onClick={onClose} variant="secondary" className="text-purple-100 hover:text-white !p-2">
                   <X className="h-6 w-6" />
                 </Button>
               </div>
@@ -70,7 +115,7 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
               <div className="flex justify-end gap-2 mt-4">
                 {isEditing ? (
                   <>
-                    <Button onClick={handleCancel} variant="outline" size="sm" className="!text-white !border-white hover:!bg-purple-800">
+                    <Button onClick={handleCancel} variant="secondary" size="sm" className="!text-white !border-white hover:!bg-purple-800">
                       Cancel
                     </Button>
                     <Button onClick={handleSave} variant="primary" size="sm" icon={<Save className="h-4 w-4" />} className="!bg-white !text-purple-600 hover:!bg-purple-50">
@@ -78,7 +123,7 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
                     </Button>
                   </>
                 ) : (
-                  <Button onClick={() => setIsEditing(true)} variant="outline" size="sm" icon={<Edit2 className="h-4 w-4" />} className="!text-white !border-white hover:!bg-purple-800">
+                  <Button onClick={() => setIsEditing(true)} variant="secondary" size="sm" icon={<Edit2 className="h-4 w-4" />} className="!text-white !border-white hover:!bg-purple-800">
                     Edit Tour
                   </Button>
                 )}
@@ -388,7 +433,7 @@ export const TourDetailPanel: React.FC<TourDetailPanelProps> = ({
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <h4 className="font-medium text-blue-900 mb-2">Revenue Statistics</h4>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-blue-600">Total Revenue:</span>
                         <span className="ml-2 font-bold text-blue-900">{formatCurrency(formData.revenue || 0)}</span>

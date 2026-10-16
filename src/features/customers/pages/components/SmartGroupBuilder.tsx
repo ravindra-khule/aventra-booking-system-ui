@@ -121,46 +121,46 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
   ];
 
   return (
-    <div className="smart-group-builder">
+    <div className={styles['smart-group-builder']}>
       {/* Templates */}
-      <div className="templates-section">
+      <div className={styles['templates-section']}>
         <h3>Quick Templates</h3>
-        <div className="templates-grid">
+        <div className={styles['templates-grid']}>
           {templates.map((template) => (
             <button
               key={template.id}
-              className={`template-card ${
-                selectedTemplate === template.id ? 'selected' : ''
+              className={`${styles['template-card']} ${
+                selectedTemplate === template.id ? styles.selected : ''
               }`}
               onClick={() => applyTemplate(template)}
             >
-              <div className="template-name">{template.name}</div>
-              <div className="template-desc">{template.description}</div>
+              <div className={styles['template-name']}>{template.name}</div>
+              <div className={styles['template-desc']}>{template.description}</div>
             </button>
           ))}
         </div>
       </div>
 
       {/* Rules Section */}
-      <div className="rules-section">
-        <div className="section-header">
+      <div className={styles['rules-section']}>
+        <div className={styles['section-header']}>
           <h3>Custom Rules</h3>
-          <button className="btn btn-secondary btn-sm" onClick={addRule}>
+          <button className={`${styles.btn} ${styles['btn-secondary']} ${styles['btn-sm']}`} onClick={addRule}>
             <Plus size={16} />
             Add Rule
           </button>
         </div>
 
         {rules.length === 0 ? (
-          <div className="no-rules">
+          <div className={styles['no-rules']}>
             <p>No rules configured. Create a rule or select a template above.</p>
           </div>
         ) : (
-          <div className="rules-list">
+          <div className={styles['rules-list']}>
             {rules.map((rule, index) => (
-              <div key={rule.id} className="rule-row">
+              <div key={rule.id} className={styles['rule-row']}>
                 {index > 0 && (
-                  <div className="logic-operator">
+                  <div className={styles['logic-operator']}>
                     <select
                       value={rule.logicOperator || 'AND'}
                       onChange={(e) =>
@@ -168,7 +168,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                           logicOperator: e.target.value as 'AND' | 'OR',
                         })
                       }
-                      className="operator-select"
+                      className={styles['operator-select']}
                     >
                       <option value="AND">AND</option>
                       <option value="OR">OR</option>
@@ -176,7 +176,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                   </div>
                 )}
 
-                <div className="rule-inputs">
+                <div className={styles['rule-inputs']}>
                   <select
                     value={rule.field}
                     onChange={(e) =>
@@ -184,7 +184,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                         field: e.target.value as any,
                       })
                     }
-                    className="field-select"
+                    className={styles['field-select']}
                   >
                     {fieldOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -200,7 +200,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                         operator: e.target.value as any,
                       })
                     }
-                    className="operator-select"
+                    className={styles['operator-select']}
                   >
                     {operatorOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -210,7 +210,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                   </select>
 
                   {rule.operator === 'between' ? (
-                    <div className="range-inputs">
+                    <div className={styles['range-inputs']}>
                       <input
                         type="number"
                         placeholder="Min"
@@ -227,9 +227,9 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                             },
                           })
                         }
-                        className="form-input"
+                        className={styles['form-input']}
                       />
-                      <span className="range-separator">to</span>
+                      <span className={styles['range-separator']}>to</span>
                       <input
                         type="number"
                         placeholder="Max"
@@ -246,7 +246,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                             },
                           })
                         }
-                        className="form-input"
+                        className={styles['form-input']}
                       />
                     </div>
                   ) : (
@@ -275,14 +275,14 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
                               : e.target.value,
                         })
                       }
-                      className="form-input"
+                      className={styles['form-input']}
                     />
                   )}
                 </div>
 
                 <button
                   type="button"
-                  className="delete-rule-btn"
+                  className={styles['delete-rule-btn']}
                   onClick={() => removeRule(rule.id)}
                   title="Delete rule"
                 >
@@ -295,7 +295,7 @@ export const SmartGroupBuilder: React.FC<SmartGroupBuilderProps> = ({
       </div>
 
       {/* Info */}
-      <div className="builder-info">
+      <div className={styles['builder-info']}>
         <p>
           <strong>How it works:</strong> Create rules to automatically segment
           customers. Each rule is evaluated against customer data, and multiple

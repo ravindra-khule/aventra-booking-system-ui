@@ -31,7 +31,7 @@ export { UserStatusIndicator } from './components/UserStatusIndicator';
 
 // Types
 export type {
-  CompanyIdentity,
+  CompanyIdentity as CompanyIdentityType,
   ContactInformation,
   BusinessRegistration,
   BankingInformation,

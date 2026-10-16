@@ -142,15 +142,15 @@ export const CampaignAnalyticsDashboard: React.FC<CampaignAnalyticsDashboardProp
 
   const channelData = Object.entries(channelPerformance).map(([channel, perf]) => ({
     channel,
-    sent: perf.metrics.sent,
-    delivered: perf.metrics.delivered,
-    converted: perf.metrics.converted,
-    revenue: perf.metrics.revenue,
+    sent: perf.sent,
+    delivered: perf.delivered,
+    converted: perf.converted,
+    revenue: perf.revenue,
   }));
 
   const pieData = Object.entries(channelPerformance).map(([channel, perf]) => ({
     name: channel,
-    value: perf.metrics.sent,
+    value: perf.sent,
   }));
 
   const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4'];

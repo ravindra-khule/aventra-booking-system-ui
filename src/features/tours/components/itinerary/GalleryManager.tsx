@@ -107,7 +107,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({
           <div className={styles.formActions}>
             <Button
               onClick={() => setShowForm(false)}
-              variant="ghost"
+              variant="secondary-dark"
               size="sm"
               icon={<X className="h-4 w-4" />}
             >
@@ -126,7 +126,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({
       ) : (
         <Button
           onClick={() => setShowForm(true)}
-          variant="outline"
+          variant="secondary-dark"
           size="sm"
           icon={<Plus className="h-4 w-4" />}
           className={styles.addButton}
@@ -162,7 +162,7 @@ export const GalleryManager: React.FC<GalleryManagerProps> = ({
       )}
 
       <div className={styles.actions}>
-        <Button onClick={onCancel} variant="ghost">
+        <Button onClick={onCancel} variant="secondary-dark">
           Cancel
         </Button>
         <Button onClick={() => onSave(galleryImages)} variant="primary" icon={<Save className="h-4 w-4" />}>

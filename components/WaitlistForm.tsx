@@ -170,7 +170,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ tour, onClose }) => 
             <Button
               type="button"
               onClick={onClose}
-              variant="outline"
+              variant="secondary-dark"
             >
               {t('common:cancel')}
             </Button>
