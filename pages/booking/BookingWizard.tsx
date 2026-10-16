@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Button, Input, Select } from '../../src/shared/components/ui';
 import { formatCurrency } from '../../src/shared/utils';
+import { useCurrency } from '../../src/shared/hooks';
 import { PaymentSection } from '../../src/features/bookings/components/PaymentSection';
 import { PaymentType } from '../../src/features/bookings/services/payment.service';
 import { Booking } from '../../src/features/bookings/types/booking.types';
@@ -70,6 +71,7 @@ export const BookingWizard = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [currentStep, setCurrentStep] = useState(0);
   const [tour, setTour] = useState<Tour | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -558,11 +560,11 @@ export const BookingWizard = () => {
       <div className="bg-green-600 text-white rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium">{t('booking:confirmation.amountPaid')}</span>
-          <span className="text-2xl font-bold">{formatCurrency(amountPaid || payNowAmount, tour.currency)}</span>
+          <span className="text-2xl font-bold">{formatCurrency(amountPaid || payNowAmount, currency)}</span>
         </div>
         <div className="flex justify-between items-center text-green-100 text-xs">
           <span>{t('booking:payment.payLater')}</span>
-          <span className="font-semibold">{formatCurrency(payLaterAmount, tour.currency)}</span>
+          <span className="font-semibold">{formatCurrency(payLaterAmount, currency)}</span>
         </div>
       </div>
 
@@ -625,7 +627,7 @@ export const BookingWizard = () => {
       <div className="border-t border-orange-200 py-4 space-y-2">
         <div className="flex justify-between text-sm">
            <span className="text-gray-600">{t('booking:summary.basePrice')}</span>
-           <span className="text-gray-900">{baseAmount.toLocaleString()} {tour.currency}</span>
+           <span className="text-gray-900">{baseAmount.toLocaleString()} {currency}</span>
         </div>
         
         {/* Show add-ons if any selected */}
@@ -644,13 +646,13 @@ export const BookingWizard = () => {
                     {addOn.name} × {quantity}
                     {addOn.pricePerPerson && ` (${participants} ppl)`}
                   </span>
-                  <span className="text-gray-900">{itemTotal.toLocaleString()} {tour.currency}</span>
+                  <span className="text-gray-900">{itemTotal.toLocaleString()} {currency}</span>
                 </div>
               );
             })}
             <div className="flex justify-between text-sm font-medium pt-2 border-t border-orange-100">
                <span className="text-gray-700">{t('booking:summary.subtotal')}</span>
-               <span className="text-gray-900">{subtotal.toLocaleString()} {tour.currency}</span>
+               <span className="text-gray-900">{subtotal.toLocaleString()} {currency}</span>
             </div>
           </>
         )}
@@ -662,29 +664,29 @@ export const BookingWizard = () => {
                <span className="flex items-center gap-1">
                  <Tag className="h-3 w-3" /> {t('booking:summary.discount')} ({appliedPromoCode})
                </span>
-               <span>-{discountAmount.toLocaleString()} {tour.currency}</span>
+               <span>-{discountAmount.toLocaleString()} {currency}</span>
             </div>
             <div className="flex justify-between text-sm font-bold text-blue-600">
                <span>{t('booking:summary.discountedTotal')}</span>
-               <span>{finalAmount.toLocaleString()} {tour.currency}</span>
+               <span>{finalAmount.toLocaleString()} {currency}</span>
             </div>
           </>
         )}
         
         <div className="flex justify-between text-sm font-semibold text-gray-900 pt-2 border-t border-orange-200">
            <span>{paymentType === 'FULL' ? t('booking:payment.payNowFull') : t('booking:payment.payNowDeposit')}</span>
-           <span>{payNowAmount.toLocaleString()} {tour.currency}</span>
+           <span>{payNowAmount.toLocaleString()} {currency}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-500">
            <span>{t('booking:payment.payLater')}</span>
-           <span>{payLaterAmount.toLocaleString()} {tour.currency}</span>
+           <span>{payLaterAmount.toLocaleString()} {currency}</span>
         </div>
       </div>
 
       <div className="border-t border-orange-200 pt-4 mb-2">
          <div className="flex justify-between items-end">
             <span className="font-bold text-lg text-gray-900">{t('booking:summary.toPay')}</span>
-            <span className="font-bold text-2xl text-blue-600">{payNowAmount.toLocaleString()} {tour.currency}</span>
+            <span className="font-bold text-2xl text-blue-600">{payNowAmount.toLocaleString()} {currency}</span>
          </div>
          <p className="text-xs text-gray-500 mt-2">{t('booking:summary.vatMsg')}</p>
       </div>
@@ -1116,7 +1118,7 @@ export const BookingWizard = () => {
                                 </div>
                                 <div className="text-right">
                                   <div className="text-xl font-bold text-gray-900">
-                                    {formatCurrency(itemPrice, addOn.currency)}
+                                    {formatCurrency(itemPrice, currency)}
                                   </div>
                                   <div className="text-xs text-gray-500">
                                     {addOn.pricePerPerson ? t('booking:addons.perPerson') : t('booking:addons.perBooking')}
@@ -1166,7 +1168,7 @@ export const BookingWizard = () => {
                                         addOn.pricePerPerson 
                                           ? addOn.price * quantity * participants 
                                           : addOn.price * quantity,
-                                        addOn.currency
+                                        currency
                                       )}
                                     </div>
                                   </div>
@@ -1200,7 +1202,7 @@ export const BookingWizard = () => {
                                   addOn.pricePerPerson 
                                     ? addOn.price * quantity * participants 
                                     : addOn.price * quantity,
-                                  addOn.currency
+                                  currency
                                 )}
                               </span>
                             </div>
@@ -1209,7 +1211,7 @@ export const BookingWizard = () => {
                         <div className="border-t border-orange-300 pt-3 flex justify-between">
                           <span className="font-bold text-gray-900">{t('booking:addons.totalAddons')}</span>
                           <span className="font-bold text-xl text-orange-600">
-                            {formatCurrency(addOnsTotal, tour.currency)}
+                            {formatCurrency(addOnsTotal, currency)}
                           </span>
                         </div>
                       </div>
@@ -1232,14 +1234,14 @@ export const BookingWizard = () => {
                             <span className="text-sm text-gray-500">
                               {paymentType === 'FULL' ? t('booking:payment.payNowFull') : t('booking:payment.payNowDeposit')}
                             </span>
-                            <span className="text-xl font-bold text-gray-900">{payNowAmount.toLocaleString()} {tour.currency}</span>
+                            <span className="text-xl font-bold text-gray-900">{payNowAmount.toLocaleString()} {currency}</span>
                             <span className="text-xs text-green-600 mt-1">
                               {paymentType === 'FULL' ? t('booking:payment.fullPayment') : t('booking:payment.dueToday')}
                             </span>
                         </div>
                         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-col opacity-75">
                             <span className="text-sm text-gray-500">{t('booking:payment.payLater')}</span>
-                            <span className="text-xl font-bold text-gray-900">{payLaterAmount.toLocaleString()} {tour.currency}</span>
+                            <span className="text-xl font-bold text-gray-900">{payLaterAmount.toLocaleString()} {currency}</span>
                             <span className="text-xs text-gray-500 mt-1">{t('booking:payment.dueLater')}</span>
                         </div>
                      </div>
@@ -1280,7 +1282,7 @@ export const BookingWizard = () => {
                               </div>
                               <div>
                                  <p className="font-bold text-green-900">{appliedPromoCode}</p>
-                                 <p className="text-sm text-green-700">{t('booking:promo.youSaved')} {discountAmount.toLocaleString()} {tour.currency}!</p>
+                                 <p className="text-sm text-green-700">{t('booking:promo.youSaved')} {discountAmount.toLocaleString()} {currency}!</p>
                               </div>
                            </div>
                            <button
@@ -1320,7 +1322,7 @@ export const BookingWizard = () => {
                      paymentType={paymentType}
                      onPaymentTypeChange={setPaymentType}
                      advanceAmount={depositTotal}
-                     currency={tour.currency}
+                     currency={currency}
                      onPaymentSuccess={(result) => {
                         completeBooking(result.paymentType);
                      }}
@@ -1439,7 +1441,7 @@ export const BookingWizard = () => {
                                                 addOn.pricePerPerson 
                                                     ? addOn.price * quantity * participants 
                                                     : addOn.price * quantity,
-                                                addOn.currency
+                                                currency
                                             )}
                                         </span>
                                     </div>
@@ -1454,34 +1456,34 @@ export const BookingWizard = () => {
                         <div className="space-y-3">
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">{t('booking:confirmation.tourBasePrice')}:</span>
-                                <span className="text-gray-900">{formatCurrency(baseAmount, tour.currency)}</span>
+                                <span className="text-gray-900">{formatCurrency(baseAmount, currency)}</span>
                             </div>
                             {addOnsTotal > 0 && (
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">{t('booking:confirmation.addonsTotal')}:</span>
-                                    <span className="text-gray-900">{formatCurrency(addOnsTotal, tour.currency)}</span>
+                                    <span className="text-gray-900">{formatCurrency(addOnsTotal, currency)}</span>
                                 </div>
                             )}
                             {discountAmount > 0 && (
                                 <div className="flex justify-between text-sm text-green-600">
                                     <span>{t('booking:confirmation.discount')} ({appliedPromoCode}):</span>
-                                    <span>-{formatCurrency(discountAmount, tour.currency)}</span>
+                                    <span>-{formatCurrency(discountAmount, currency)}</span>
                                 </div>
                             )}
                             <div className="border-t border-gray-200 pt-3 mt-3">
                                 <div className="flex justify-between">
                                     <span className="font-semibold text-gray-900">{t('booking:confirmation.totalAmount')}:</span>
-                                    <span className="font-bold text-xl text-gray-900">{formatCurrency(finalAmount, tour.currency)}</span>
+                                    <span className="font-bold text-xl text-gray-900">{formatCurrency(finalAmount, currency)}</span>
                                 </div>
                             </div>
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
                                 <div className="flex justify-between mb-2">
                                     <span className="font-semibold text-green-800">{t('booking:confirmation.paidToday')}:</span>
-                                    <span className="font-bold text-green-800">{formatCurrency(amountPaid || payNowAmount, tour.currency)}</span>
+                                    <span className="font-bold text-green-800">{formatCurrency(amountPaid || payNowAmount, currency)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-green-700">{t('booking:payment.payLater')}:</span>
-                                    <span className="font-semibold text-green-700">{formatCurrency(payLaterAmount, tour.currency)}</span>
+                                    <span className="font-semibold text-green-700">{formatCurrency(payLaterAmount, currency)}</span>
                                 </div>
                                 {payLaterAmount > 0 && (
                                     <p className="text-xs text-green-700 mt-2">
@@ -1639,7 +1641,7 @@ export const BookingWizard = () => {
                 fullWidth
                 className="md:w-auto shadow-lg"
               >
-                {isProcessing ? t('common:processing') : `${t('booking:payment.payBtn')} ${formatCurrency(payNowAmount, tour.currency)}`}
+                {isProcessing ? t('common:processing') : `${t('booking:payment.payBtn')} ${formatCurrency(payNowAmount, currency)}`}
               </Button>
             ) : (
               <Button

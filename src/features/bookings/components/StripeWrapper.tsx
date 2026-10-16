@@ -4,6 +4,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { PaymentUI } from './PaymentUI';
 import { Booking } from '../types/booking.types';
 import { formatCurrency } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks';
 
 interface StripeWrapperProps {
   booking: Booking;
@@ -17,6 +18,7 @@ interface StripeWrapperProps {
 export const StripeWrapper: React.FC<StripeWrapperProps> = ({ booking, onPaymentSuccess }) => {
   const stripeKey = process.env.REACT_APP_STRIPE_KEY || 'pk_test_YourStripeKeyHere';
   const isProductionKey = stripeKey && !stripeKey.includes('YourStripeKeyHere');
+  useCurrency(); // re-render when the site currency changes
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {

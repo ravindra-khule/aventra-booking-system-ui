@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ensureCurrencyLoaded } from './src/shared/services/currency.service';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { Home } from './pages/Home';
@@ -191,6 +192,11 @@ const AppRoutes = () => {
 };
 
 function App() {
+  // Load the site-wide currency from backend settings (Admin > Settings > Payment)
+  useEffect(() => {
+    ensureCurrencyLoaded();
+  }, []);
+
   return (
     <AuthProvider>
       <ToastProvider>

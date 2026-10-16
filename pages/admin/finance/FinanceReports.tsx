@@ -25,16 +25,19 @@ import {
   ExportFormat
 } from '../../../src/features/finance/types/report.types';
 import { ReportService } from '../../../src/features/finance/services/report.service';
+import { getActiveCurrency } from '../../../src/shared/utils';
+import { useCurrency } from '../../../src/shared/hooks';
 
 type ReportTab = 'revenue' | 'profit-loss' | 'cash-flow' | 'forecast' | 'tax' | 'commission' | 'payment-methods' | 'refunds';
 
 export const FinanceReports: React.FC = () => {
+  useCurrency(); // re-render when the site currency changes
   const [activeTab, setActiveTab] = useState<ReportTab>('revenue');
   const [filters, setFilters] = useState<ReportFilters>({
     dateFrom: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
     dateTo: new Date().toISOString().split('T')[0],
     period: ReportPeriod.THIS_MONTH,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     compareWithPrevious: false
   });
   const [loading, setLoading] = useState(false);

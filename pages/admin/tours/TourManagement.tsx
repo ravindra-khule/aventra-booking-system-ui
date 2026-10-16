@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../../src/shared/components/ui';
 import { formatCurrency, formatDate } from '../../../src/shared/utils';
+import { useCurrency } from '../../../src/shared/hooks';
 import { useToast } from '../../../src/shared/context/ToastContext';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +18,7 @@ type ViewMode = 'grid' | 'list';
 export const TourManagement: React.FC = () => {
   const toast = useToast();
   const { t } = useTranslation();
+  useCurrency(); // re-render when the site currency changes
   const [tours, setTours] = useState<Tour[]>([]);
   const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
   const [categories, setCategories] = useState<TourCategory[]>([]);

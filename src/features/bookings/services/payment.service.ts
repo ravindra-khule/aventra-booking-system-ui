@@ -6,6 +6,7 @@
 import { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 import { createPaymentIntent } from './stripe.service';
 import { Booking, BookingStatus, PaymentStatus } from '../types/booking.types';
+import { getActiveCurrency } from '../../../shared/utils';
 
 export type PaymentType = 'FULL' | 'ADVANCE';
 
@@ -13,7 +14,7 @@ export interface PaymentConfig {
   advancePercentage: number;
   /** Explicit advance/deposit amount; when set, it overrides advancePercentage */
   advanceAmount?: number;
-  currency: string;
+  currency?: string;
 }
 
 export interface PaymentProcessingResult {
@@ -35,7 +36,6 @@ export interface PaymentCalculation {
 
 const DEFAULT_CONFIG: PaymentConfig = {
   advancePercentage: 0.2, // 20% advance payment
-  currency: 'sek',
 };
 
 /**
@@ -108,7 +108,7 @@ export const processPayment = async (
     const finalConfig = { ...DEFAULT_CONFIG, ...config };
 
     // Create payment intent
-    const intent = await createPaymentIntent(amount * 100, finalConfig.currency, {
+    const intent = await createPaymentIntent(amount * 100, finalConfig.currency || getActiveCurrency().toLowerCase(), {
       bookingId: booking.id,
       paymentType,
     });
@@ -212,7 +212,7 @@ export const getPaymentDescription = (
   paymentType: PaymentType,
   payableAmount: number,
   remainingBalance: number,
-  currency = 'SEK'
+  currency = getActiveCurrency()
 ): string => {
   if (paymentType === 'FULL') {
     return `Pay full amount now`;

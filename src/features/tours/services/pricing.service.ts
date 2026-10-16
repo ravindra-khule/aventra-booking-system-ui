@@ -17,6 +17,7 @@ import {
   PricingCalculationSettings,
   PriceCalendarFilter,
 } from '../types/pricing.types';
+import { getActiveCurrency } from '../../../shared/utils';
 
 class TourPricingService {
   private baseUrl = '/api/tours/pricing';
@@ -30,7 +31,7 @@ class TourPricingService {
       tourId,
       basePricing: {
         basePrice: 2500,
-        currency: 'SEK',
+        currency: getActiveCurrency(),
         depositPercentage: 30,
       },
       seasonalPricing: [

@@ -24,7 +24,13 @@ export {
   formatPercentage,
   calculateDiscount,
   getDiscountAmount,
+  SUPPORTED_CURRENCIES,
+  DEFAULT_CURRENCY,
+  getActiveCurrency,
+  setActiveCurrency,
+  subscribeCurrency,
 } from './currency.utils';
+export type { CurrencyInfo } from './currency.utils';
 
 // Validation utilities
 export {

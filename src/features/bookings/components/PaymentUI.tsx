@@ -3,7 +3,7 @@ import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { StripeCardElement } from '@stripe/stripe-js';
 import { createPaymentIntent } from '../services/stripe.service';
 import { Booking, BookingStatus, PaymentStatus } from '../types/booking.types';
-import { formatCurrency } from '../../../shared/utils';
+import { formatCurrency, getActiveCurrency } from '../../../shared/utils';
 import { Button } from '../../../shared/components/ui/Button';
 
 interface PaymentUIProps {
@@ -33,7 +33,7 @@ export const PaymentUI: React.FC<PaymentUIProps> = ({ booking, onPaymentSuccess 
       // Create PaymentIntent on backend
       const intent = await createPaymentIntent(
         payableAmount * 100, // Stripe expects amount in smallest currency unit
-        'sek',
+        getActiveCurrency().toLowerCase(),
         { bookingId: booking.id, paymentType }
       );
       if (!stripe || !elements) {

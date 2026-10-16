@@ -4,6 +4,7 @@
  */
 
 import { Booking, PaymentStatus } from '../../../../types';
+import { getActiveCurrency } from '../../../shared/utils';
 
 export interface EmailPayload {
   to: string;
@@ -60,7 +61,7 @@ class EmailServiceClass {
         tourName: booking.tourTitle || 'Your Upcoming Adventure',
         tripDate: this.formatDate(new Date(booking.tripDate || booking.bookingDate)),
         remainingAmount,
-        currency: 'SEK',
+        currency: getActiveCurrency(),
         paymentDueDate: formattedDueDate,
         bookingDetailsUrl: `${window.location.origin}/#/my-bookings`,
         paymentLink: `${window.location.origin}/#/my-bookings?pay=${booking.id}`,
@@ -104,7 +105,7 @@ class EmailServiceClass {
         guestEmail: booking.payer.email,
         tourName: booking.tourTitle || 'Your Upcoming Adventure',
         amount,
-        currency: 'SEK',
+        currency: getActiveCurrency(),
         transactionId,
         paymentDate: this.formatDate(new Date()),
         bookingDetailsUrl: `${window.location.origin}/#/my-bookings`,
@@ -146,7 +147,7 @@ class EmailServiceClass {
         totalAmount: booking.totalAmount,
         paidAmount: booking.paidAmount,
         remainingAmount: booking.totalAmount - booking.paidAmount,
-        currency: 'SEK',
+        currency: getActiveCurrency(),
         bookingDetailsUrl: `${window.location.origin}/#/my-bookings`,
         numberOfTravelers: booking.travelers?.length || 1,
       };
