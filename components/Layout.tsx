@@ -43,8 +43,12 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
     navigate('/');
   };
 
+  // resolvedLanguage is normalized to 'en' or 'sv' even when the browser reports
+  // regional codes like 'en-US' or 'sv-SE'
+  const isSwedish = (i18n.resolvedLanguage || i18n.language || 'en').startsWith('sv');
+
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'sv' : 'en');
+    i18n.changeLanguage(isSwedish ? 'en' : 'sv');
   };
 
   return (
@@ -74,10 +78,10 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                <button 
                  onClick={toggleLanguage}
                  className="btn btn-secondary-dark btn-sm"
-                 title={i18n.language === 'en' ? t('admin:switchToSwedish') : t('admin:switchToEnglish')}
+                 title={isSwedish ? t('admin:switchToEnglish') : t('admin:switchToSwedish')}
                >
                  <Globe className="h-4 w-4" />
-                 <span className="font-semibold">{i18n.language === 'en' ? 'EN' : 'SV'}</span>
+                 <span className="font-semibold">{isSwedish ? 'SV' : 'EN'}</span>
                </button>
 
                {user ? (
@@ -129,7 +133,7 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                 style={{ color: '#6b7280' }}
               >
                 <Globe className="h-4 w-4" />
-                {i18n.language === 'en' ? t('nav:switchToSwedish') : t('nav:switchToEnglish')}
+                {isSwedish ? t('nav:switchToEnglish') : t('nav:switchToSwedish')}
               </button>
               {!user && (
                 <button 
