@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookingService } from '../../services/api';
 import { DashboardStats } from '../../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
@@ -9,33 +10,22 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-interface KPIData {
-  totalRevenue: number;
-  monthlyRevenue: number;
-  revenueGrowth: number;
-  activeBookings: number;
-  pendingBookings: number;
-  completedBookings: number;
-  occupancyRate: number;
-  customerSatisfaction: number;
-  conversionRate: number;
-  averageBookingValue: number;
-  cancellationRate: number;
-  paymentSuccessRate: number;
-  totalCustomers: number;
-  newCustomersThisMonth: number;
-  repeatCustomerRate: number;
-  averageCustomerLTV: number;
-}
-
 interface Alert {
   id: string;
   type: 'warning' | 'danger' | 'info' | 'success';
   title: string;
   message: string;
-  action?: { label: string; href: string };
+  action?: { label: string; onClick: () => void };
   timestamp: Date;
 }
+
+const AUTO_REFRESH_MS = 60000;
+
+const formatSEK = (value: number): string => {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M SEK`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K SEK`;
+  return `${Math.round(value)} SEK`;
+};
 
 const StatCard = ({ title, value, change, icon: Icon, color, trend }: any) => (
   <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -87,9 +77,12 @@ const AlertWidget: React.FC<{ alert: Alert }> = ({ alert }) => {
         </div>
       </div>
       {alert.action && (
-        <a href={alert.action.href} className="text-xs font-medium text-gray-700 hover:text-gray-900 whitespace-nowrap ml-4">
+        <button
+          onClick={alert.action.onClick}
+          className="text-xs font-medium text-gray-700 hover:text-gray-900 hover:underline whitespace-nowrap ml-4"
+        >
           {alert.action.label} →
-        </a>
+        </button>
       )}
     </div>
   );
@@ -108,9 +101,10 @@ const ActionWidget = ({ title, description, icon: Icon, color, actions }: any) =
       {actions.map((action: any, idx: number) => (
         <button
           key={idx}
-          className="inline-flex items-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+          onClick={action.onClick}
+          className="inline-flex items-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors cursor-pointer"
         >
-          {action} <ChevronRight className="h-3 w-3" />
+          {action.label} <ChevronRight className="h-3 w-3" />
         </button>
       ))}
     </div>
@@ -132,98 +126,234 @@ const InsightCard = ({ title, value, context, icon: Icon, color }: any) => (
 
 export const AdminDashboard = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [kpiData, setKpiData] = useState<KPIData | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const buildAlerts = useCallback((data: DashboardStats): Alert[] => {
+    const now = new Date();
+    const list: Alert[] = [];
+
+    const cancelled = data.cancelledBookings ?? 0;
+    if (cancelled > 0) {
+      list.push({
+        id: 'cancellations',
+        type: (data.cancellationRate ?? 0) >= 15 ? 'danger' : 'warning',
+        title: t('admin:highCancellationRate'),
+        message: t('admin:cancellationAlertMessage')
+          .replace('{count}', cancelled.toString())
+          .replace('{rate}', (data.cancellationRate ?? 0).toString()),
+        action: { label: t('admin:review'), onClick: () => navigate('/admin/bookings') },
+        timestamp: now,
+      });
+    }
+
+    const pendingPayments = data.pendingPayments ?? 0;
+    if (pendingPayments > 0) {
+      list.push({
+        id: 'pending-payments',
+        type: 'info',
+        title: t('admin:paymentPending'),
+        message: t('admin:pendingPaymentsMessage')
+          .replace('{count}', pendingPayments.toString())
+          .replace('{amount}', formatSEK(data.unpaidBalance ?? 0)),
+        action: { label: t('admin:followUp'), onClick: () => navigate('/admin/finance/invoices') },
+        timestamp: now,
+      });
+    }
+
+    const lowAvailability = data.lowAvailabilityTours ?? 0;
+    if (lowAvailability > 0) {
+      list.push({
+        id: 'low-availability',
+        type: 'warning',
+        title: t('admin:lowAvailabilityTitle'),
+        message: t('admin:lowAvailabilityMessage').replace('{count}', lowAvailability.toString()),
+        action: { label: t('admin:review'), onClick: () => navigate('/admin/tours') },
+        timestamp: now,
+      });
+    }
+
+    if ((data.revenueGrowth ?? 0) > 0 && (data.monthlyRevenue ?? 0) > 0) {
+      list.push({
+        id: 'revenue-growth',
+        type: 'success',
+        title: t('admin:revenueGrowthTitle'),
+        message: t('admin:revenueGrowthMessage').replace('{growth}', (data.revenueGrowth ?? 0).toString()),
+        timestamp: now,
+      });
+    }
+
+    if (list.length === 0) {
+      list.push({
+        id: 'all-clear',
+        type: 'success',
+        title: t('admin:allClearTitle'),
+        message: t('admin:allClearMessage'),
+        timestamp: now,
+      });
+    }
+
+    return list;
+  }, [t, navigate]);
+
+  const loadDashboard = useCallback(async (showSpinner = false) => {
+    if (showSpinner) setIsRefreshing(true);
+    try {
+      const data = await BookingService.getStats();
+      setStats(data);
+      setAlerts(buildAlerts(data));
+      setLastUpdated(new Date());
+      setLoadError(null);
+    } catch (error) {
+      console.error('Failed to load dashboard stats:', error);
+      setLoadError(t('admin:dashboardLoadError'));
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [buildAlerts, t]);
 
   useEffect(() => {
-    BookingService.getStats().then((data) => {
-      setStats(data);
-      // Initialize enhanced KPI data
-      setKpiData({
-        totalRevenue: data.totalRevenue || 1250000,
-        monthlyRevenue: 285000,
-        revenueGrowth: 12.5,
-        activeBookings: data.activeBookings || 42,
-        pendingBookings: 18,
-        completedBookings: 156,
-        occupancyRate: data.occupancyRate || 78,
-        customerSatisfaction: 94,
-        conversionRate: 8.4,
-        averageBookingValue: 6800,
-        cancellationRate: 3.2,
-        paymentSuccessRate: 98.6,
-        totalCustomers: 1240,
-        newCustomersThisMonth: 148,
-        repeatCustomerRate: 42,
-        averageCustomerLTV: 18500,
-      });
-      // Initialize alerts
-      setAlerts([
-        {
-          id: '1',
-          type: 'warning',
-          title: t('admin:highCancellationRate'),
-          message: t('admin:cancellationMessage'),
-          action: { label: t('admin:review'), href: '/admin/bookings' },
-          timestamp: new Date(),
-        },
-        {
-          id: '2',
-          type: 'info',
-          title: t('admin:paymentPending'),
-          message: t('admin:paymentPendingMessage'),
-          action: { label: t('admin:followUp'), href: '/admin/finance/invoices' },
-          timestamp: new Date(),
-        },
-        {
-          id: '3',
-          type: 'success',
-          title: t('admin:monthlyTargetMet'),
-          message: t('admin:monthlyTargetMessage'),
-          timestamp: new Date(),
-        },
-      ]);
-    });
-  }, []);
+    loadDashboard();
+    const interval = setInterval(() => loadDashboard(), AUTO_REFRESH_MS);
+    return () => clearInterval(interval);
+  }, [loadDashboard]);
 
-  // Mock data for charts
-  const revenueData = [
-    { name: 'Jan', revenue: 220000, target: 200000 },
-    { name: 'Feb', revenue: 240000, target: 210000 },
-    { name: 'Mar', revenue: 260000, target: 220000 },
-    { name: 'Apr', revenue: 270000, target: 230000 },
-    { name: 'May', revenue: 285000, target: 250000 },
-    { name: 'Jun', revenue: 310000, target: 260000 },
-  ];
+  if (!stats) {
+    return (
+      <div className="p-8 text-center">
+        {loadError ? (
+          <div className="text-red-600">
+            <p>{loadError}</p>
+            <button
+              onClick={() => loadDashboard(true)}
+              className="mt-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium"
+            >
+              {t('admin:refresh')}
+            </button>
+          </div>
+        ) : (
+          t('common:loading')
+        )}
+      </div>
+    );
+  }
 
+  // Booking growth vs previous month (from monthly chart data)
+  const monthlyBookings = stats.revenueByMonth ?? [];
+  const thisMonthBookings = monthlyBookings[monthlyBookings.length - 1]?.bookings ?? 0;
+  const lastMonthBookings = monthlyBookings[monthlyBookings.length - 2]?.bookings ?? 0;
+  const bookingsGrowth = lastMonthBookings > 0
+    ? Math.round(((thisMonthBookings - lastMonthBookings) / lastMonthBookings) * 1000) / 10
+    : (thisMonthBookings > 0 ? 100 : 0);
+
+  const customersGrowth = (stats.newCustomersLastMonth ?? 0) > 0
+    ? Math.round((((stats.newCustomersThisMonth ?? 0) - (stats.newCustomersLastMonth ?? 0)) / (stats.newCustomersLastMonth ?? 1)) * 1000) / 10
+    : ((stats.newCustomersThisMonth ?? 0) > 0 ? 100 : 0);
+
+  const revenueData = (stats.revenueByMonth ?? []).map((m) => ({ name: m.month, revenue: m.revenue }));
+
+  const breakdown = stats.statusBreakdown ?? {};
   const bookingStatusData = [
-    { name: t('admin:confirmed'), value: 42, fill: '#10b981' },
-    { name: t('admin:pending'), value: 18, fill: '#f59e0b' },
-    { name: t('admin:completed'), value: 156, fill: '#3b82f6' },
-    { name: t('admin:cancelled'), value: 12, fill: '#ef4444' },
+    { name: t('admin:confirmed'), value: breakdown.confirmed ?? 0, fill: '#10b981' },
+    { name: t('admin:pending'), value: breakdown.pending ?? 0, fill: '#f59e0b' },
+    { name: t('admin:completed'), value: breakdown.completed ?? 0, fill: '#3b82f6' },
+    { name: t('admin:cancelled'), value: breakdown.cancelled ?? 0, fill: '#ef4444' },
   ];
 
-  const customerAcquisitionData = [
-    { name: 'Jan', direct: 28, organic: 45, referral: 32, campaign: 35 },
-    { name: 'Feb', direct: 32, organic: 52, referral: 38, campaign: 42 },
-    { name: 'Mar', direct: 35, organic: 58, referral: 42, campaign: 48 },
-    { name: 'Apr', direct: 42, organic: 68, referral: 52, campaign: 58 },
-    { name: 'May', direct: 48, organic: 75, referral: 62, campaign: 65 },
-    { name: 'Jun', direct: 58, organic: 92, referral: 75, campaign: 78 },
-  ];
+  const customerAcquisitionData = (stats.customersByMonth ?? []).map((m) => ({ name: m.month, customers: m.count }));
 
-  if (!stats || !kpiData) return <div className="p-8 text-center">{t('common:loading')}</div>;
+  const quickActionGroups = [
+    {
+      title: t('admin:bookingManagement'),
+      description: t('admin:bookingManagementDesc'),
+      icon: Calendar,
+      color: 'bg-primary',
+      actions: [
+        { label: t('admin:viewBookings'), onClick: () => navigate('/admin/bookings') },
+        { label: t('admin:newBooking'), onClick: () => navigate('/admin/bookings') },
+        { label: t('admin:calendar'), onClick: () => navigate('/admin/bookings') },
+      ],
+    },
+    {
+      title: t('admin:customerManagement'),
+      description: t('admin:customerManagementDesc'),
+      icon: Users,
+      color: 'bg-success',
+      actions: [
+        { label: t('admin:allCustomers'), onClick: () => navigate('/admin/customers') },
+        { label: t('admin:groups'), onClick: () => navigate('/admin/customers/groups') },
+        { label: t('admin:communications'), onClick: () => navigate('/admin/customers/communications') },
+      ],
+    },
+    {
+      title: t('admin:financialOperations'),
+      description: t('admin:financialOperationsDesc'),
+      icon: CreditCard,
+      color: 'bg-emerald-500',
+      actions: [
+        { label: t('admin:invoices'), onClick: () => navigate('/admin/finance/invoices') },
+        { label: t('admin:payments'), onClick: () => navigate('/admin/finance/payments') },
+        { label: t('admin:reports'), onClick: () => navigate('/admin/finance/reports') },
+      ],
+    },
+    {
+      title: t('admin:tourManagement'),
+      description: t('admin:tourManagementDesc'),
+      icon: MapPin,
+      color: 'bg-purple-500',
+      actions: [
+        { label: t('admin:viewTours'), onClick: () => navigate('/admin/tours') },
+        { label: t('admin:addTour'), onClick: () => navigate('/admin/tours') },
+        { label: t('admin:availability'), onClick: () => navigate('/admin/tours/pricing') },
+      ],
+    },
+    {
+      title: t('admin:marketingCampaigns'),
+      description: t('admin:marketingCampaignsDesc'),
+      icon: BarChart3,
+      color: 'bg-orange-500',
+      actions: [
+        { label: t('admin:campaigns'), onClick: () => navigate('/admin/marketing/email-templates') },
+        { label: t('admin:promoCodes'), onClick: () => navigate('/admin/marketing/promo-codes') },
+        { label: t('admin:analytics'), onClick: () => navigate('/admin/finance/reports') },
+      ],
+    },
+    {
+      title: t('admin:systemAdministration'),
+      description: t('admin:systemAdministrationDesc'),
+      icon: Shield,
+      color: 'bg-red-500',
+      actions: [
+        { label: t('admin:users'), onClick: () => navigate('/admin/settings/users') },
+        { label: t('admin:settings'), onClick: () => navigate('/admin/settings/company') },
+        { label: t('admin:logs'), onClick: () => navigate('/admin/settings/logs') },
+      ],
+    },
+  ];
 
   return (
     <div className="p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:dashboardOverview')}</h1>
-        <p className="text-gray-600 flex items-center gap-2">
-          <Activity className="h-4 w-4" />
-          {t('admin:realtimeInsights')}
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:dashboardOverview')}</h1>
+          <p className="text-gray-600 flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            {t('admin:realtimeInsights')}
+          </p>
+        </div>
+        <button
+          onClick={() => loadDashboard(true)}
+          disabled={isRefreshing}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          {t('admin:refresh')}
+        </button>
       </div>
 
       {/* Key Performance Indicators (KPIs) */}
@@ -235,33 +365,31 @@ export const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard 
             title={t('admin:totalRevenue')}
-            value={`${(kpiData.totalRevenue / 1000000).toFixed(1)}M SEK`} 
-            change={kpiData.revenueGrowth}
-            trend="up"
+            value={formatSEK(stats.totalRevenue)} 
+            change={stats.revenueGrowth}
+            trend={(stats.revenueGrowth ?? 0) >= 0 ? 'up' : 'down'}
             icon={DollarSign} 
             color="bg-success" 
           />
           <StatCard 
             title={t('admin:monthlyRevenue')}
-            value={`${(kpiData.monthlyRevenue / 1000).toFixed(0)}K SEK`} 
-            change={5.8}
-            trend="up"
+            value={formatSEK(stats.monthlyRevenue ?? 0)} 
+            change={stats.revenueGrowth}
+            trend={(stats.revenueGrowth ?? 0) >= 0 ? 'up' : 'down'}
             icon={TrendingUp} 
             color="bg-primary" 
           />
           <StatCard 
             title={t('admin:activeBookings')}
-            value={kpiData.activeBookings}
-            change={3.2}
-            trend="up"
+            value={stats.activeBookings}
+            change={bookingsGrowth}
+            trend={bookingsGrowth >= 0 ? 'up' : 'down'}
             icon={Briefcase} 
             color="bg-info" 
           />
           <StatCard 
-            title={t('admin:customerSatisfaction')}
-            value={`${kpiData.customerSatisfaction}%`}
-            change={2.1}
-            trend="up"
+            title={t('admin:occupancyRate')}
+            value={`${stats.occupancyRate}%`}
             icon={Eye} 
             color="bg-warning" 
           />
@@ -288,7 +416,7 @@ export const AdminDashboard = () => {
         {/* Revenue Performance */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:revenuePerformance')}</h3>
-          <p className="text-sm text-gray-500 mb-6">{t('admin:revenueVsTarget')}</p>
+          <p className="text-sm text-gray-500 mb-6">{t('admin:monthlyRevenueTrend')}</p>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueData}>
@@ -297,7 +425,6 @@ export const AdminDashboard = () => {
                 <YAxis stroke="#6b7280" />
                 <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
                 <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="target" fill="#d1d5db" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -338,21 +465,18 @@ export const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Customer Acquisition Trends */}
+      {/* New Customers Trend */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
         <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:customerAcquisitionTrends')}</h3>
-        <p className="text-sm text-gray-500 mb-6">{t('admin:newCustomersByChannel')}</p>
+        <p className="text-sm text-gray-500 mb-6">{t('admin:newCustomersOverTime')}</p>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={customerAcquisitionData}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
               <XAxis dataKey="name" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
+              <YAxis stroke="#6b7280" allowDecimals={false} />
               <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
-              <Line type="monotone" dataKey="direct" stroke="#3b82f6" strokeWidth={2} name={t('admin:direct')} />
-              <Line type="monotone" dataKey="organic" stroke="#10b981" strokeWidth={2} name={t('admin:organic')} />
-              <Line type="monotone" dataKey="referral" stroke="#f59e0b" strokeWidth={2} name={t('admin:referral')} />
-              <Line type="monotone" dataKey="campaign" stroke="#8b5cf6" strokeWidth={2} name={t('admin:campaign')} />
+              <Line type="monotone" dataKey="customers" stroke="#3b82f6" strokeWidth={2} name={t('admin:newCustomers')} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -367,125 +491,52 @@ export const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <InsightCard
             title={t('admin:occupancyRate')}
-            value={`${kpiData.occupancyRate}%`}
-            context={t('admin:toursAtCapacity')}
+            value={`${stats.occupancyRate}%`}
+            context={t('admin:ofUpcomingCapacity')}
             icon={MapPin}
             color="bg-info"
           />
           <InsightCard
-            title={t('admin:conversionRate')}
-            value={`${kpiData.conversionRate}%`}
-            context={t('admin:visitorConversion')}
-            icon={Target}
-            color="bg-success"
+            title={t('admin:cancellationRate')}
+            value={`${stats.cancellationRate ?? 0}%`}
+            context={t('admin:ofAllBookings')}
+            icon={AlertCircle}
+            color="bg-warning"
           />
           <InsightCard
             title={t('admin:avgBookingValue')}
-            value={`${(kpiData.averageBookingValue / 1000).toFixed(1)}K SEK`}
-            context={t('admin:higherThanAverage')}
+            value={formatSEK(stats.averageBookingValue ?? 0)}
+            context={t('admin:perActiveBooking')}
             icon={CreditCard}
             color="bg-purple-500"
           />
           <InsightCard
             title={t('admin:paymentSuccessRate')}
-            value={`${kpiData.paymentSuccessRate}%`}
-            context={t('admin:excellentRate').replace('{count}', kpiData.pendingBookings.toString())}
+            value={`${stats.paymentSuccessRate ?? 0}%`}
+            context={t('admin:excellentRate').replace('{count}', (stats.pendingPayments ?? 0).toString())}
             icon={CheckCircle}
             color="bg-green-500"
           />
         </div>
       </div>
 
-      {/* System Health & Integrations */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-1">{t('admin:systemHealthIntegrations')}</h3>
-        <p className="text-sm text-gray-500 mb-6">{t('admin:criticalServicesStatus')}</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="font-medium text-gray-900">{t('admin:fortnoxAccounting')}</p>
-              </div>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">{t('admin:statusActive')}</span>
-            </div>
-            <p className="text-xs text-gray-600">{t('admin:lastSync')}: 10 {t('admin:minsAgo')}</p>
-            <p className="text-xs text-gray-500 mt-2">{t('admin:syncingInvoices')}</p>
-          </div>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="font-medium text-gray-900">{t('admin:stripePayments')}</p>
-              </div>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">{t('admin:live')}</span>
-            </div>
-            <p className="text-xs text-gray-600">{t('admin:operational')} • 0 {t('admin:failedTransactions')}</p>
-            <p className="text-xs text-gray-500 mt-2">{t('admin:processingBookings')}</p>
-          </div>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="font-medium text-gray-900">{t('admin:sendgridEmail')}</p>
-              </div>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">{t('admin:statusActive')}</span>
-            </div>
-            <p className="text-xs text-gray-600">98.5% {t('admin:emailDeliveryRate')}</p>
-            <p className="text-xs text-gray-500 mt-2">1,240 {t('admin:emailsSent')}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Actionable Widgets */}
+      {/* Quick Actions */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Zap className="h-5 w-5" style={{ color: '#ff1b00' }} />
-          Quick Actions
+          {t('admin:quickActions')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <ActionWidget
-            title={t('admin:bookingManagement')}
-            description={t('admin:bookingManagementDesc')}
-            icon={Calendar}
-            color="bg-primary"
-            actions={[t('admin:viewBookings'), t('admin:newBooking'), t('admin:calendar')]}
-          />
-          <ActionWidget
-            title={t('admin:customerManagement')}
-            description={t('admin:customerManagementDesc')}
-            icon={Users}
-            color="bg-success"
-            actions={[t('admin:allCustomers'), t('admin:groups'), t('admin:communications')]}
-          />
-          <ActionWidget
-            title={t('admin:financialOperations')}
-            description={t('admin:financialOperationsDesc')}
-            icon={CreditCard}
-            color="bg-emerald-500"
-            actions={[t('admin:invoices'), t('admin:payments'), t('admin:reports')]}
-          />
-          <ActionWidget
-            title={t('admin:tourManagement')}
-            description={t('admin:tourManagementDesc')}
-            icon={MapPin}
-            color="bg-purple-500"
-            actions={[t('admin:viewTours'), t('admin:addTour'), t('admin:availability')]}
-          />
-          <ActionWidget
-            title={t('admin:marketingCampaigns')}
-            description={t('admin:marketingCampaignsDesc')}
-            icon={BarChart3}
-            color="bg-orange-500"
-            actions={[t('admin:campaigns'), t('admin:promoCodes'), t('admin:analytics')]}
-          />
-          <ActionWidget
-            title={t('admin:systemAdministration')}
-            description={t('admin:systemAdministrationDesc')}
-            icon={Shield}
-            color="bg-red-500"
-            actions={[t('admin:users'), t('admin:settings'), t('admin:logs')]}
-          />
+          {quickActionGroups.map((group) => (
+            <ActionWidget
+              key={group.title}
+              title={group.title}
+              description={group.description}
+              icon={group.icon}
+              color={group.color}
+              actions={group.actions}
+            />
+          ))}
         </div>
       </div>
 
@@ -493,33 +544,27 @@ export const AdminDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard 
           title={t('admin:totalCustomers')}
-          value={kpiData.totalCustomers.toLocaleString()}
-          change={9.2}
-          trend="up"
+          value={(stats.totalCustomers ?? 0).toLocaleString()}
           icon={Users} 
           color="bg-cyan-500" 
         />
         <StatCard 
           title={t('admin:newThisMonth')} 
-          value={kpiData.newCustomersThisMonth}
-          change={12.8}
-          trend="up"
+          value={stats.newCustomersThisMonth ?? 0}
+          change={customersGrowth}
+          trend={customersGrowth >= 0 ? 'up' : 'down'}
           icon={UserPlus} 
           color="bg-info" 
         />
         <StatCard 
           title={t('admin:repeatRate')}
-          value={`${kpiData.repeatCustomerRate}%`}
-          change={3.5}
-          trend="up"
+          value={`${stats.repeatCustomerRate ?? 0}%`}
           icon={RefreshCw} 
           color="bg-success" 
         />
         <StatCard 
-          title="Avg Customer LTV" 
-          value={`${(kpiData.averageCustomerLTV / 1000).toFixed(1)}K SEK`}
-          change={6.3}
-          trend="up"
+          title={t('admin:avgCustomerLTV')} 
+          value={formatSEK(stats.averageCustomerLTV ?? 0)}
           icon={TrendingUp} 
           color="bg-warning" 
         />
@@ -527,7 +572,9 @@ export const AdminDashboard = () => {
 
       {/* Footer Info */}
       <div className="text-center text-sm text-gray-500 py-4 border-t border-gray-200">
-        <p>{t('admin:dashboardLastUpdated')}: {new Date().toLocaleTimeString('sv-SE')} • {t('admin:autoRefreshEnabled')}</p>
+        <p>
+          {t('admin:dashboardLastUpdated')}: {lastUpdated ? lastUpdated.toLocaleString('sv-SE') : '—'} • {t('admin:autoRefreshEnabled')}
+        </p>
       </div>
     </div>
   );
