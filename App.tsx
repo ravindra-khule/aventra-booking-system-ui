@@ -129,6 +129,11 @@ const AppRoutes = () => {
                     <AdminLayout><TourManagement /></AdminLayout>
                 </ProtectedRoute>
             } />
+            <Route path="/admin/tours/pricing" element={
+                <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                    <AdminLayout><PricingAvailability /></AdminLayout>
+                </ProtectedRoute>
+            } />
             <Route path="/admin/tours/addons" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><TourAddons /></AdminLayout>
@@ -139,6 +144,11 @@ const AppRoutes = () => {
             <Route path="/admin/finance/invoices" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><Invoices /></AdminLayout>
+                </ProtectedRoute>
+            } />
+            <Route path="/admin/finance/payments" element={
+                <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                    <AdminLayout><PaymentsRefunds /></AdminLayout>
                 </ProtectedRoute>
             } />
             <Route path="/admin/finance/reports" element={

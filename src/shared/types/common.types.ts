@@ -66,4 +66,31 @@ export interface DashboardStats {
   activeBookings: number;
   pendingInquiries: number;
   occupancyRate: number;
+  // Extended stats from dashboard-stats.php
+  totalTours?: number;
+  totalBookings?: number;
+  totalUsers?: number;
+  totalCustomers?: number;
+  monthlyRevenue?: number;
+  lastMonthRevenue?: number;
+  revenueGrowth?: number;
+  pendingBookings?: number;
+  confirmedBookings?: number;
+  completedBookings?: number;
+  cancelledBookings?: number;
+  bookingsThisMonth?: number;
+  newCustomersThisMonth?: number;
+  newCustomersLastMonth?: number;
+  pendingPayments?: number;
+  unpaidBalance?: number;
+  averageBookingValue?: number;
+  paymentSuccessRate?: number;
+  cancellationRate?: number;
+  repeatCustomerRate?: number;
+  averageCustomerLTV?: number;
+  lowAvailabilityTours?: number;
+  statusBreakdown?: Record<string, number>;
+  revenueByMonth?: { month: string; revenue: number; bookings: number }[];
+  customersByMonth?: { month: string; count: number }[];
+  generatedAt?: string;
 }

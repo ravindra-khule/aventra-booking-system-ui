@@ -583,8 +583,8 @@ export const BookingService = {
   getStats: async (): Promise<DashboardStats> => {
     try {
       // Define API_URL at runtime
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:8000') as string;
-      
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
+
       const token = localStorage.getItem('auth_token');
 
       const response = await fetch(`${API_URL}/api/dashboard-stats.php`, {
@@ -606,9 +606,35 @@ export const BookingService = {
       const stats = data.data?.summary || {};
       return {
         totalRevenue: stats.totalRevenue || 0,
-        activeBookings: stats.confirmedBookings || 0,
+        activeBookings: (stats.confirmedBookings || 0) + (stats.pendingBookings || 0),
         pendingInquiries: stats.pendingBookings || 0,
-        occupancyRate: 85 // Calculate from data if available
+        occupancyRate: stats.occupancyRate || 0,
+        totalTours: stats.totalTours || 0,
+        totalBookings: stats.totalBookings || 0,
+        totalUsers: stats.totalUsers || 0,
+        totalCustomers: stats.totalCustomers || 0,
+        monthlyRevenue: stats.monthlyRevenue || 0,
+        lastMonthRevenue: stats.lastMonthRevenue || 0,
+        revenueGrowth: stats.revenueGrowth || 0,
+        pendingBookings: stats.pendingBookings || 0,
+        confirmedBookings: stats.confirmedBookings || 0,
+        completedBookings: stats.completedBookings || 0,
+        cancelledBookings: stats.cancelledBookings || 0,
+        bookingsThisMonth: stats.bookingsThisMonth || 0,
+        newCustomersThisMonth: stats.newCustomersThisMonth || 0,
+        newCustomersLastMonth: stats.newCustomersLastMonth || 0,
+        pendingPayments: stats.pendingPayments || 0,
+        unpaidBalance: stats.unpaidBalance || 0,
+        averageBookingValue: stats.averageBookingValue || 0,
+        paymentSuccessRate: stats.paymentSuccessRate || 0,
+        cancellationRate: stats.cancellationRate || 0,
+        repeatCustomerRate: stats.repeatCustomerRate || 0,
+        averageCustomerLTV: stats.averageCustomerLTV || 0,
+        lowAvailabilityTours: stats.lowAvailabilityTours || 0,
+        statusBreakdown: data.data?.statusBreakdown || {},
+        revenueByMonth: data.data?.revenueByMonth || [],
+        customersByMonth: data.data?.customersByMonth || [],
+        generatedAt: data.data?.generatedAt
       } as DashboardStats;
     } catch (error) {
       console.error('Dashboard stats error:', error);
@@ -708,7 +734,33 @@ export const BookingService = {
       totalRevenue: 2540000,
       activeBookings: 45,
       pendingInquiries: 12,
-      occupancyRate: 85
+      occupancyRate: 85,
+      totalTours: 0,
+      totalBookings: 0,
+      totalUsers: 0,
+      totalCustomers: 0,
+      monthlyRevenue: 0,
+      lastMonthRevenue: 0,
+      revenueGrowth: 0,
+      pendingBookings: 12,
+      confirmedBookings: 45,
+      completedBookings: 0,
+      cancelledBookings: 0,
+      bookingsThisMonth: 0,
+      newCustomersThisMonth: 0,
+      newCustomersLastMonth: 0,
+      pendingPayments: 0,
+      unpaidBalance: 0,
+      averageBookingValue: 0,
+      paymentSuccessRate: 0,
+      cancellationRate: 0,
+      repeatCustomerRate: 0,
+      averageCustomerLTV: 0,
+      lowAvailabilityTours: 0,
+      statusBreakdown: {},
+      revenueByMonth: [],
+      customersByMonth: [],
+      generatedAt: new Date().toISOString()
     };
   }
 };
