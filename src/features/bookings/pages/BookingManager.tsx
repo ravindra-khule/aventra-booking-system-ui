@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { StripeWrapper } from '../components/StripeWrapper';
 import { Booking, BookingStatus, PaymentStatus, PayerDetails, Traveler } from '../types/booking.types';
 import { BookingService } from '../services/booking.service';
+import { validateBookingEdit } from '../services/booking.validation';
 import { Search, Filter, MoreHorizontal, Download, Eye, X, CreditCard, User, Users, Calendar, Edit2, Save, Trash, Mail, CheckSquare, Square } from 'lucide-react';
 import { Button, Badge, Input, Select } from '../../../shared/components/ui';
 import { BulkActionsToolbar, BulkAction } from '../../../shared/components/BulkActionsToolbar';
@@ -397,6 +398,11 @@ export const BookingManager = () => {
      const remainingAmount = formData.totalAmount - formData.paidAmount;
 
      const handleSave = () => {
+        const validationError = validateBookingEdit(formData);
+        if (validationError) {
+           toast.error(validationError);
+           return;
+        }
         onUpdate(formData);
         setIsEditing(false);
      };

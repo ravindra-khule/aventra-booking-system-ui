@@ -155,5 +155,21 @@
     "removePromoCode": "Ta bort kampanjkod",
     "enterCode": "Vänligen ange en kampanjkod",
     "validationFailed": "Misslyckades med att validera kampanjkod"
+  },
+  "validation": {
+    "required": "Detta fält är obligatoriskt",
+    "invalidName": "Ange ett giltigt namn (endast bokstäver)",
+    "invalidEmail": "Ange en giltig e-postadress",
+    "invalidPhone": "Ange ett giltigt telefonnummer",
+    "invalidZip": "Ange ett giltigt postnummer",
+    "invalidSsn": "Ange ett giltigt födelsedatum / personnummer (ÅÅÅÅMMDD)",
+    "invalidDate": "Ange ett giltigt datum",
+    "dateInPast": "Resedatumet kan inte vara i det förflutna",
+    "tooLong": "Värdet är för långt",
+    "minParticipants": "Minst 1 resenär krävs",
+    "tooManyParticipants": "Maximalt 10 resenärer per bokning",
+    "exceedsCapacity": "Gruppstorleken överstiger turens maxkapacitet",
+    "exceedsAvailability": "Det finns inte tillräckligt många platser kvar på denna tur",
+    "fixErrorsBelow": "Vänligen korrigera de markerade fälten nedan innan du fortsätter"
   }
 }
