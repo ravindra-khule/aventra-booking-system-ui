@@ -7,7 +7,7 @@ import { Menu, X, User as UserIcon, LogOut, Globe } from 'lucide-react';
 import { DemoLoginModal } from './DemoLoginModal';
 
 export const Layout = ({ children }: { children?: React.ReactNode }) => {
-  const { user, logout, login } = useAuth();
+  const { user, logout, login, isAdmin } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -66,6 +66,11 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                      {t('nav:myPages')}
                    </Link>
                 )}
+                {isAdmin && (
+                  <Link to="/admin" className="border-transparent hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" style={{ color: '#6b7280' }}>
+                    {t('nav:admin')}
+                  </Link>
+                )}
               </div>
             </div>
             
@@ -121,6 +126,11 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
               {user?.role === UserRole.CUSTOMER && (
                 <Link to="/my-bookings" className="border-transparent border-l-4 block pl-3 pr-4 py-2 text-base font-medium hover:bg-gray-50" style={{ color: '#6b7280' }}>
                   {t('nav:myPages')}
+                </Link>
+              )}
+              {isAdmin && (
+                <Link to="/admin" className="border-transparent border-l-4 block pl-3 pr-4 py-2 text-base font-medium hover:bg-gray-50" style={{ color: '#6b7280' }}>
+                  {t('nav:admin')}
                 </Link>
               )}
               <button 

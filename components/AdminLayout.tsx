@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
@@ -66,6 +66,14 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
 
               {/* Right Side - User Actions */}
               <div className="flex items-center gap-3">
+                {/* Back to Tours Link */}
+                <Link
+                  to="/"
+                  className="btn btn-secondary-dark btn-sm"
+                >
+                  {t('nav:tours')}
+                </Link>
+
                 {/* Language Toggle */}
                 <button
                   onClick={toggleLanguage}
