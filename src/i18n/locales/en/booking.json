@@ -155,5 +155,21 @@
     "removePromoCode": "Remove promo code",
     "enterCode": "Please enter a promo code",
     "validationFailed": "Failed to validate promo code"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidName": "Enter a valid name (letters only)",
+    "invalidEmail": "Enter a valid email address",
+    "invalidPhone": "Enter a valid phone number",
+    "invalidZip": "Enter a valid postal code",
+    "invalidSsn": "Enter a valid date of birth / SSN (YYYYMMDD)",
+    "invalidDate": "Enter a valid date",
+    "dateInPast": "Trip date cannot be in the past",
+    "tooLong": "Value is too long",
+    "minParticipants": "At least 1 traveler is required",
+    "tooManyParticipants": "Maximum 10 travelers per booking",
+    "exceedsCapacity": "Group size exceeds the tour's maximum capacity",
+    "exceedsAvailability": "Not enough spots left on this tour",
+    "fixErrorsBelow": "Please fix the highlighted fields below before continuing"
   }
 }
