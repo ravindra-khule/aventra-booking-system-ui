@@ -285,6 +285,7 @@
   "showingEntries": "Showing {count} of {total} entries",
   "waitlistUpdated": "Waitlist entry updated successfully!",
   "waitlistUpdateFailed": "Failed to update waitlist entry",
+  "waitlistLoadFailed": "Failed to load waitlist entries",
   "selectAllWaitlist": "Select all",
   "deselectAllWaitlist": "Deselect all",
   "customer": "Customer",
