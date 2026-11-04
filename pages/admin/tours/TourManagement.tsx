@@ -205,7 +205,7 @@ export const TourManagement: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <Button 
-              variant="secondary" 
+              variant="secondary-dark" 
               icon={<Download className="h-4 w-4" />}
               onClick={() => alert('Export functionality to be implemented')}
             >

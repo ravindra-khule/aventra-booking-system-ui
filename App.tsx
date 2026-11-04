@@ -32,6 +32,7 @@ import { StripePaymentSettings } from './pages/admin/settings/StripeSettings';
 import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './src/shared/context/ToastContext';
+import { ensureCurrencyLoaded } from './src/shared/services/currency.service';
 import { UserRole } from './types';
 
 // Scrolls the window back to the top whenever the route changes.

@@ -1,5 +1,6 @@
 /**
  * Customer Group Service - Group management and business logic
+ * Calls real backend APIs for group CRUD operations
  */
 
 import {
@@ -8,75 +9,67 @@ import {
   BulkActionRequest,
   GroupExportData,
   SmartGroupRule,
-  GroupPricingRule,
 } from '../types/group.types';
 import { Customer } from '../types/customer.types';
-import { Booking } from '../../bookings/types/booking.types';
-import { delay } from '../../../shared/utils/api.utils';
 
-// Mock data store
-let MOCK_GROUPS: CustomerGroup[] = [
-  {
-    id: 'g-001',
-    name: 'VIP Customers',
-    description: 'High-value customers with premium bookings',
-    type: 'manual',
-    memberIds: ['c-001', 'c-002'],
-    memberCount: 2,
-    pricingRules: [
-      {
-        id: 'pr-001',
-        tourId: 't-001',
-        discountType: 'percentage',
-        discountValue: 15,
-        description: 'VIP discount on premium tours',
-      },
-    ],
-    defaultDiscount: { type: 'percentage', value: 10 },
-    tags: ['premium', 'high-value'],
-    color: '#FFD700',
-    createdDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedDate: new Date().toISOString(),
-    createdBy: 'admin',
-    isActive: true,
-    stats: {
-      totalRevenue: 45000,
-      avgBookingValue: 2500,
-      avgBookingsPerMember: 5.5,
-      lastActivityDate: new Date().toISOString(),
-    },
-  },
-  {
-    id: 'g-002',
-    name: 'Frequent Travelers',
-    description: 'Customers with 3+ bookings in the last year',
-    type: 'smart',
-    memberIds: ['c-001', 'c-003', 'c-004'],
-    memberCount: 3,
-    smartRules: [
-      {
-        id: 'r-001',
-        field: 'totalBookings',
-        operator: 'gte',
-        value: 3,
-      },
-    ],
-    pricingRules: [],
-    defaultDiscount: { type: 'percentage', value: 8 },
-    tags: ['active', 'loyal'],
-    color: '#4CAF50',
-    createdDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedDate: new Date().toISOString(),
-    createdBy: 'admin',
-    isActive: true,
-    stats: {
-      totalRevenue: 72000,
-      avgBookingValue: 1800,
-      avgBookingsPerMember: 4.2,
-      lastActivityDate: new Date().toISOString(),
-    },
-  },
-];
+const API_BASE = () => (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
+
+const parseJson = <T>(value: T | string | null | undefined, fallback: T): T => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed === null || parsed === undefined ? fallback : parsed;
+    } catch {
+      return fallback;
+    }
+  }
+  return value;
+};
+
+/**
+ * Map API response (snake_case) to camelCase CustomerGroup type
+ */
+const mapGroupFromApi = (data: any): CustomerGroup => {
+  const memberIds = parseJson<string[]>(data.member_ids ?? data.memberIds, []);
+  return {
+    id: String(data.id),
+    name: data.name,
+    description: data.description || '',
+    type: data.type === 'smart' ? 'smart' : 'manual',
+    memberIds: memberIds.map(String),
+    memberCount: data.member_count ?? memberIds.length,
+    smartRules: parseJson(data.smart_rules ?? data.smartRules, undefined as any) || undefined,
+    pricingRules: parseJson(data.pricing_rules ?? data.pricingRules, []),
+    defaultDiscount: parseJson(data.default_discount ?? data.defaultDiscount, undefined as any) || undefined,
+    tags: parseJson<string[]>(data.tags, []),
+    color: data.color || undefined,
+    createdDate: data.created_at || data.createdDate || new Date().toISOString(),
+    updatedDate: data.updated_at || data.updatedDate || new Date().toISOString(),
+    createdBy: data.created_by || data.createdBy || 'admin',
+    isActive: data.is_active !== undefined ? Boolean(data.is_active) : (data.isActive !== undefined ? Boolean(data.isActive) : true),
+    stats: parseJson(data.stats, {
+      totalRevenue: 0,
+      avgBookingValue: 0,
+      avgBookingsPerMember: 0,
+    }),
+  };
+};
+
+const request = async (path: string, options: RequestInit = {}): Promise<any> => {
+  const response = await fetch(`${API_BASE()}/api/${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok || result.success === false) {
+    throw new Error(result.error || `Request failed: ${response.status} ${response.statusText}`);
+  }
+
+  return result;
+};
 
 /**
  * Evaluate if a customer matches smart group rules
@@ -124,77 +117,94 @@ export const CustomerGroupService = {
    * Get all customer groups
    */
   getAll: async (): Promise<CustomerGroup[]> => {
-    await delay(400);
-    return [...MOCK_GROUPS];
+    try {
+      const result = await request('customer-groups-list.php');
+      return (result.data || []).map(mapGroupFromApi);
+    } catch (error) {
+      console.error('Error fetching customer groups:', error);
+      return [];
+    }
   },
 
   /**
    * Get a specific group by ID
    */
   getById: async (id: string): Promise<CustomerGroup | undefined> => {
-    await delay(300);
-    return MOCK_GROUPS.find((g) => g.id === id);
+    try {
+      const result = await request(`customer-groups-get.php?id=${encodeURIComponent(id)}`);
+      return result.data ? mapGroupFromApi(result.data) : undefined;
+    } catch (error) {
+      console.error('Error fetching group:', error);
+      return undefined;
+    }
   },
 
   /**
    * Create a new customer group
    */
   create: async (data: Omit<CustomerGroup, 'id' | 'createdDate' | 'updatedDate' | 'stats' | 'createdBy'>): Promise<CustomerGroup> => {
-    await delay(500);
-
-    const newGroup: CustomerGroup = {
-      ...data,
-      id: `g-${Date.now()}`,
-      createdDate: new Date().toISOString(),
-      updatedDate: new Date().toISOString(),
-      createdBy: 'admin',
-      stats: {
-        totalRevenue: 0,
-        avgBookingValue: 0,
-        avgBookingsPerMember: 0,
-      },
+    const payload = {
+      name: data.name,
+      description: data.description,
+      type: data.type,
+      memberIds: data.memberIds || [],
+      smartRules: data.smartRules,
+      pricingRules: data.pricingRules || [],
+      defaultDiscount: data.defaultDiscount,
+      tags: data.tags || [],
+      color: data.color,
+      isActive: data.isActive !== undefined ? data.isActive : true,
     };
 
-    MOCK_GROUPS.push(newGroup);
-    return newGroup;
+    const result = await request('customer-groups-create.php', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+
+    return mapGroupFromApi(result.data);
   },
 
   /**
    * Update an existing group
    */
   update: async (id: string, updates: Partial<Omit<CustomerGroup, 'id' | 'createdDate'>>): Promise<CustomerGroup> => {
-    await delay(400);
+    const payload: any = { id };
 
-    const groupIndex = MOCK_GROUPS.findIndex((g) => g.id === id);
-    if (groupIndex === -1) throw new Error('Group not found');
+    if (updates.name !== undefined) payload.name = updates.name;
+    if (updates.description !== undefined) payload.description = updates.description;
+    if (updates.type !== undefined) payload.type = updates.type;
+    if (updates.memberIds !== undefined) payload.memberIds = updates.memberIds;
+    if (updates.smartRules !== undefined) payload.smartRules = updates.smartRules;
+    if (updates.pricingRules !== undefined) payload.pricingRules = updates.pricingRules;
+    if (updates.defaultDiscount !== undefined) payload.defaultDiscount = updates.defaultDiscount;
+    if (updates.tags !== undefined) payload.tags = updates.tags;
+    if (updates.color !== undefined) payload.color = updates.color;
+    if (updates.isActive !== undefined) payload.isActive = updates.isActive;
+    if (updates.createdBy !== undefined) payload.createdBy = updates.createdBy;
 
-    const updated: CustomerGroup = {
-      ...MOCK_GROUPS[groupIndex],
-      ...updates,
-      id: MOCK_GROUPS[groupIndex].id,
-      createdDate: MOCK_GROUPS[groupIndex].createdDate,
-      updatedDate: new Date().toISOString(),
-    };
+    const result = await request('customer-groups-update.php', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
 
-    MOCK_GROUPS[groupIndex] = updated;
-    return updated;
+    return mapGroupFromApi(result.data);
   },
 
   /**
    * Delete a group
    */
   delete: async (id: string): Promise<void> => {
-    await delay(300);
-    MOCK_GROUPS = MOCK_GROUPS.filter((g) => g.id !== id);
+    await request('customer-groups-delete.php', {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+    });
   },
 
   /**
    * Add members to a group
    */
   addMembers: async (groupId: string, memberIds: string[]): Promise<CustomerGroup> => {
-    await delay(400);
-
-    const group = MOCK_GROUPS.find((g) => g.id === groupId);
+    const group = await CustomerGroupService.getById(groupId);
     if (!group) throw new Error('Group not found');
 
     const newMemberIds = Array.from(new Set([...group.memberIds, ...memberIds]));
@@ -209,9 +219,7 @@ export const CustomerGroupService = {
    * Remove members from a group
    */
   removeMembers: async (groupId: string, memberIds: string[]): Promise<CustomerGroup> => {
-    await delay(400);
-
-    const group = MOCK_GROUPS.find((g) => g.id === groupId);
+    const group = await CustomerGroupService.getById(groupId);
     if (!group) throw new Error('Group not found');
 
     const newMemberIds = group.memberIds.filter((id) => !memberIds.includes(id));
@@ -226,9 +234,7 @@ export const CustomerGroupService = {
    * Apply smart segmentation based on rules
    */
   applySmartSegmentation: async (groupId: string): Promise<CustomerGroup> => {
-    await delay(600);
-
-    const group = MOCK_GROUPS.find((g) => g.id === groupId);
+    const group = await CustomerGroupService.getById(groupId);
     if (!group || !group.smartRules) throw new Error('Group not found or not a smart group');
 
     // Import customer service to get all customers
@@ -250,26 +256,24 @@ export const CustomerGroupService = {
    * Get group analytics
    */
   getAnalytics: async (groupId: string): Promise<GroupAnalytics> => {
-    await delay(500);
-
-    const group = MOCK_GROUPS.find((g) => g.id === groupId);
+    const group = await CustomerGroupService.getById(groupId);
     if (!group) throw new Error('Group not found');
 
     // Import services to get related data
     const { CustomerService } = await import('./customer.service');
     const { BookingService } = await import('../../bookings/services/booking.service');
 
-    const members = (await Promise.all(group.memberIds.map((id) => CustomerService.getById(id)))).filter(
-      (m) => m !== undefined
-    ) as Customer[];
+    const customers = await CustomerService.getAll();
+    const members = customers.filter((c) => group.memberIds.includes(c.id));
 
     const allBookings = await BookingService.getAll();
-    const groupBookings = allBookings.filter((b) => group.memberIds.includes(b.customerId));
+    const groupBookings = allBookings.filter((b) => group.memberIds.includes(String(b.customerId)));
 
-    const totalRevenue = group.stats.totalRevenue;
+    const totalRevenue = groupBookings.reduce((sum, b: any) => sum + (b.totalAmount || b.total_amount || 0), 0);
     const bookingCount = groupBookings.length;
     const avgBookingValue = bookingCount > 0 ? totalRevenue / bookingCount : 0;
     const avgRevenuePerMember = group.memberCount > 0 ? totalRevenue / group.memberCount : 0;
+    const avgBookingsPerMember = group.memberCount > 0 ? bookingCount / group.memberCount : 0;
 
     return {
       groupId,
@@ -279,17 +283,11 @@ export const CustomerGroupService = {
       avgRevenuePerMember,
       bookingCount,
       avgBookingValue,
-      conversionRate: (bookingCount / group.memberCount) * 100,
+      conversionRate: group.memberCount > 0 ? (members.length / group.memberCount) * 100 : 0,
       customerLifetimeValue: avgRevenuePerMember,
-      churnRate: 5, // Mock value
-      topDestinations: [
-        { tourId: 't-001', bookingCount: 12, revenue: 24000 },
-        { tourId: 't-002', bookingCount: 8, revenue: 16000 },
-        { tourId: 't-003', bookingCount: 5, revenue: 10000 },
-      ],
+      churnRate: 0,
+      topDestinations: [],
       growthTrend: [
-        { date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], memberCount: group.memberCount - 5, revenue: totalRevenue - 5000 },
-        { date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], memberCount: group.memberCount - 2, revenue: totalRevenue - 2000 },
         { date: new Date().toISOString().split('T')[0], memberCount: group.memberCount, revenue: totalRevenue },
       ],
     };
@@ -299,15 +297,12 @@ export const CustomerGroupService = {
    * Export group data
    */
   exportGroup: async (groupId: string): Promise<GroupExportData> => {
-    await delay(400);
-
-    const group = MOCK_GROUPS.find((g) => g.id === groupId);
+    const group = await CustomerGroupService.getById(groupId);
     if (!group) throw new Error('Group not found');
 
     const { CustomerService } = await import('./customer.service');
-    const members = (await Promise.all(group.memberIds.map((id) => CustomerService.getById(id)))).filter(
-      (m) => m !== undefined
-    ) as Customer[];
+    const customers = await CustomerService.getAll();
+    const members = customers.filter((c) => group.memberIds.includes(c.id));
 
     return {
       groupId: group.id,
@@ -331,33 +326,35 @@ export const CustomerGroupService = {
    * Perform bulk actions on groups
    */
   bulkAction: async (request: BulkActionRequest): Promise<void> => {
-    await delay(500);
-
     for (const groupId of request.groupIds) {
-      const group = MOCK_GROUPS.find((g) => g.id === groupId);
+      const group = await CustomerGroupService.getById(groupId);
       if (!group) continue;
 
       switch (request.action) {
         case 'activate':
-          group.isActive = true;
+          await CustomerGroupService.update(groupId, { isActive: true });
           break;
         case 'deactivate':
-          group.isActive = false;
+          await CustomerGroupService.update(groupId, { isActive: false });
           break;
         case 'delete':
-          MOCK_GROUPS = MOCK_GROUPS.filter((g) => g.id !== groupId);
+          await CustomerGroupService.delete(groupId);
           break;
         case 'addTag':
           if (request.payload?.tag && !group.tags.includes(request.payload.tag)) {
-            group.tags.push(request.payload.tag);
+            await CustomerGroupService.update(groupId, {
+              tags: [...group.tags, request.payload.tag],
+            });
           }
           break;
         case 'applyDiscount':
-          if (request.payload?.discountType && request.payload?.discountValue !== undefined) {
-            group.defaultDiscount = {
-              type: request.payload.discountType,
-              value: request.payload.discountValue,
-            };
+          if (request.payload?.discountType && request.payload.discountValue !== undefined) {
+            await CustomerGroupService.update(groupId, {
+              defaultDiscount: {
+                type: request.payload.discountType,
+                value: request.payload.discountValue,
+              },
+            });
           }
           break;
       }
@@ -368,10 +365,9 @@ export const CustomerGroupService = {
    * Search groups by criteria
    */
   search: async (query: string): Promise<CustomerGroup[]> => {
-    await delay(300);
-
+    const groups = await CustomerGroupService.getAll();
     const lowerQuery = query.toLowerCase();
-    return MOCK_GROUPS.filter(
+    return groups.filter(
       (g) =>
         g.name.toLowerCase().includes(lowerQuery) ||
         g.description?.toLowerCase().includes(lowerQuery) ||

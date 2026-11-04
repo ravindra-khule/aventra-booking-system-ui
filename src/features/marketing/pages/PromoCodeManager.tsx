@@ -340,6 +340,7 @@ interface PromoCodeModalProps {
 }
 
 const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClose, onSave, isCreating }) => {
+  const currency = useCurrency();
   const [formData, setFormData] = useState<Partial<PromoCode>>({
     code: promoCode?.code || '',
     description: promoCode?.description || '',

@@ -19,7 +19,13 @@ export const CustomerManager = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customerBookings, setCustomerBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
+  // Bulk email modal state
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+
   // Bulk selection hook
   const bulkSelection = useBulkSelection(filteredCustomers);
 
@@ -71,6 +77,92 @@ export const CustomerManager = () => {
     } catch (error) {
       console.error('Failed to update customer', error);
       alert(t('admin:failedToUpdateCustomer'));
+    }
+  };
+
+  const handleExportSelected = () => {
+    const selected = bulkSelection.getSelectedItems();
+    if (selected.length === 0) return;
+
+    const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'City', 'Country', 'Total Bookings', 'Total Spent (SEK)', 'Last Booking'];
+    const rows = selected.map(c => [
+      c.id,
+      c.firstName,
+      c.lastName,
+      c.email,
+      c.phone,
+      c.city,
+      c.country,
+      String(c.totalBookings),
+      String(c.totalSpent),
+      c.lastBookingDate ? new Date(c.lastBookingDate).toLocaleDateString() : '',
+    ]);
+
+    const csv = [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customers_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleSendBulkEmail = async () => {
+    const selected = bulkSelection.getSelectedItems();
+    if (selected.length === 0) {
+      alert(t('admin:selectAtLeastOneCustomer'));
+      return;
+    }
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      alert(t('admin:enterSubjectAndMessage'));
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const API_BASE = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
+      const emails = Array.from(new Set(selected.map(c => c.email).filter(Boolean)));
+
+      const results = await Promise.allSettled(
+        emails.map(email =>
+          fetch(`${API_BASE}/api/emails/send.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: email,
+              subject: emailSubject,
+              data: { message: emailMessage },
+            }),
+          }).then(async res => {
+            const json = await res.json().catch(() => ({}));
+            if (!res.ok || !json.success) throw new Error(json.error || `Failed for ${email}`);
+            return json;
+          })
+        )
+      );
+
+      const failed = results.filter(r => r.status === 'rejected').length;
+      const sent = results.length - failed;
+
+      if (failed === 0) {
+        alert(t('admin:bulkEmailSentSuccess').replace('{count}', String(sent)));
+      } else {
+        alert(t('admin:bulkEmailSentPartial').replace('{sent}', String(sent)).replace('{failed}', String(failed)));
+      }
+
+      setShowEmailModal(false);
+      setEmailSubject('');
+      setEmailMessage('');
+      bulkSelection.clearSelection();
+    } catch (error) {
+      console.error('Failed to send bulk email', error);
+      alert(t('admin:bulkEmailSendFailed'));
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -443,14 +535,14 @@ export const CustomerManager = () => {
                 label: t('admin:sendBulkEmail'),
                 icon: <Mail className="h-4 w-4" />,
                 variant: 'primary',
-                onClick: () => console.log('Send email to selected customers')
+                onClick: () => setShowEmailModal(true)
               },
               {
                 id: 'export',
                 label: t('admin:exportCustomers'),
                 icon: <ShoppingBag className="h-4 w-4" />,
-                variant: 'secondary',
-                onClick: () => console.log('Export selected customers')
+                variant: 'secondary-dark',
+                onClick: handleExportSelected
               }
             ]}
             onClearSelection={() => bulkSelection.clearSelection()}
@@ -630,6 +722,67 @@ export const CustomerManager = () => {
           }}
           onUpdate={handleUpdateCustomer}
         />
+      )}
+
+      {/* Bulk Email Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-500 bg-opacity-75" onClick={() => !sendingEmail && setShowEmailModal(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full">
+            <div className="px-6 py-4 border-b flex justify-between items-center">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {t('admin:sendEmailToCustomers').replace('{count}', String(new Set(bulkSelection.getSelectedItems().map(c => c.email).filter(Boolean)).size))}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {t('admin:customersSelected').replace('{count}', String(bulkSelection.selectedCount))}
+                </p>
+              </div>
+              <button onClick={() => setShowEmailModal(false)} disabled={sendingEmail} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin:emailSubject')}</label>
+                <input
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder={t('admin:emailSubjectPlaceholder')}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin:emailMessage')}</label>
+                <textarea
+                  value={emailMessage}
+                  onChange={(e) => setEmailMessage(e.target.value)}
+                  placeholder={t('admin:emailMessagePlaceholder')}
+                  rows={6}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t bg-gray-50 rounded-b-xl flex justify-end gap-3">
+              <button
+                onClick={() => setShowEmailModal(false)}
+                disabled={sendingEmail}
+                className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+              >
+                {t('admin:cancel')}
+              </button>
+              <button
+                onClick={handleSendBulkEmail}
+                disabled={sendingEmail}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                {sendingEmail ? t('admin:sendingEmails') : t('admin:sendEmail')}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,8 +1,7 @@
 /**
  * Communication Service
  * Handles communication logs, filtering, searching, and analytics
- * 
- * Mock data is used for UI-only development
+ * Calls real backend APIs for persistence
  */
 
 import {
@@ -13,8 +12,77 @@ import {
   CommunicationTimelineEntry,
 } from '../types/communication.types';
 
+const API_BASE = () => (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
+
+const parseJson = <T>(value: T | string | null | undefined, fallback: T): T => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed === null || parsed === undefined ? fallback : parsed;
+    } catch {
+      return fallback;
+    }
+  }
+  return value;
+};
+
 /**
- * Mock Communication Templates
+ * Map API response (snake_case) to camelCase CommunicationLog type
+ */
+const mapCommunicationFromApi = (data: any): CommunicationLog => ({
+  id: String(data.id),
+  customerId: data.customer_id !== null && data.customer_id !== undefined
+    ? String(data.customer_id)
+    : String(data.customerId ?? ''),
+  type: data.type,
+  direction: data.direction,
+  status: data.status,
+  subject: data.subject || undefined,
+  content: data.content || '',
+  sender: {
+    name: data.sender_name ?? data.sender?.name ?? '',
+    email: data.sender_email ?? data.sender?.email ?? undefined,
+    phone: data.sender_phone ?? data.sender?.phone ?? undefined,
+    type: data.sender_type ?? data.sender?.type ?? 'staff',
+  },
+  recipient: {
+    name: data.recipient_name ?? data.recipient?.name ?? '',
+    email: data.recipient_email ?? data.recipient?.email ?? undefined,
+    phone: data.recipient_phone ?? data.recipient?.phone ?? undefined,
+  },
+  timestamp: data.sent_at || data.timestamp || data.created_at || new Date().toISOString(),
+  sentAt: data.sent_at || data.sentAt || data.created_at || new Date().toISOString(),
+  deliveredAt: data.delivered_at || data.deliveredAt || undefined,
+  readAt: data.read_at || data.readAt || undefined,
+  responseTime: data.response_time ?? data.responseTime ?? undefined,
+  templateId: data.template_id || data.templateId || undefined,
+  templateName: data.template_name || data.templateName || undefined,
+  internalNotes: data.internal_notes || data.internalNotes || undefined,
+  attachments: parseJson(data.attachments, []),
+  tags: parseJson(data.tags, []),
+  relatedBookingId: data.related_booking_id || data.relatedBookingId || undefined,
+  relatedBookingReference: data.related_booking_reference || data.relatedBookingReference || undefined,
+  metadata: parseJson(data.metadata, undefined as any) || undefined,
+});
+
+const request = async (path: string, options: RequestInit = {}): Promise<any> => {
+  const response = await fetch(`${API_BASE()}/api/${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok || result.success === false) {
+    throw new Error(result.error || `Request failed: ${response.status} ${response.statusText}`);
+  }
+
+  return result;
+};
+
+/**
+ * Communication Templates (static reference data)
  */
 const MOCK_TEMPLATES: CommunicationTemplate[] = [
   {
@@ -51,261 +119,59 @@ const MOCK_TEMPLATES: CommunicationTemplate[] = [
   },
 ];
 
-/**
- * Mock Communication Logs
- */
-const MOCK_COMMUNICATIONS: CommunicationLog[] = [
-  {
-    id: 'comm-1',
-    customerId: 'cust-1',
-    type: 'email',
-    direction: 'outbound',
-    status: 'read',
-    subject: 'Your Arctic Adventure Tour Confirmation',
-    content:
-      'Dear Anna, your Arctic Adventure tour starting on March 15, 2025 has been confirmed. Your booking reference is BOOK-2025-001. Please review the attached itinerary and prepare for an unforgettable experience!',
-    sender: {
-      name: 'Swett Support Team',
-      email: 'support@swett.com',
-      type: 'staff',
-    },
-    recipient: {
-      name: 'Anna Johnson',
-      email: 'anna.johnson@email.com',
-    },
-    timestamp: '2024-12-10T09:30:00Z',
-    sentAt: '2024-12-10T09:30:00Z',
-    deliveredAt: '2024-12-10T09:31:00Z',
-    readAt: '2024-12-10T10:15:00Z',
-    responseTime: 45,
-    templateId: 'tpl-1',
-    templateName: 'Pre-Tour Confirmation',
-    attachments: [
-      {
-        id: 'att-1',
-        fileName: 'Arctic_Adventure_Itinerary.pdf',
-        fileSize: 1024000,
-        fileType: 'application/pdf',
-        uploadedAt: '2024-12-10T09:30:00Z',
-      },
-    ],
-    tags: ['booking-confirmation', 'important', 'attachment'],
-    relatedBookingId: 'book-1',
-    relatedBookingReference: 'BOOK-2025-001',
-  },
-  {
-    id: 'comm-2',
-    customerId: 'cust-1',
-    type: 'sms',
-    direction: 'outbound',
-    status: 'delivered',
-    content: 'Hi Anna! Quick reminder: Your Arctic Adventure tour starts in 5 days (March 15). Reply CONFIRM to acknowledge.',
-    sender: {
-      name: 'Swett Notifications',
-      phone: '+46701234567',
-      type: 'staff',
-    },
-    recipient: {
-      name: 'Anna Johnson',
-      phone: '+46701111111',
-    },
-    timestamp: '2024-12-13T14:00:00Z',
-    sentAt: '2024-12-13T14:00:00Z',
-    deliveredAt: '2024-12-13T14:00:30Z',
-    templateId: 'tpl-2',
-    templateName: 'Reminder SMS',
-    attachments: [],
-    tags: ['reminder', 'automated'],
-    relatedBookingId: 'book-1',
-    relatedBookingReference: 'BOOK-2025-001',
-  },
-  {
-    id: 'comm-3',
-    customerId: 'cust-1',
-    type: 'sms',
-    direction: 'inbound',
-    status: 'delivered',
-    content: 'Yes, I confirm! Really excited about the trip.',
-    sender: {
-      name: 'Anna Johnson',
-      phone: '+46701111111',
-      type: 'customer',
-    },
-    recipient: {
-      name: 'Swett Support',
-      phone: '+46701234567',
-    },
-    timestamp: '2024-12-13T14:05:00Z',
-    sentAt: '2024-12-13T14:05:00Z',
-    deliveredAt: '2024-12-13T14:05:15Z',
-    attachments: [],
-    tags: ['confirmation-reply', 'customer-response'],
-    relatedBookingId: 'book-1',
-  },
-  {
-    id: 'comm-4',
-    customerId: 'cust-1',
-    type: 'note',
-    direction: 'inbound',
-    status: 'completed',
-    content: 'Customer called asking about dietary restrictions. Confirmed vegetarian meal options available. Special request noted in booking.',
-    sender: {
-      name: 'Maria Garcia',
-      email: 'maria@swett.com',
-      type: 'staff',
-    },
-    recipient: {
-      name: 'Anna Johnson',
-      email: 'anna.johnson@email.com',
-    },
-    timestamp: '2024-12-12T11:30:00Z',
-    sentAt: '2024-12-12T11:30:00Z',
-    internalNotes: 'Vegetarian meals confirmed. Update to be sent to catering team.',
-    attachments: [],
-    tags: ['call-log', 'special-request', 'important'],
-    relatedBookingId: 'book-1',
-  },
-  {
-    id: 'comm-5',
-    customerId: 'cust-1',
-    type: 'email',
-    direction: 'outbound',
-    status: 'sent',
-    subject: 'Your Packing Checklist for Arctic Adventure',
-    content: 'Dear Anna, here is your personalized packing checklist for your Arctic Adventure tour. We recommend packing light layers and waterproof clothing...',
-    sender: {
-      name: 'Swett Support Team',
-      email: 'support@swett.com',
-      type: 'staff',
-    },
-    recipient: {
-      name: 'Anna Johnson',
-      email: 'anna.johnson@email.com',
-    },
-    timestamp: '2024-12-11T16:45:00Z',
-    sentAt: '2024-12-11T16:45:00Z',
-    attachments: [
-      {
-        id: 'att-2',
-        fileName: 'Packing_Checklist.pdf',
-        fileSize: 512000,
-        fileType: 'application/pdf',
-        uploadedAt: '2024-12-11T16:45:00Z',
-      },
-    ],
-    tags: ['preparation', 'attachment'],
-    relatedBookingId: 'book-1',
-  },
-  {
-    id: 'comm-6',
-    customerId: 'cust-2',
-    type: 'email',
-    direction: 'outbound',
-    status: 'failed',
-    subject: 'Your Iceland Explorer Tour Confirmation',
-    content: 'Dear Robert, your Iceland Explorer tour has been confirmed...',
-    sender: {
-      name: 'Swett Support Team',
-      email: 'support@swett.com',
-      type: 'staff',
-    },
-    recipient: {
-      name: 'Robert Smith',
-      email: 'invalid-email@invalid.com',
-    },
-    timestamp: '2024-12-09T08:00:00Z',
-    sentAt: '2024-12-09T08:00:00Z',
-    attachments: [],
-    tags: ['failed-delivery', 'action-required'],
-    relatedBookingId: 'book-2',
-    relatedBookingReference: 'BOOK-2025-002',
-  },
-  {
-    id: 'comm-7',
-    customerId: 'cust-3',
-    type: 'call',
-    direction: 'inbound',
-    status: 'completed',
-    content: 'Customer inquired about group discount for 8 people. Discussed 12% group rate. Customer interested in early April dates.',
-    sender: {
-      name: 'Jennifer Lee',
-      phone: '+46705555555',
-      type: 'customer',
-    },
-    recipient: {
-      name: 'Johan Schmidt',
-      phone: '+46701234567',
-    },
-    timestamp: '2024-12-13T13:20:00Z',
-    sentAt: '2024-12-13T13:20:00Z',
-    internalNotes: 'Promising lead - group booking potential. Follow up with quote by Friday.',
-    attachments: [],
-    tags: ['inbound-call', 'group-inquiry', 'sales-lead'],
-  },
-  {
-    id: 'comm-8',
-    customerId: 'cust-1',
-    type: 'email',
-    direction: 'inbound',
-    status: 'delivered',
-    subject: 'RE: Your Packing Checklist for Arctic Adventure',
-    content: 'Hi! Thanks for the checklist. One question - are hiking boots essential or can I wear regular waterproof shoes? Looking forward to the trip!',
-    sender: {
-      name: 'Anna Johnson',
-      email: 'anna.johnson@email.com',
-      type: 'customer',
-    },
-    recipient: {
-      name: 'Swett Support Team',
-      email: 'support@swett.com',
-    },
-    timestamp: '2024-12-12T09:15:00Z',
-    sentAt: '2024-12-12T09:15:00Z',
-    deliveredAt: '2024-12-12T09:16:00Z',
-    attachments: [],
-    tags: ['customer-inquiry', 'response-needed'],
-    relatedBookingId: 'book-1',
-  },
-];
-
 class CommunicationService {
   /**
    * Get all communications with optional filtering
    */
   static async getAll(filter?: CommunicationFilter): Promise<CommunicationLog[]> {
-    await this.delay(300);
-    return this.filterCommunications(MOCK_COMMUNICATIONS, filter);
+    try {
+      const customerParam = filter?.customerId ? `?customer_id=${encodeURIComponent(filter.customerId)}` : '';
+      const result = await request(`communication-logs-list.php${customerParam}`);
+      const communications = (result.data || []).map(mapCommunicationFromApi);
+      return this.filterCommunications(communications, filter);
+    } catch (error) {
+      console.error('Error fetching communications:', error);
+      return [];
+    }
   }
 
   /**
    * Get communications for a specific customer
    */
   static async getByCustomer(customerId: string, filter?: CommunicationFilter): Promise<CommunicationLog[]> {
-    await this.delay(250);
-    const filtered = MOCK_COMMUNICATIONS.filter(c => c.customerId === customerId);
-    return this.filterCommunications(filtered, filter);
+    try {
+      const result = await request(`communication-logs-list.php?customer_id=${encodeURIComponent(customerId)}`);
+      const communications = (result.data || []).map(mapCommunicationFromApi);
+      return this.filterCommunications(communications, filter);
+    } catch (error) {
+      console.error('Error fetching customer communications:', error);
+      return [];
+    }
   }
 
   /**
    * Get a single communication by ID
    */
   static async getById(id: string): Promise<CommunicationLog | null> {
-    await this.delay(100);
-    return MOCK_COMMUNICATIONS.find(c => c.id === id) || null;
+    try {
+      const result = await request('communication-logs-list.php');
+      const communications = (result.data || []).map(mapCommunicationFromApi);
+      return communications.find(c => c.id === id) || null;
+    } catch (error) {
+      console.error('Error fetching communication:', error);
+      return null;
+    }
   }
 
   /**
    * Search communications
    */
   static async search(query: string, customerId?: string): Promise<CommunicationLog[]> {
-    await this.delay(300);
+    const results = customerId
+      ? await this.getByCustomer(customerId)
+      : await this.getAll();
+
     const q = query.toLowerCase();
-    let results = MOCK_COMMUNICATIONS;
-
-    if (customerId) {
-      results = results.filter(c => c.customerId === customerId);
-    }
-
     return results.filter(
       c =>
         c.subject?.toLowerCase().includes(q) ||
@@ -317,11 +183,90 @@ class CommunicationService {
   }
 
   /**
+   * Create a new communication log entry
+   */
+  static async create(log: Omit<CommunicationLog, 'id'>): Promise<CommunicationLog> {
+    const payload = {
+      customerId: log.customerId,
+      type: log.type,
+      direction: log.direction,
+      status: log.status,
+      subject: log.subject,
+      content: log.content,
+      sender: log.sender,
+      recipient: log.recipient,
+      sentAt: log.sentAt,
+      deliveredAt: log.deliveredAt,
+      readAt: log.readAt,
+      responseTime: log.responseTime,
+      templateId: log.templateId,
+      templateName: log.templateName,
+      internalNotes: log.internalNotes,
+      attachments: log.attachments,
+      tags: log.tags,
+      relatedBookingId: log.relatedBookingId,
+      relatedBookingReference: log.relatedBookingReference,
+      metadata: log.metadata,
+    };
+
+    const result = await request('communication-logs-create.php', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+
+    return mapCommunicationFromApi(result.data);
+  }
+
+  /**
+   * Update a communication log entry
+   */
+  static async update(id: string, updates: Partial<CommunicationLog>): Promise<CommunicationLog> {
+    const payload: any = { id };
+
+    if (updates.customerId !== undefined) payload.customerId = updates.customerId;
+    if (updates.type !== undefined) payload.type = updates.type;
+    if (updates.direction !== undefined) payload.direction = updates.direction;
+    if (updates.status !== undefined) payload.status = updates.status;
+    if (updates.subject !== undefined) payload.subject = updates.subject;
+    if (updates.content !== undefined) payload.content = updates.content;
+    if (updates.sender !== undefined) payload.sender = updates.sender;
+    if (updates.recipient !== undefined) payload.recipient = updates.recipient;
+    if (updates.sentAt !== undefined) payload.sentAt = updates.sentAt;
+    if (updates.deliveredAt !== undefined) payload.deliveredAt = updates.deliveredAt;
+    if (updates.readAt !== undefined) payload.readAt = updates.readAt;
+    if (updates.responseTime !== undefined) payload.responseTime = updates.responseTime;
+    if (updates.templateId !== undefined) payload.templateId = updates.templateId;
+    if (updates.templateName !== undefined) payload.templateName = updates.templateName;
+    if (updates.internalNotes !== undefined) payload.internalNotes = updates.internalNotes;
+    if (updates.attachments !== undefined) payload.attachments = updates.attachments;
+    if (updates.tags !== undefined) payload.tags = updates.tags;
+    if (updates.relatedBookingId !== undefined) payload.relatedBookingId = updates.relatedBookingId;
+    if (updates.relatedBookingReference !== undefined) payload.relatedBookingReference = updates.relatedBookingReference;
+    if (updates.metadata !== undefined) payload.metadata = updates.metadata;
+
+    const result = await request('communication-logs-update.php', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+
+    return mapCommunicationFromApi(result.data);
+  }
+
+  /**
+   * Delete a communication log entry
+   */
+  static async delete(id: string): Promise<void> {
+    await request('communication-logs-delete.php', {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  /**
    * Get communication timeline for a customer
    */
   static async getTimeline(customerId: string, limit: number = 20): Promise<CommunicationTimelineEntry[]> {
-    await this.delay(250);
-    const communications = MOCK_COMMUNICATIONS.filter(c => c.customerId === customerId).sort(
+    const communications = (await this.getByCustomer(customerId)).sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
 
@@ -340,7 +285,6 @@ class CommunicationService {
    * Get templates by type
    */
   static async getTemplates(type?: string): Promise<CommunicationTemplate[]> {
-    await this.delay(150);
     if (type) {
       return MOCK_TEMPLATES.filter(t => t.type === type);
     }
@@ -351,13 +295,9 @@ class CommunicationService {
    * Get communication analytics
    */
   static async getAnalytics(customerId?: string, dateFrom?: string, dateTo?: string): Promise<CommunicationAnalytics> {
-    await this.delay(400);
-
-    let communications = MOCK_COMMUNICATIONS;
-
-    if (customerId) {
-      communications = communications.filter(c => c.customerId === customerId);
-    }
+    let communications = customerId
+      ? await this.getByCustomer(customerId)
+      : await this.getAll();
 
     if (dateFrom && dateTo) {
       const from = new Date(dateFrom).getTime();
@@ -413,8 +353,7 @@ class CommunicationService {
    * Export communications
    */
   static async exportCommunications(format: 'csv' | 'pdf' | 'json', filter?: CommunicationFilter): Promise<string> {
-    await this.delay(500);
-    const communications = this.filterCommunications(MOCK_COMMUNICATIONS, filter);
+    const communications = await this.getAll(filter);
 
     switch (format) {
       case 'json':
@@ -500,10 +439,6 @@ class CommunicationService {
     ]);
 
     return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-  }
-
-  private static delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
