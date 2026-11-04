@@ -1,60 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
 import {
   Menu,
   X,
   LayoutDashboard,
-  Calendar,
-  Users,
-  Map,
-  DollarSign,
-  Settings,
-  Tag,
-  Mail,
-  TrendingUp,
   ChevronDown,
   ChevronRight,
-  ListOrdered,
-  CalendarClock,
-  Clock,
-  UsersRound,
-  MessageSquare,
-  MapPin,
-  Package,
-  Receipt,
-  FileText,
-  BarChart3,
-  Building2,
-  UserCog,
-  Shield,
-  MailOpen,
-  FileBarChart,
-  CreditCard,
+  ArrowLeft,
 } from 'lucide-react';
-
-interface MenuItem {
-  label: string;
-  path: string;
-  icon: React.ReactNode;
-  badge?: string;
-}
-
-interface MenuCategory {
-  label: string;
-  icon: React.ReactNode;
-  items: MenuItem[];
-  allowedRoles?: UserRole[]; // Which roles can see this category
-}
-
-// Helper function to check if user has access to a category
-const hasAccessToCategory = (category: MenuCategory, userRole: UserRole | undefined): boolean => {
-  if (!userRole) return false;
-  if (!category.allowedRoles || category.allowedRoles.length === 0) return true; // If no restriction, allow all
-  return category.allowedRoles.includes(userRole);
-};
+import { AdminMenuItem, useAdminMenu } from './adminMenu';
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -64,7 +19,7 @@ interface MobileSidebarProps {
 const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { t } = useTranslation();
-  const { user } = useAuth(); // Get current user to check role
+  const { visibleCategories } = useAdminMenu();
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     t('admin:bookings'),
     t('admin:marketing'),
@@ -82,150 +37,9 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
     return location.pathname === path;
   };
 
-  const isCategoryActive = (items: MenuItem[]) => {
+  const isCategoryActive = (items: AdminMenuItem[]) => {
     return items.some((item) => location.pathname === item.path);
   };
-
-  // Menu structure with categories - with role-based access control
-  // Role-based tab visibility:
-  // - Super Admin: All tabs
-  // - Admin: All tabs (Bookings, Marketing, Customers, Tours, Finance, Settings)
-  // - Manager (Accountant): Bookings, Customers, Finance, Tours
-  // - Support: Bookings, Customers only
-  const menuCategories: MenuCategory[] = [
-    {
-      label: t('admin:bookings'),
-      icon: <Calendar className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.SUPPORT],
-      items: [
-        {
-          label: t('admin:allBookings'),
-          path: '/admin/bookings',
-          icon: <ListOrdered className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:waitlist'),
-          path: '/admin/waitlist',
-          icon: <Clock className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      label: t('admin:marketing'),
-      icon: <TrendingUp className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Admin only
-      items: [
-        {
-          label: t('admin:promoCodes'),
-          path: '/admin/marketing/promo-codes',
-          icon: <Tag className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:emailTemplates'),
-          path: '/admin/marketing/email-templates',
-          icon: <Mail className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      label: t('admin:customers'),
-      icon: <Users className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.SUPPORT],
-      items: [
-        {
-          label: t('admin:customerList'),
-          path: '/admin/customers',
-          icon: <UsersRound className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:customerGroups'),
-          path: '/admin/customers/groups',
-          icon: <Users className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:communicationLogs'),
-          path: '/admin/customers/communications',
-          icon: <MessageSquare className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      label: t('admin:tours'),
-      icon: <Map className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Admin and Manager only
-      items: [
-        {
-          label: t('admin:tourManagement'),
-          path: '/admin/tours',
-          icon: <MapPin className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:addons'),
-          path: '/admin/tours/addons',
-          icon: <Package className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      label: t('admin:finance'),
-      icon: <DollarSign className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ACCOUNTANT], // Admin and Manager only
-      items: [
-        {
-          label: t('admin:invoices'),
-          path: '/admin/finance/invoices',
-          icon: <Receipt className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:reports'),
-          path: '/admin/finance/reports',
-          icon: <FileText className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:fortnoxIntegration'),
-          path: '/admin/finance/fortnox',
-          icon: <Building2 className="w-4 h-4" />,
-        },
-      ],
-    },
-    {
-      label: t('admin:settings'),
-      icon: <Settings className="w-5 h-5" />,
-      allowedRoles: [UserRole.SUPER_ADMIN, UserRole.ADMIN], // Admin only
-      items: [
-        {
-          label: t('admin:companyInfo'),
-          path: '/admin/settings/company',
-          icon: <Building2 className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:userManagement'),
-          path: '/admin/settings/users',
-          icon: <UserCog className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:rolesPermissions'),
-          path: '/admin/settings/roles',
-          icon: <Shield className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:emailSettings'),
-          path: '/admin/settings/email',
-          icon: <MailOpen className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:paymentDetails'),
-          path: '/admin/settings/payment',
-          icon: <CreditCard className="w-4 h-4" />,
-        },
-        {
-          label: t('admin:systemLogs'),
-          path: '/admin/settings/logs',
-          icon: <FileBarChart className="w-4 h-4" />,
-        },
-      ],
-    },
-  ];
 
   if (!isOpen) return null;
 
@@ -270,8 +84,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           </Link>
 
           {/* Categories - filtered by user role */}
-          {menuCategories
-            .filter((category) => hasAccessToCategory(category, user?.role))
+          {visibleCategories
             .map((category) => {
               const isExpanded = expandedCategories.includes(category.label);
               const hasActiveItem = isCategoryActive(category.items);
@@ -328,6 +141,14 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
+          <Link
+            to="/"
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 mb-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">{t('admin:backToSite')}</span>
+          </Link>
           <div className="bg-purple-50 rounded-lg p-3">
             <p className="text-xs text-purple-700 font-medium">{t('admin:needHelp')}</p>
             <p className="text-xs text-gray-600 mt-1">
