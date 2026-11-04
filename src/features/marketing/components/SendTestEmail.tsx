@@ -91,7 +91,7 @@ export const SendTestEmail: React.FC<SendTestEmailProps> = ({ template, onClose 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
@@ -211,7 +211,7 @@ export const SendTestEmail: React.FC<SendTestEmailProps> = ({ template, onClose 
             </summary>
             <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
               <dl className="space-y-2">
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <dt className="font-medium text-gray-700">Customer Name:</dt>
                   <dd className="text-gray-600">John Doe</dd>
                   

@@ -119,7 +119,7 @@ export const DemoLoginModal: React.FC<DemoLoginModalProps> = ({ isOpen, onClose,
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="bg-black p-6 text-white rounded-t-2xl">
           <div className="flex items-center justify-between">

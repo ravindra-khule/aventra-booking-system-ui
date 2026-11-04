@@ -139,7 +139,8 @@ export const PriceHistoryAnalytics: React.FC<PriceHistoryAnalyticsProps> = ({ an
                 <YAxis yAxisId="left" />
                 <YAxis yAxisId="right" orientation="right" />
                 <Tooltip formatter={(value) => {
-                  if (value > 100) return formatCurrency(value as number);
+                  const num = Number(value);
+                  if (num > 100) return formatCurrency(num);
                   return `${value}%`;
                 }} />
                 <Legend />

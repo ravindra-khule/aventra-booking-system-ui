@@ -583,8 +583,8 @@ export const BookingService = {
   getStats: async (): Promise<DashboardStats> => {
     try {
       // Define API_URL at runtime
-      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://127.0.0.1:8000') as string;
-      
+      const API_URL = (import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5500') as string;
+
       const token = localStorage.getItem('auth_token');
 
       const response = await fetch(`${API_URL}/api/dashboard-stats.php`, {
@@ -606,9 +606,35 @@ export const BookingService = {
       const stats = data.data?.summary || {};
       return {
         totalRevenue: stats.totalRevenue || 0,
-        activeBookings: stats.confirmedBookings || 0,
+        activeBookings: (stats.confirmedBookings || 0) + (stats.pendingBookings || 0),
         pendingInquiries: stats.pendingBookings || 0,
-        occupancyRate: 85 // Calculate from data if available
+        occupancyRate: stats.occupancyRate || 0,
+        totalTours: stats.totalTours || 0,
+        totalBookings: stats.totalBookings || 0,
+        totalUsers: stats.totalUsers || 0,
+        totalCustomers: stats.totalCustomers || 0,
+        monthlyRevenue: stats.monthlyRevenue || 0,
+        lastMonthRevenue: stats.lastMonthRevenue || 0,
+        revenueGrowth: stats.revenueGrowth || 0,
+        pendingBookings: stats.pendingBookings || 0,
+        confirmedBookings: stats.confirmedBookings || 0,
+        completedBookings: stats.completedBookings || 0,
+        cancelledBookings: stats.cancelledBookings || 0,
+        bookingsThisMonth: stats.bookingsThisMonth || 0,
+        newCustomersThisMonth: stats.newCustomersThisMonth || 0,
+        newCustomersLastMonth: stats.newCustomersLastMonth || 0,
+        pendingPayments: stats.pendingPayments || 0,
+        unpaidBalance: stats.unpaidBalance || 0,
+        averageBookingValue: stats.averageBookingValue || 0,
+        paymentSuccessRate: stats.paymentSuccessRate || 0,
+        cancellationRate: stats.cancellationRate || 0,
+        repeatCustomerRate: stats.repeatCustomerRate || 0,
+        averageCustomerLTV: stats.averageCustomerLTV || 0,
+        lowAvailabilityTours: stats.lowAvailabilityTours || 0,
+        statusBreakdown: data.data?.statusBreakdown || {},
+        revenueByMonth: data.data?.revenueByMonth || [],
+        customersByMonth: data.data?.customersByMonth || [],
+        generatedAt: data.data?.generatedAt
       } as DashboardStats;
     } catch (error) {
       console.error('Dashboard stats error:', error);
@@ -708,54 +734,127 @@ export const BookingService = {
       totalRevenue: 2540000,
       activeBookings: 45,
       pendingInquiries: 12,
-      occupancyRate: 85
+      occupancyRate: 85,
+      totalTours: 0,
+      totalBookings: 0,
+      totalUsers: 0,
+      totalCustomers: 0,
+      monthlyRevenue: 0,
+      lastMonthRevenue: 0,
+      revenueGrowth: 0,
+      pendingBookings: 12,
+      confirmedBookings: 45,
+      completedBookings: 0,
+      cancelledBookings: 0,
+      bookingsThisMonth: 0,
+      newCustomersThisMonth: 0,
+      newCustomersLastMonth: 0,
+      pendingPayments: 0,
+      unpaidBalance: 0,
+      averageBookingValue: 0,
+      paymentSuccessRate: 0,
+      cancellationRate: 0,
+      repeatCustomerRate: 0,
+      averageCustomerLTV: 0,
+      lowAvailabilityTours: 0,
+      statusBreakdown: {},
+      revenueByMonth: [],
+      customersByMonth: [],
+      generatedAt: new Date().toISOString()
     };
   }
 };
 
-// Mock waitlist data
-const MOCK_WAITLIST: Waitlist[] = [
-  {
-    id: 'WL-1001',
-    tourId: '2',
-    tourTitle: 'Langtang & Tamang Heritage',
-    firstName: 'Sara',
-    lastName: 'Svensson',
-    email: 'sara@example.com',
-    phone: '0708887777',
-    participants: 2,
-    preferredDate: '2026-03-15',
-    message: 'Would love to join this adventure!',
-    submittedDate: '2024-02-15',
-    status: 'PENDING'
-  },
-  {
-    id: 'WL-1002',
-    tourId: '2',
-    tourTitle: 'Langtang & Tamang Heritage',
-    firstName: 'Marcus',
-    lastName: 'Magnusson',
-    email: 'marcus@example.com',
-    phone: '0706665555',
-    participants: 1,
-    preferredDate: '2026-04-01',
-    message: 'First trip to Nepal, very excited!',
-    submittedDate: '2024-02-20',
-    status: 'CONTACTED'
+// Waitlist data that cannot be stored on a booking is kept in localStorage:
+// - CONTACTED markers: booking IDs the admin has contacted (bookings have no such status)
+// - Local entries: waitlist requests submitted via the public WaitlistForm
+const WAITLIST_CONTACTED_KEY = 'aventra_waitlist_contacted';
+const WAITLIST_LOCAL_KEY = 'aventra_waitlist_entries';
+
+const readStorageArray = (key: string): any[] => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
   }
-];
+};
+
+const writeStorageArray = (key: string, value: any[]) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage unavailable (e.g. private mode) - marker simply won't persist
+  }
+};
+
+const getContactedIds = (): Set<string> => new Set(readStorageArray(WAITLIST_CONTACTED_KEY).map(String));
+
+const setContacted = (bookingId: string, contacted: boolean) => {
+  const ids = getContactedIds();
+  if (contacted) {
+    ids.add(bookingId);
+  } else {
+    ids.delete(bookingId);
+  }
+  writeStorageArray(WAITLIST_CONTACTED_KEY, Array.from(ids));
+};
+
+const getLocalEntries = (): Waitlist[] => readStorageArray(WAITLIST_LOCAL_KEY);
+
+const saveLocalEntries = (entries: Waitlist[]) => writeStorageArray(WAITLIST_LOCAL_KEY, entries);
+
+/** Map a booking status onto the waitlist lifecycle */
+const mapToWaitlistStatus = (status: BookingStatus): Waitlist['status'] => {
+  switch (status) {
+    case BookingStatus.CONFIRMED:
+    case BookingStatus.COMPLETED:
+      return 'CONVERTED';
+    case BookingStatus.CANCELLED:
+      return 'CANCELLED';
+    default:
+      return 'PENDING';
+  }
+};
+
+/** Derive a waitlist entry from a real booking */
+const mapBookingToWaitlist = (booking: Booking, contactedIds: Set<string>): Waitlist => {
+  const nameParts = (booking.customerName || '').trim().split(/\s+/).filter(Boolean);
+  const status = mapToWaitlistStatus(booking.status);
+  const bookingId = String(booking.id);
+
+  return {
+    id: booking.transactionId || `WL-${bookingId}`,
+    bookingId,
+    tourId: String(booking.tourId || ''),
+    tourTitle: booking.tourTitle || '',
+    firstName: nameParts[0] || booking.payer?.firstName || '',
+    lastName: nameParts.slice(1).join(' ') || booking.payer?.lastName || '',
+    email: booking.payer?.email || '',
+    phone: booking.payer?.phone || '',
+    participants: booking.participants || 1,
+    preferredDate: booking.tripDate || undefined,
+    message: booking.specialRequests || undefined,
+    submittedDate: (booking.bookingDate || '').split(' ')[0],
+    status: status === 'PENDING' && contactedIds.has(bookingId) ? 'CONTACTED' : status
+  };
+};
 
 /**
  * Waitlist Service
- * Handles waitlist management
+ * The waitlist is derived from actual booking data:
+ * - pending bookings            -> PENDING waitlist entries
+ * - confirmed/completed bookings -> CONVERTED (the customer got a spot)
+ * - cancelled/refunded bookings  -> CANCELLED
+ * CONTACTED has no booking equivalent and is tracked client-side per booking ID.
+ * Requests submitted via the public WaitlistForm are stored locally until a
+ * dedicated backend exists.
  */
 export const WaitlistService = {
   /**
    * Create a new waitlist entry
    */
   create: async (waitlistData: Partial<Waitlist>): Promise<Waitlist> => {
-    await delay(500);
-
     const newWaitlist: Waitlist = {
       id: generateId('WL-'),
       tourId: waitlistData.tourId || '',
@@ -771,41 +870,72 @@ export const WaitlistService = {
       status: 'PENDING'
     };
 
-    MOCK_WAITLIST.push(newWaitlist);
+    saveLocalEntries([...getLocalEntries(), newWaitlist]);
     return newWaitlist;
   },
 
   /**
-   * Get all waitlist entries
+   * Get all waitlist entries (local requests + entries derived from bookings)
    */
   getAll: async (): Promise<Waitlist[]> => {
-    await delay(400);
-    return MOCK_WAITLIST;
+    const contactedIds = getContactedIds();
+    const bookings = await BookingService.getAll();
+    const derived = bookings.map((b) => mapBookingToWaitlist(b, contactedIds));
+
+    const toTime = (d: string) => {
+      const t = Date.parse((d || '').replace(' ', 'T'));
+      return isNaN(t) ? 0 : t;
+    };
+
+    return [...getLocalEntries(), ...derived].sort(
+      (a, b) => toTime(b.submittedDate) - toTime(a.submittedDate)
+    );
   },
 
   /**
    * Update waitlist entry status
+   * `id` is the entry's bookingId for booking-derived entries, or the entry id
+   * for locally stored requests.
    */
   updateStatus: async (
     id: string,
     status: 'PENDING' | 'CONTACTED' | 'CONVERTED' | 'CANCELLED'
   ): Promise<Waitlist> => {
-    await delay(500);
-    const index = MOCK_WAITLIST.findIndex((w) => w.id === id);
-    if (index === -1) throw new Error('Waitlist entry not found');
+    // Locally stored request (submitted via the public waitlist form)
+    const localEntries = getLocalEntries();
+    const localIndex = localEntries.findIndex((w) => w.id === id);
+    if (localIndex !== -1) {
+      localEntries[localIndex] = { ...localEntries[localIndex], status };
+      saveLocalEntries(localEntries);
+      return localEntries[localIndex];
+    }
 
-    MOCK_WAITLIST[index].status = status;
-    return MOCK_WAITLIST[index];
+    // Booking-derived entry: CONTACTED is a client-side marker only
+    if (status === 'CONTACTED') {
+      setContacted(id, true);
+      const entry = (await WaitlistService.getAll()).find((w) => w.bookingId === id);
+      if (!entry) throw new Error('Waitlist entry not found');
+      return entry;
+    }
+
+    setContacted(id, false);
+    const bookingStatus =
+      status === 'CONVERTED'
+        ? BookingStatus.CONFIRMED
+        : status === 'CANCELLED'
+          ? BookingStatus.CANCELLED
+          : BookingStatus.PENDING;
+    const booking = await BookingService.update(id, { status: bookingStatus });
+    return mapBookingToWaitlist(booking, getContactedIds());
   },
 
   /**
    * Delete a waitlist entry
+   * Only removes locally stored requests and CONTACTED markers. Entries derived
+   * from real bookings are removed by cancelling the booking itself.
    */
   delete: async (id: string): Promise<void> => {
-    await delay(500);
-    const index = MOCK_WAITLIST.findIndex((w) => w.id === id);
-    if (index !== -1) {
-      MOCK_WAITLIST.splice(index, 1);
-    }
+    saveLocalEntries(getLocalEntries().filter((w) => w.id !== id));
+    setContacted(id, false);
   }
 };

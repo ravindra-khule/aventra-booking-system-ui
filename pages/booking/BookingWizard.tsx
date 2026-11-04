@@ -29,6 +29,12 @@ import { useCurrency } from '../../src/shared/hooks';
 import { PaymentSection } from '../../src/features/bookings/components/PaymentSection';
 import { PaymentType } from '../../src/features/bookings/services/payment.service';
 import { Booking } from '../../src/features/bookings/types/booking.types';
+import {
+  validateBookingDetails,
+  validateTripDate,
+  validateParticipants,
+  FieldErrors,
+} from '../../src/features/bookings/services/booking.validation';
 
 // Icon mapping for different add-on types
 const ADDON_TYPE_ICONS: Record<AddOnType, React.ReactNode> = {
@@ -89,6 +95,11 @@ export const BookingWizard = () => {
   const [participants, setParticipants] = useState(1);
   const [payer, setPayer] = useState<PayerDetails>(EMPTY_PAYER);
   const [travelers, setTravelers] = useState<Traveler[]>([]);
+
+  // Field-level validation errors (i18n keys under booking:validation.*)
+  const [payerErrors, setPayerErrors] = useState<FieldErrors<keyof PayerDetails>>({});
+  const [travelerErrors, setTravelerErrors] = useState<Record<number, FieldErrors<keyof Traveler>>>({});
+  const [stepError, setStepError] = useState<string | null>(null);
   
   // Promo Code State
   const [promoCode, setPromoCode] = useState('');
@@ -246,8 +257,22 @@ export const BookingWizard = () => {
   }, [participants]);
 
 
+  // Translate a stored error key to a localized message
+  const fieldError = (errors: FieldErrors | undefined, field: string): string | undefined => {
+    const key = errors?.[field];
+    return key ? t(`booking:validation.${key}`) : undefined;
+  };
+
   const handlePayerChange = (field: keyof PayerDetails, value: string) => {
     setPayer(prev => ({ ...prev, [field]: value }));
+    if (payerErrors[field]) {
+      setPayerErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+    if (stepError) setStepError(null);
   };
 
   const handleTravelerChange = (index: number, field: keyof Traveler, value: any) => {
@@ -272,6 +297,36 @@ export const BookingWizard = () => {
     }
     
     setTravelers(updatedTravelers);
+    if (travelerErrors[index]?.[field]) {
+      setTravelerErrors(prev => {
+        const next = { ...prev };
+        next[index] = { ...next[index] };
+        delete next[index][field];
+        if (Object.keys(next[index]).length === 0) delete next[index];
+        return next;
+      });
+    }
+    if (stepError) setStepError(null);
+  };
+
+  // Gate for step 0: trip date must be valid and the group must fit capacity
+  const validateCustomizeStep = (): boolean => {
+    const dateErrorKey = validateTripDate(date);
+    const participantsErrorKey = validateParticipants(participants, tour?.maxCapacity, tour?.availableSpots);
+    const errorKey = dateErrorKey || participantsErrorKey;
+    setStepError(errorKey ? t(`booking:validation.${errorKey}`) : null);
+    if (errorKey) window.scrollTo(0, 0);
+    return !errorKey;
+  };
+
+  // Gate for step 1: payer + every traveler must be complete and valid
+  const validateDetailsStep = (): boolean => {
+    const result = validateBookingDetails(payer, travelers);
+    setPayerErrors(result.payerErrors);
+    setTravelerErrors(result.travelerErrors);
+    setStepError(result.isValid ? null : t('booking:validation.fixErrorsBelow'));
+    if (!result.isValid) window.scrollTo(0, 0);
+    return result.isValid;
   };
 
   // Promo Code Handlers
@@ -362,18 +417,21 @@ export const BookingWizard = () => {
       const advanceTotal = Math.round((tour?.depositPrice || 0) * participants * (finalTotal / (baseTotal || 1)));
       const paidNow = type === 'FULL' ? finalTotal : advanceTotal;
 
-      // Validate required fields
+      // Re-validate all booking fields before submitting — a failed check here
+      // must never turn into a "paid but no booking" situation
       if (!tour?.id) {
         throw new Error('Tour information is missing. Please go back and select a tour again.');
       }
-      if (!payer.firstName || !payer.lastName) {
-        throw new Error('Payer first and last name are required.');
-      }
-      if (!payer.email) {
-        throw new Error('Payer email is required.');
-      }
-      if (participants < 1) {
-        throw new Error('Number of participants must be at least 1.');
+      const tripDateError = validateTripDate(date);
+      const participantsError = validateParticipants(participants, tour.maxCapacity, tour.availableSpots);
+      const detailsResult = validateBookingDetails(payer, travelers);
+      if (tripDateError || participantsError || !detailsResult.isValid) {
+        setPayerErrors(detailsResult.payerErrors);
+        setTravelerErrors(detailsResult.travelerErrors);
+        setStepError(t('booking:validation.fixErrorsBelow'));
+        setCurrentStep(1);
+        window.scrollTo(0, 0);
+        return;
       }
 
       const newBooking = await BookingService.create({
@@ -446,6 +504,8 @@ export const BookingWizard = () => {
   };
 
   const handleNext = async () => {
+    if (currentStep === 0 && !validateCustomizeStep()) return;
+    if (currentStep === 1 && !validateDetailsStep()) return;
     if (currentStep === 2) {
       await completeBooking(paymentType);
     } else {
@@ -776,7 +836,7 @@ export const BookingWizard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           
           {/* Main Form Area */}
-          <div className="lg:col-span-2 flex flex-col min-h-screen lg:min-h-auto">
+          <div className="lg:col-span-2 flex flex-col lg:min-h-screen">
             
             {/* Debug: Show current step (dev builds only) */}
             {import.meta.env.DEV && (
@@ -788,14 +848,22 @@ export const BookingWizard = () => {
             {/* Step 1: Payer & Traveler Details */}
             {currentStep === 1 && (
               <div className="animate-fade-in space-y-12 flex-1">
-                
+
+                {/* Validation summary */}
+                {stepError && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                    <X className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-700">{stepError}</p>
+                  </div>
+                )}
+
                 {/* Payer Section */}
                 <section>
                     <div className="flex items-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-900 mr-3">{t('booking:payer.title')}</h2>
                         <div className="group relative">
                              <Info className="h-5 w-5 text-gray-400 cursor-help" />
-                             <div className="absolute hidden group-hover:block w-64 bg-gray-800 text-white text-xs rounded p-2 -top-10 left-6">
+                             <div className="absolute hidden group-hover:block w-64 max-w-[calc(100vw-3rem)] bg-gray-800 text-white text-xs rounded p-2 -top-10 left-0 z-10">
                                 {t('booking:payer.tooltip')}
                              </div>
                         </div>
@@ -807,6 +875,7 @@ export const BookingWizard = () => {
                             type="text"
                             value={payer.firstName}
                             onChange={e => handlePayerChange('firstName', e.target.value)}
+                            error={fieldError(payerErrors, 'firstName')}
                             required
                             fullWidth
                         />
@@ -815,6 +884,7 @@ export const BookingWizard = () => {
                             type="text"
                             value={payer.lastName}
                             onChange={e => handlePayerChange('lastName', e.target.value)}
+                            error={fieldError(payerErrors, 'lastName')}
                             required
                             fullWidth
                         />
@@ -830,6 +900,7 @@ export const BookingWizard = () => {
                                     { value: 'United Kingdom', label: 'United Kingdom' },
                                     { value: 'USA', label: 'USA' }
                                 ]}
+                                error={fieldError(payerErrors, 'country')}
                                 required
                                 fullWidth
                             />
@@ -841,6 +912,7 @@ export const BookingWizard = () => {
                                 value={payer.address}
                                 onChange={e => handlePayerChange('address', e.target.value)}
                                 placeholder={t('booking:payer.streetAndNumber')}
+                                error={fieldError(payerErrors, 'address')}
                                 required
                                 fullWidth
                             />
@@ -850,6 +922,7 @@ export const BookingWizard = () => {
                             type="text"
                             value={payer.zipCode}
                             onChange={e => handlePayerChange('zipCode', e.target.value)}
+                            error={fieldError(payerErrors, 'zipCode')}
                             required
                             fullWidth
                         />
@@ -858,6 +931,7 @@ export const BookingWizard = () => {
                             type="text"
                             value={payer.city}
                             onChange={e => handlePayerChange('city', e.target.value)}
+                            error={fieldError(payerErrors, 'city')}
                             required
                             fullWidth
                         />
@@ -866,6 +940,7 @@ export const BookingWizard = () => {
                             type="tel"
                             value={payer.phone}
                             onChange={e => handlePayerChange('phone', e.target.value)}
+                            error={fieldError(payerErrors, 'phone')}
                             required
                             fullWidth
                         />
@@ -874,6 +949,7 @@ export const BookingWizard = () => {
                             type="email"
                             value={payer.email}
                             onChange={e => handlePayerChange('email', e.target.value)}
+                            error={fieldError(payerErrors, 'email')}
                             required
                             fullWidth
                         />
@@ -911,6 +987,7 @@ export const BookingWizard = () => {
                                     value={traveler.firstName}
                                     onChange={(e) => handleTravelerChange(index, 'firstName', e.target.value)}
                                     disabled={traveler.isPayer}
+                                    error={fieldError(travelerErrors[index], 'firstName')}
                                     required
                                     fullWidth
                                 />
@@ -920,6 +997,7 @@ export const BookingWizard = () => {
                                     value={traveler.lastName}
                                     onChange={(e) => handleTravelerChange(index, 'lastName', e.target.value)}
                                     disabled={traveler.isPayer}
+                                    error={fieldError(travelerErrors[index], 'lastName')}
                                     required
                                     fullWidth
                                 />
@@ -929,6 +1007,7 @@ export const BookingWizard = () => {
                                     value={traveler.phone}
                                     onChange={(e) => handleTravelerChange(index, 'phone', e.target.value)}
                                     disabled={traveler.isPayer}
+                                    error={fieldError(travelerErrors[index], 'phone')}
                                     required
                                     fullWidth
                                 />
@@ -938,6 +1017,7 @@ export const BookingWizard = () => {
                                     value={traveler.email}
                                     onChange={(e) => handleTravelerChange(index, 'email', e.target.value)}
                                     disabled={traveler.isPayer}
+                                    error={fieldError(travelerErrors[index], 'email')}
                                     required
                                     fullWidth
                                 />
@@ -950,6 +1030,7 @@ export const BookingWizard = () => {
                                         onChange={(e) => handleTravelerChange(index, 'address', e.target.value)}
                                         disabled={traveler.isPayer}
                                         placeholder={t('booking:payer.address')}
+                                        error={fieldError(travelerErrors[index], 'address')}
                                         required
                                         fullWidth
                                     />
@@ -961,6 +1042,7 @@ export const BookingWizard = () => {
                                     value={traveler.zipCode}
                                     onChange={(e) => handleTravelerChange(index, 'zipCode', e.target.value)}
                                     disabled={traveler.isPayer}
+                                    error={fieldError(travelerErrors[index], 'zipCode')}
                                     required
                                     fullWidth
                                 />
@@ -970,6 +1052,7 @@ export const BookingWizard = () => {
                                     value={traveler.city}
                                     onChange={(e) => handleTravelerChange(index, 'city', e.target.value)}
                                     disabled={traveler.isPayer}
+                                    error={fieldError(travelerErrors[index], 'city')}
                                     required
                                     fullWidth
                                 />
@@ -981,6 +1064,7 @@ export const BookingWizard = () => {
                                         value={traveler.ssn}
                                         onChange={(e) => handleTravelerChange(index, 'ssn', e.target.value)}
                                         placeholder={t('booking:payer.yyyymmdd')}
+                                        error={fieldError(travelerErrors[index], 'ssn')}
                                         required
                                         fullWidth
                                     />
@@ -1020,7 +1104,15 @@ export const BookingWizard = () => {
               <div className="animate-fade-in flex-1">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('booking:steps.travelersAddons')}</h2>
                 <p className="text-gray-600 mb-6">{t('booking:customize.subtitle')} {t('booking:addons.title')}</p>
-                
+
+                {/* Validation summary */}
+                {stepError && (
+                  <div className="p-4 mb-6 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                    <X className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-700">{stepError}</p>
+                  </div>
+                )}
+
                 {/* Number of Travelers */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200 mb-6">
                   <div className="flex items-center justify-between">
@@ -1106,7 +1198,7 @@ export const BookingWizard = () => {
                             
                             {/* Content */}
                             <div className="flex-1">
-                              <div className="flex items-start justify-between mb-2">
+                              <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                                 <div>
                                   <h3 className="text-lg font-semibold text-gray-900">{addOn.name}</h3>
                                   <span className="text-xs text-gray-500 uppercase">{addOn.type.replace('_', ' ')}</span>
@@ -1255,7 +1347,7 @@ export const BookingWizard = () => {
                      </div>
                      
                      {!appliedPromoCode ? (
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                            <input 
                               type="text" 
                               placeholder={t('booking:payer.enterPromoCode')}
@@ -1353,10 +1445,10 @@ export const BookingWizard = () => {
 
                     {/* Booking Reference Card */}
                     <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 mb-6">
-                        <div className="flex items-center justify-between">
-                            <div>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div className="min-w-0">
                                 <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.ref')}</p>
-                                <p className="text-3xl font-mono font-bold text-gray-900">{createdBooking?.transactionId || '—'}</p>
+                                <p className="text-2xl sm:text-3xl font-mono font-bold text-gray-900 break-all">{createdBooking?.transactionId || '—'}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-gray-600 mb-1">{t('booking:confirmation.bookingDate')}</p>

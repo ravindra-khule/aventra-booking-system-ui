@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
-import { Menu, X, User as UserIcon, LogOut, Globe } from 'lucide-react';
+import { Menu, X, User as UserIcon, LogOut, Globe, LayoutDashboard } from 'lucide-react';
 import { DemoLoginModal } from './DemoLoginModal';
 
 export const Layout = ({ children }: { children?: React.ReactNode }) => {
-  const { user, logout, login } = useAuth();
+  const { user, logout, login, isAdmin } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -43,8 +43,12 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
     navigate('/');
   };
 
+  // resolvedLanguage is normalized to 'en' or 'sv' even when the browser reports
+  // regional codes like 'en-US' or 'sv-SE'
+  const isSwedish = (i18n.resolvedLanguage || i18n.language || 'en').startsWith('sv');
+
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'sv' : 'en');
+    i18n.changeLanguage(isSwedish ? 'en' : 'sv');
   };
 
   return (
@@ -66,18 +70,31 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                      {t('nav:myPages')}
                    </Link>
                 )}
+                {isAdmin && (
+                  <Link to="/admin" className="border-transparent hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium" style={{ color: '#6b7280' }}>
+                    {t('nav:admin')}
+                  </Link>
+                )}
               </div>
             </div>
             
             <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+               {/* Admin Panel Button - visible only for admin-level roles */}
+               {isAdmin && (
+                 <Link to="/admin" className="btn btn-primary btn-sm">
+                   <LayoutDashboard className="h-4 w-4" />
+                   {t('nav:adminPanel')}
+                 </Link>
+               )}
+
                {/* Language Toggle */}
                <button 
                  onClick={toggleLanguage}
                  className="btn btn-secondary-dark btn-sm"
-                 title={i18n.language === 'en' ? t('admin:switchToSwedish') : t('admin:switchToEnglish')}
+                 title={isSwedish ? t('admin:switchToEnglish') : t('admin:switchToSwedish')}
                >
                  <Globe className="h-4 w-4" />
-                 <span className="font-semibold">{i18n.language === 'en' ? 'EN' : 'SV'}</span>
+                 <span className="font-semibold">{isSwedish ? 'SV' : 'EN'}</span>
                </button>
 
                {user ? (
@@ -123,13 +140,19 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                   {t('nav:myPages')}
                 </Link>
               )}
+              {isAdmin && (
+                <Link to="/admin" className="btn btn-primary btn-md mx-3 mt-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  {t('nav:adminPanel')}
+                </Link>
+              )}
               <button 
                 onClick={toggleLanguage} 
                 className="w-full text-left border-transparent border-l-4 block pl-3 pr-4 py-2 text-base font-medium flex items-center gap-2 hover:bg-gray-50"
                 style={{ color: '#6b7280' }}
               >
                 <Globe className="h-4 w-4" />
-                {i18n.language === 'en' ? t('nav:switchToSwedish') : t('nav:switchToEnglish')}
+                {isSwedish ? t('nav:switchToEnglish') : t('nav:switchToSwedish')}
               </button>
               {!user && (
                 <button 

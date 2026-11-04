@@ -65,7 +65,7 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: var(--shadow-md);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .loading,

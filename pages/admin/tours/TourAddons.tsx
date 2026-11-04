@@ -387,7 +387,7 @@ export const TourAddons: React.FC = () => {
               </div>
 
               {/* Type and Category */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                   <Select
@@ -415,8 +415,8 @@ export const TourAddons: React.FC = () => {
               </div>
 
               {/* Price and Currency */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Price <span className="text-red-500">*</span>
                   </label>
@@ -439,7 +439,7 @@ export const TourAddons: React.FC = () => {
               </div>
 
               {/* Quantity Limits */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Min Quantity</label>
                   <Input
@@ -522,7 +522,7 @@ export const TourAddons: React.FC = () => {
 
             {/* Modal Footer */}
             <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
-              <Button variant="outline" onClick={handleCloseModal} disabled={isSaving}>
+              <Button variant="secondary-dark" onClick={handleCloseModal} disabled={isSaving}>
                 Cancel
               </Button>
               <Button onClick={handleSave} disabled={isSaving}>

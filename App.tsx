@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ensureCurrencyLoaded } from './src/shared/services/currency.service';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { Home } from './pages/Home';
@@ -34,6 +33,19 @@ import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './src/shared/context/ToastContext';
 import { UserRole } from './types';
+
+// Scrolls the window back to the top whenever the route changes.
+// Without this, the browser keeps the previous scroll position and
+// pages (e.g. tour details) can open already scrolled down.
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, requiredRole }: { children?: React.ReactNode, requiredRole?: UserRole }) => {
@@ -130,6 +142,11 @@ const AppRoutes = () => {
                     <AdminLayout><TourManagement /></AdminLayout>
                 </ProtectedRoute>
             } />
+            <Route path="/admin/tours/pricing" element={
+                <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                    <AdminLayout><PricingAvailability /></AdminLayout>
+                </ProtectedRoute>
+            } />
             <Route path="/admin/tours/addons" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><TourAddons /></AdminLayout>
@@ -140,6 +157,11 @@ const AppRoutes = () => {
             <Route path="/admin/finance/invoices" element={
                 <ProtectedRoute requiredRole={UserRole.ADMIN}>
                     <AdminLayout><Invoices /></AdminLayout>
+                </ProtectedRoute>
+            } />
+            <Route path="/admin/finance/payments" element={
+                <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                    <AdminLayout><PaymentsRefunds /></AdminLayout>
                 </ProtectedRoute>
             } />
             <Route path="/admin/finance/reports" element={
@@ -201,6 +223,7 @@ function App() {
     <AuthProvider>
       <ToastProvider>
         <Router>
+            <ScrollToTop />
             <AppRoutes />
         </Router>
       </ToastProvider>

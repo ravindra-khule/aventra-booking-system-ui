@@ -16,7 +16,8 @@ export const WaitlistManager = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [selectedEntry, setSelectedEntry] = useState<Waitlist | null>(null);
   const [search, setSearch] = useState('');
-  
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   // Bulk selection hook
   const bulkSelection = useBulkSelection(filteredWaitlist);
 
@@ -25,8 +26,15 @@ export const WaitlistManager = () => {
   }, []);
 
   const loadWaitlist = async () => {
-    const data = await WaitlistService.getAll();
-    setWaitlist(data);
+    try {
+      const data = await WaitlistService.getAll();
+      setWaitlist(data);
+      setLoadError(null);
+    } catch (error) {
+      console.error('Failed to load waitlist', error);
+      setLoadError(t('admin:waitlistLoadFailed'));
+      setWaitlist([]);
+    }
   };
 
   useEffect(() => {
@@ -85,7 +93,7 @@ export const WaitlistManager = () => {
     const [formData, setFormData] = useState<Waitlist>(entry);
 
     const handleSave = async () => {
-      await handleUpdateEntry(entry.id, formData);
+      await handleUpdateEntry(entry.bookingId || entry.id, formData);
       setSelectedEntry(formData);
       setIsEditing(false);
       alert(t('admin:waitlistUpdated'));
@@ -131,7 +139,7 @@ export const WaitlistManager = () => {
                       const newStatus = e.target.value as Waitlist['status'];
                       setFormData({...formData, status: newStatus});
                       if (!isEditing) {
-                        handleUpdateEntry(entry.id, { status: newStatus });
+                        handleUpdateEntry(entry.bookingId || entry.id, { status: newStatus });
                       }
                     }}
                     className="w-full border border-gray-300 rounded-lg p-3 bg-white"
@@ -290,11 +298,17 @@ export const WaitlistManager = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('admin:waitlistManagement')}</h1>
         <p className="text-gray-600">{t('admin:manageWaitlistRequests')}</p>
       </div>
+
+      {loadError && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+          {loadError}
+        </div>
+      )}
 
       <div className="mb-6 space-y-4">
         <div className="bg-white p-4 rounded-xl shadow-sm border">
@@ -325,7 +339,7 @@ export const WaitlistManager = () => {
                   id: 'mark-contacted',
                   label: t('admin:markAsContacted'),
                   icon: <MessageSquare className="h-4 w-4" />,
-                  variant: 'outline',
+                  variant: 'secondary',
                   onClick: () => console.log('Mark selected as contacted')
                 }
               ]}
@@ -462,7 +476,7 @@ export const WaitlistManager = () => {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                     {t('admin:noWaitlistEntries')}
                   </td>
                 </tr>

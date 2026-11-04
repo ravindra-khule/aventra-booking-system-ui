@@ -72,7 +72,7 @@ export const CommunicationDetails: React.FC<CommunicationDetailsProps> = ({ comm
       {/* Body */}
       <div className="p-6 space-y-6">
         {/* Status and Metadata */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Status</label>
             <div className="flex items-center gap-2 mt-1">
@@ -111,7 +111,7 @@ export const CommunicationDetails: React.FC<CommunicationDetailsProps> = ({ comm
         {/* Sender and Recipient */}
         <div className="border-t pt-4">
           <h3 className="text-sm font-bold text-gray-900 mb-3">Participants</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-gray-50 p-3 rounded-lg">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">From</p>
               <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export const CommunicationDetails: React.FC<CommunicationDetailsProps> = ({ comm
       {/* Footer Actions */}
       <div className="border-t bg-gray-50 px-6 py-4 flex gap-2">
         {communication.status === 'delivered' && communication.direction === 'outbound' && (
-          <Button variant="outline" size="sm">
+          <Button variant="secondary-dark" size="sm">
             Resend
           </Button>
         )}
@@ -238,7 +238,7 @@ export const CommunicationDetails: React.FC<CommunicationDetailsProps> = ({ comm
             Reply
           </Button>
         )}
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button variant="secondary-dark" size="sm" onClick={onClose}>
           Close
         </Button>
       </div>

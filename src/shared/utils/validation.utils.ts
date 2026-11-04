@@ -26,6 +26,18 @@ export const isValidSwedishPhone = (phone: string): boolean => {
 };
 
 /**
+ * Validate a generic phone number (domestic or international).
+ * Accepts digits with optional leading +, spaces, dashes and parentheses.
+ * Requires 7–15 digits (per E.164 max length).
+ * @param phone - Phone number to validate
+ * @returns True if valid phone number
+ */
+export const isValidPhone = (phone: string): boolean => {
+  const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+  return /^\+?\d{7,15}$/.test(cleaned);
+};
+
+/**
  * Validate Swedish postal code
  * @param postalCode - Postal code to validate
  * @returns True if valid Swedish postal code
@@ -37,15 +49,77 @@ export const isValidSwedishPostalCode = (postalCode: string): boolean => {
 };
 
 /**
- * Validate Swedish personal number (personnummer)
- * @param ssn - Swedish personal number to validate
+ * Validate a generic postal/zip code (3–10 chars, letters, digits, space, hyphen).
+ * Covers formats used by SE/NO/DK/UK/US.
+ * @param zipCode - Postal code to validate
+ * @returns True if valid postal code
+ */
+export const isValidZipCode = (zipCode: string): boolean => {
+  return /^[A-Za-z0-9][A-Za-z0-9\s\-]{1,8}[A-Za-z0-9]$/.test(zipCode.trim());
+};
+
+/**
+ * Validate Swedish personal number (personnummer) or a plain birth date.
+ * Accepts YYYYMMDD, YYMMDDXXXX or YYYYMMDDXXXX with an optional
+ * '-' or '+' separator. The date portion must be a real date.
+ * @param ssn - Value to validate
  * @returns True if valid format
  */
 export const isValidSwedishSSN = (ssn: string): boolean => {
-  const cleaned = ssn.replace(/[\s\-]/g, '');
-  // Basic format check: YYYYMMDDXXXX or YYMMDDXXXX
-  const ssnRegex = /^(\d{8}|\d{10}|\d{12})\d{4}$/;
-  return ssnRegex.test(cleaned);
+  const cleaned = ssn.replace(/[\s\-+]/g, '');
+  if (!/^\d{8}$|^\d{10}$|^\d{12}$/.test(cleaned)) return false;
+  // Date portion: first 6 digits for YYMMDDXXXX, first 8 for YYYYMMDD / YYYYMMDDXXXX
+  const datePart = cleaned.slice(0, cleaned.length === 10 ? 6 : 8);
+  return isPlausibleBirthDate(datePart);
+};
+
+/**
+ * Check that a 6- or 8-digit string (YYMMDD / YYYYMMDD) is a real calendar date
+ */
+const isPlausibleBirthDate = (digits: string): boolean => {
+  const year = parseInt(digits.slice(0, digits.length === 8 ? 4 : 2), 10);
+  const month = parseInt(digits.slice(-4, -2), 10);
+  const day = parseInt(digits.slice(-2), 10);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+  if (digits.length === 8 && (year < 1900 || year > new Date().getFullYear())) return false;
+  const daysInMonth = new Date(digits.length === 8 ? year : 2000, month, 0).getDate();
+  return day <= daysInMonth;
+};
+
+/**
+ * Validate an ISO date string (YYYY-MM-DD) that must be a real calendar date
+ * @param dateString - Date string to validate
+ * @returns True if valid date
+ */
+export const isValidISODate = (dateString: string): boolean => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString);
+  if (!match) return false;
+  const year = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10);
+  const day = parseInt(match[3], 10);
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+};
+
+/**
+ * Check that an ISO date string (YYYY-MM-DD) is today or in the future
+ * @param dateString - Date string to validate
+ * @returns True if the date is not before today
+ */
+export const isDateTodayOrFuture = (dateString: string): boolean => {
+  if (!isValidISODate(dateString)) return false;
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  return dateString >= todayStr;
+};
+
+/**
+ * Validate a person's name (letters incl. diacritics, spaces, hyphens, apostrophes)
+ * @param name - Name to validate
+ * @returns True if valid name
+ */
+export const isValidName = (name: string): boolean => {
+  return /^[A-Za-zÀ-ÖØ-öø-ÿ'’\-]+(\s[A-Za-zÀ-ÖØ-öø-ÿ'’\-]+)*$/.test(name.trim());
 };
 
 /**

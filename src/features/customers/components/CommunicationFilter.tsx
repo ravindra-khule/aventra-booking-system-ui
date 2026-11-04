@@ -208,7 +208,7 @@ export const CommunicationFilter: React.FC<CommunicationFilterProps> = ({ onFilt
           </div>
 
           {/* Date Range */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-2">From</label>
               <input
