@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
-import { Menu, X, User as UserIcon, LogOut, Globe } from 'lucide-react';
+import { Menu, X, User as UserIcon, LogOut, Globe, LayoutDashboard } from 'lucide-react';
 import { DemoLoginModal } from './DemoLoginModal';
 
 export const Layout = ({ children }: { children?: React.ReactNode }) => {
@@ -75,6 +75,14 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
             </div>
             
             <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+               {/* Admin Panel Button - visible only for admin-level roles */}
+               {isAdmin && (
+                 <Link to="/admin" className="btn btn-primary btn-sm">
+                   <LayoutDashboard className="h-4 w-4" />
+                   {t('nav:adminPanel')}
+                 </Link>
+               )}
+
                {/* Language Toggle */}
                <button 
                  onClick={toggleLanguage}
@@ -129,8 +137,9 @@ export const Layout = ({ children }: { children?: React.ReactNode }) => {
                 </Link>
               )}
               {isAdmin && (
-                <Link to="/admin" className="border-transparent border-l-4 block pl-3 pr-4 py-2 text-base font-medium hover:bg-gray-50" style={{ color: '#6b7280' }}>
-                  {t('nav:admin')}
+                <Link to="/admin" className="btn btn-primary btn-md mx-3 mt-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  {t('nav:adminPanel')}
                 </Link>
               )}
               <button 

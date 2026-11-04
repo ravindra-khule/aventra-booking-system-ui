@@ -3,15 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
-import { LogOut, Globe, User as UserIcon } from 'lucide-react';
+import { LogOut, Globe, User as UserIcon, Search, X, ArrowLeft } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { MobileSidebar, MenuButton } from './MobileSidebar';
+import AdminSearch from './AdminSearch';
 
 export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
   const { user, logout, login } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleLogin = async (email: string, password: string, role: UserRole) => {
@@ -64,15 +66,34 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                 </div>
               </div>
 
+              {/* Center - Menu Search (tablet and up) */}
+              <div className="hidden sm:flex flex-1 justify-center px-4">
+                <div className="w-full max-w-md">
+                  <AdminSearch />
+                </div>
+              </div>
+
               {/* Right Side - User Actions */}
               <div className="flex items-center gap-3">
-                {/* Back to Tours Link */}
+                {/* Back to Site */}
                 <Link
                   to="/"
-                  className="btn btn-secondary-dark btn-sm"
+                  className="btn btn-primary btn-sm"
+                  title={t('admin:backToSite')}
                 >
-                  {t('nav:tours')}
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t('admin:backToSite')}</span>
                 </Link>
+
+                {/* Mobile Search Toggle */}
+                <button
+                  onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+                  className="sm:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  style={{ color: '#6b7280' }}
+                  aria-label={t('admin:search')}
+                >
+                  {isMobileSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+                </button>
 
                 {/* Language Toggle */}
                 <button
@@ -110,6 +131,13 @@ export const AdminLayout = ({ children }: { children?: React.ReactNode }) => {
                 )}
               </div>
             </div>
+
+            {/* Mobile Search Row */}
+            {isMobileSearchOpen && (
+              <div className="sm:hidden py-3 border-t" style={{ borderColor: '#e5e7eb' }}>
+                <AdminSearch autoFocus onNavigate={() => setIsMobileSearchOpen(false)} />
+              </div>
+            )}
           </div>
         </header>
 
