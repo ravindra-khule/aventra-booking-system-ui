@@ -97,6 +97,8 @@ export interface CreateBookingInput {
 // Waitlist interface
 export interface Waitlist {
   id: string;
+  /** ID of the source booking when the entry is derived from booking data */
+  bookingId?: string;
   tourId: string;
   tourTitle: string;
   firstName: string;

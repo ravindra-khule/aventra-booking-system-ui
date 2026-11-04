@@ -289,6 +289,7 @@
   "showingEntries": "Visar {count} av {total} poster",
   "waitlistUpdated": "Väntelistepost uppdaterad framgångsrikt!",
   "waitlistUpdateFailed": "Misslyckades med att uppdatera väntelistepost",
+  "waitlistLoadFailed": "Misslyckades med att hämta väntelisteposter",
   "selectAllWaitlist": "Välj alla",
   "deselectAllWaitlist": "Avmarkera alla",
   "customer": "Kund",
