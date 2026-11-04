@@ -11,6 +11,7 @@ import {
   InvoiceRecipient,
 } from '../types/invoice.types';
 import { InvoiceService } from '../services/invoice.service';
+import { getActiveCurrency } from '../../../shared/utils';
 
 interface InvoiceFormProps {
   invoice?: Invoice;
@@ -168,7 +169,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('sv-SE', {
       style: 'currency',
-      currency: 'SEK',
+      currency: getActiveCurrency(),
     }).format(amount);
   };
 

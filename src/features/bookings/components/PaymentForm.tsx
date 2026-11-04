@@ -112,7 +112,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
                     {getPaymentDescription(type, typeCalc.payableAmount, typeCalc.remainingBalance)}
                   </div>
                   <div className="mt-2 font-semibold text-lg text-blue-600">
-                    {formatCurrency(typeCalc.payableAmount)} SEK
+                    {formatCurrency(typeCalc.payableAmount)}
                   </div>
                 </div>
               </label>
@@ -125,16 +125,16 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       <div className="bg-gray-50 rounded-lg p-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Booking Total:</span>
-          <span className="font-semibold">{formatCurrency(booking.totalAmount)} SEK</span>
+          <span className="font-semibold">{formatCurrency(booking.totalAmount)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">To Pay Now:</span>
-          <span className="font-semibold text-blue-600">{formatCurrency(payableAmount)} SEK</span>
+          <span className="font-semibold text-blue-600">{formatCurrency(payableAmount)}</span>
         </div>
         {remainingBalance > 0 && (
           <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
             <span className="text-gray-600">Remaining Balance:</span>
-            <span className="font-semibold text-orange-600">{formatCurrency(remainingBalance)} SEK</span>
+            <span className="font-semibold text-orange-600">{formatCurrency(remainingBalance)}</span>
           </div>
         )}
       </div>
@@ -163,7 +163,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       >
         {isProcessing && <Loader className="h-4 w-4 animate-spin" />}
         <span>
-          {isProcessing ? 'Processing...' : `Pay ${formatCurrency(payableAmount)} SEK`}
+          {isProcessing ? 'Processing...' : `Pay ${formatCurrency(payableAmount)}`}
         </span>
       </button>
 

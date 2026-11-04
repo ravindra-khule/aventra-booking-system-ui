@@ -20,7 +20,8 @@ import {
 import { TourAddOn, AddOnType, AddOnCategory } from '../../../src/features/tours/types/tour.types';
 import { AddOnService } from '../../../src/features/tours/services/addon.service';
 import { Button, Input, Select } from '../../../src/shared/components/ui';
-import { formatCurrency } from '../../../src/shared/utils';
+import { formatCurrency, getActiveCurrency, SUPPORTED_CURRENCIES } from '../../../src/shared/utils';
+import { useCurrency } from '../../../src/shared/hooks';
 
 const ADDON_TYPE_ICONS: Record<AddOnType, React.ReactNode> = {
   [AddOnType.EXTRA_NIGHT]: <Bed className="h-5 w-5" />,
@@ -38,7 +39,7 @@ const EMPTY_ADDON: Omit<TourAddOn, 'id' | 'createdAt' | 'updatedAt'> = {
   type: AddOnType.OTHER,
   category: AddOnCategory.SERVICES,
   price: 0,
-  currency: 'SEK',
+  currency: getActiveCurrency(),
   imageUrl: '',
   isAvailable: true,
   isMandatory: false,
@@ -50,6 +51,7 @@ const EMPTY_ADDON: Omit<TourAddOn, 'id' | 'createdAt' | 'updatedAt'> = {
 };
 
 export const TourAddons: React.FC = () => {
+  useCurrency(); // re-render when the site currency changes
   const [addOns, setAddOns] = useState<TourAddOn[]>([]);
   const [filteredAddOns, setFilteredAddOns] = useState<TourAddOn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -431,11 +433,7 @@ export const TourAddons: React.FC = () => {
                   <Select
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                    options={[
-                      { value: 'SEK', label: 'SEK' },
-                      { value: 'EUR', label: 'EUR' },
-                      { value: 'USD', label: 'USD' }
-                    ]}
+                    options={SUPPORTED_CURRENCIES.map((curr) => ({ value: curr.code, label: curr.code }))}
                   />
                 </div>
               </div>

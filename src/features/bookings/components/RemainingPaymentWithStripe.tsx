@@ -7,6 +7,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { RemainingPaymentModal } from './RemainingPaymentModal';
 import { Booking } from '../../../../types';
+import { useCurrency } from '../../../shared/hooks';
 
 interface RemainingPaymentWithStripeProps {
   booking: Booking;
@@ -22,6 +23,7 @@ export const RemainingPaymentWithStripe: React.FC<RemainingPaymentWithStripeProp
   onSuccess,
 }) => {
   const stripeKey = import.meta.env.VITE_REACT_APP_STRIPE_KEY;
+  const currency = useCurrency();
   const [stripe, setStripe] = useState<Stripe | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -89,8 +91,8 @@ export const RemainingPaymentWithStripe: React.FC<RemainingPaymentWithStripeProp
 
   const elementsOptions = {
     mode: 'payment' as const,
-    currency: 'sek',
-    amount: remainingAmount * 100, // Convert to cents/öre
+    currency: currency.toLowerCase(),
+    amount: remainingAmount * 100, // Convert to smallest currency unit
     appearance: {
       theme: 'stripe' as const,
     },

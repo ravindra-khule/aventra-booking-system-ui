@@ -4,6 +4,7 @@ import { StripePaymentForm } from './StripePaymentForm';
 import { Booking } from '../types/booking.types';
 import { PaymentType, calculatePaymentAmounts, formatPaymentType } from '../services/payment.service';
 import { EmailService } from '../services/email.service';
+import { getActiveCurrency } from '../../../shared/utils';
 
 // Stripe is only available when the publishable key is configured
 const STRIPE_CONFIGURED = !!import.meta.env.VITE_REACT_APP_STRIPE_KEY;
@@ -35,7 +36,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
   paymentType,
   onPaymentTypeChange,
   advanceAmount,
-  currency = 'SEK',
+  currency = getActiveCurrency(),
   onPaymentSuccess = (result) => {},
 }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);

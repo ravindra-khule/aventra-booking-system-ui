@@ -6,10 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { Booking, BookingStatus, PaymentStatus } from '../types';
 import { getSampleBooking } from '../src/features/bookings/services/booking.service';
 import { RemainingPaymentWithStripe } from '../src/features/bookings/components/RemainingPaymentWithStripe';
+import { useCurrency } from '../src/shared/hooks';
 import { Calendar, MapPin, Users, CreditCard, CheckCircle2, Clock, Mail, Phone, User as UserIcon, Download, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const MyPages = () => {
   const { t } = useTranslation();
+  const currency = useCurrency();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,7 +198,7 @@ export const MyPages = () => {
                             </div>
                             <div className="flex items-center">
                               <CreditCard className="h-4 w-4 mr-1.5" />
-                              <span className="font-semibold">{booking.totalAmount.toLocaleString()} SEK</span>
+                              <span className="font-semibold">{booking.totalAmount.toLocaleString()} {currency}</span>
                             </div>
                           </div>
                         </div>
@@ -238,7 +240,7 @@ export const MyPages = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                               <span className="font-bold text-sm">
-                                {t('myPages:savedAmount')} {booking.discountAmount.toLocaleString()} SEK {t('myPages:withCode')} {booking.promoCode}!
+                                {t('myPages:savedAmount')} {booking.discountAmount.toLocaleString()} {currency} {t('myPages:withCode')} {booking.promoCode}!
                               </span>
                             </div>
                           )}
@@ -331,7 +333,7 @@ export const MyPages = () => {
                                     </div>
                                     <div className="flex justify-between text-sm">
                                       <span className="text-purple-700">{t('myPages:youSaved')}:</span>
-                                      <span className="font-bold text-purple-900">{booking.discountAmount.toLocaleString()} SEK</span>
+                                      <span className="font-bold text-purple-900">{booking.discountAmount.toLocaleString()} {currency}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -339,16 +341,16 @@ export const MyPages = () => {
                               
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">{t('myPages:totalAmount')}</span>
-                                <span className="font-bold text-gray-900">{booking.totalAmount.toLocaleString()} SEK</span>
+                                <span className="font-bold text-gray-900">{booking.totalAmount.toLocaleString()} {currency}</span>
                               </div>
                               <div className="flex justify-between text-sm text-green-600">
                                 <span>{t('myPages:paidAmount')}</span>
-                                <span className="font-bold">-{booking.paidAmount.toLocaleString()} SEK</span>
+                                <span className="font-bold">-{booking.paidAmount.toLocaleString()} {currency}</span>
                               </div>
                               {remainingAmount > 0 && (
                                 <div className="border-t border-gray-200 pt-3 flex justify-between text-sm">
                                   <span className="text-gray-700 font-medium">{t('myPages:remainingBalance')}</span>
-                                  <span className="font-bold text-orange-600">{remainingAmount.toLocaleString()} SEK</span>
+                                  <span className="font-bold text-orange-600">{remainingAmount.toLocaleString()} {currency}</span>
                                 </div>
                               )}
                             </div>

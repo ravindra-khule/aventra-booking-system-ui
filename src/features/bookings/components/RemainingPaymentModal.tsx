@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Booking } from '../../../../types';
 import { X, AlertCircle, CheckCircle2, Loader } from 'lucide-react';
 import { formatCurrency } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks';
 import { RemainingPaymentForm } from './RemainingPaymentForm';
 
 interface RemainingPaymentModalProps {
@@ -22,6 +23,7 @@ export const RemainingPaymentModal: React.FC<RemainingPaymentModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  useCurrency(); // re-render when the site currency changes
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

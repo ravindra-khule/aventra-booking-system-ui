@@ -18,6 +18,7 @@ import {
   CreditNote,
   PaymentMethod,
 } from '../types/invoice.types';
+import { getActiveCurrency } from '../../../shared/utils';
 
 // Mock data storage
 let invoices: Invoice[] = [
@@ -61,7 +62,7 @@ let invoices: Invoice[] = [
       paidDate: '2025-11-20',
       transactionId: 'pi_3abc123',
     },
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     remindersSent: 0,
     createdAt: '2025-11-15T10:00:00Z',
     createdBy: 'admin',
@@ -111,7 +112,7 @@ let invoices: Invoice[] = [
     totalTax: 1145,
     totalAmount: 10145,
     paidAmount: 0,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     remindersSent: 0,
     createdAt: '2025-11-20T14:00:00Z',
     createdBy: 'admin',
@@ -150,7 +151,7 @@ let invoices: Invoice[] = [
     totalTax: 2700,
     totalAmount: 25200,
     paidAmount: 0,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     remindersSent: 2,
     lastReminderDate: '2025-11-25',
     createdAt: '2025-10-15T09:00:00Z',
@@ -188,7 +189,7 @@ let invoices: Invoice[] = [
     totalTax: 7200,
     totalAmount: 67200,
     paidAmount: 0,
-    currency: 'SEK',
+    currency: getActiveCurrency(),
     remindersSent: 0,
     createdAt: '2025-11-28T11:00:00Z',
     createdBy: 'admin',
@@ -333,7 +334,7 @@ class InvoiceServiceClass {
       paidAmount: 0,
       discountAmount: input.discountAmount,
       discountReason: input.discountReason,
-      currency: input.currency || 'SEK',
+      currency: input.currency || getActiveCurrency(),
       reference: input.reference,
       ourReference: input.ourReference,
       notes: input.notes,

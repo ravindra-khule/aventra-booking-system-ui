@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { BookingWizard } from './BookingWizard';
+import { useCurrency } from '../../src/shared/hooks';
 
 /**
  * Wrapper for BookingWizard that provides Stripe Elements context
@@ -9,6 +10,7 @@ import { BookingWizard } from './BookingWizard';
  */
 export const BookingWizardWithStripe: React.FC = () => {
   const stripeKey = import.meta.env.VITE_REACT_APP_STRIPE_KEY;
+  const currency = useCurrency();
   const [stripe, setStripe] = useState<Stripe | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -60,8 +62,8 @@ export const BookingWizardWithStripe: React.FC = () => {
   // Stripe ready - wrap with Elements provider for hooks to work
   const elementsOptions = {
     mode: 'payment' as const,
-    currency: 'sek',
-    amount: 50000, // 500 SEK default for testing - will be replaced with actual booking amount
+    currency: currency.toLowerCase(),
+    amount: 50000, // 500 in default currency for testing - will be replaced with actual booking amount
     appearance: {
       theme: 'stripe' as const,
     }

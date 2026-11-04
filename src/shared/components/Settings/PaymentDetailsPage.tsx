@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SettingsService, SETTINGS_CATEGORIES, Setting } from '@shared/services/settings.service';
+import { setActiveCurrency, SUPPORTED_CURRENCIES } from '@shared/utils';
 import './SettingsPages.css';
 
 const PaymentDetailsPage: React.FC = () => {
@@ -59,6 +60,9 @@ const PaymentDetailsPage: React.FC = () => {
       const success = await SettingsService.updateMultiple(updates);
 
       if (success) {
+        if (editingSettings['currency']) {
+          setActiveCurrency(editingSettings['currency']);
+        }
         setMessage({ type: 'success', text: 'Payment settings saved successfully' });
         fetchSettings();
       } else {
@@ -122,12 +126,11 @@ const PaymentDetailsPage: React.FC = () => {
                   onChange={(e) => handleInputChange('currency', e.target.value)}
                   className="setting-input"
                 >
-                  <option value="SEK">SEK (Swedish Krona)</option>
-                  <option value="EUR">EUR (Euro)</option>
-                  <option value="USD">USD (US Dollar)</option>
-                  <option value="GBP">GBP (British Pound)</option>
-                  <option value="NOK">NOK (Norwegian Krone)</option>
-                  <option value="DKK">DKK (Danish Krone)</option>
+                  {SUPPORTED_CURRENCIES.map((curr) => (
+                    <option key={curr.code} value={curr.code}>
+                      {curr.code} ({curr.name})
+                    </option>
+                  ))}
                 </select>
               </div>
 

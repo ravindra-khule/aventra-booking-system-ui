@@ -3,10 +3,13 @@ import { Plus, DollarSign, AlertCircle, Download, RefreshCw } from 'lucide-react
 import { InvoiceList, InvoiceForm, InvoicePreview, InvoiceStats } from '../../../src/features/finance/components';
 import { Invoice, InvoiceStatus, RecordPaymentInput, PaymentMethod } from '../../../src/features/finance/types/invoice.types';
 import { InvoiceService } from '../../../src/features/finance/services/invoice.service';
+import { getActiveCurrency } from '../../../src/shared/utils';
+import { useCurrency } from '../../../src/shared/hooks';
 
 type ViewMode = 'list' | 'create' | 'edit' | 'preview' | 'record-payment';
 
 export const Invoices: React.FC = () => {
+  useCurrency(); // re-render when the site currency changes
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus[]>([]);
@@ -121,7 +124,7 @@ export const Invoices: React.FC = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('sv-SE', {
       style: 'currency',
-      currency: 'SEK',
+      currency: getActiveCurrency(),
     }).format(amount);
   };
 

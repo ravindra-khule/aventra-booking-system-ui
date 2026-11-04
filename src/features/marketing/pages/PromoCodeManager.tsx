@@ -6,10 +6,12 @@ import { TourService } from '../../tours/services/tour.service';
 import { Search, Plus, Edit2, Trash2, X, Save, Tag, Calendar, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button, Badge, Input, Select, Modal } from '../../../shared/components/ui';
 import { formatCurrency, formatDate } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks/useCurrency';
 import { useTranslation } from 'react-i18next';
 
 export const PromoCodeManager = () => {
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [tours, setTours] = useState<Tour[]>([]);
   const [filteredPromoCodes, setFilteredPromoCodes] = useState<PromoCode[]>([]);
@@ -251,10 +253,10 @@ export const PromoCodeManager = () => {
                         <span className="font-semibold text-gray-900">
                           {promoCode.type === PromoCodeType.PERCENTAGE
                             ? `${promoCode.value}%`
-                            : `${promoCode.value} SEK`}
+                            : `${promoCode.value} ${currency}`}
                         </span>
                         {promoCode.maxDiscount && (
-                          <div className="text-xs text-gray-500">{t('admin:max')}: {promoCode.maxDiscount} SEK</div>
+                          <div className="text-xs text-gray-500">{t('admin:max')}: {promoCode.maxDiscount} {currency}</div>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -444,7 +446,7 @@ const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClo
                 className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value={PromoCodeType.PERCENTAGE}>Percentage (%)</option>
-                <option value={PromoCodeType.FIXED_AMOUNT}>Fixed Amount (SEK)</option>
+                <option value={PromoCodeType.FIXED_AMOUNT}>Fixed Amount ({currency})</option>
               </select>
             </div>
 
@@ -466,7 +468,7 @@ const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClo
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Min Booking Amount (SEK)
+                Min Booking Amount ({currency})
               </label>
               <input
                 type="number"
@@ -480,7 +482,7 @@ const PromoCodeModal: React.FC<PromoCodeModalProps> = ({ promoCode, tours, onClo
             {formData.type === PromoCodeType.PERCENTAGE && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max Discount (SEK)
+                  Max Discount ({currency})
                 </label>
                 <input
                   type="number"

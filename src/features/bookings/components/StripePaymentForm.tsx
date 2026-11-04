@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { AlertCircle, CheckCircle2, Loader } from 'lucide-react';
 import { formatCurrency } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks';
 import { Booking } from '../types/booking.types';
 import { createPaymentIntent, createPaymentIntentMock } from '../services/stripe-payment.service';
 import { EmailService } from '../services/email.service';
@@ -34,6 +35,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
 }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const currency = useCurrency();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
           </div>
           <div className="flex justify-between text-sm font-semibold pt-2 border-t border-gray-200">
             <span className="text-gray-900">Amount:</span>
-            <span className="text-lg text-blue-600">{formatCurrency(booking.totalAmount)} SEK</span>
+            <span className="text-lg text-blue-600">{formatCurrency(booking.totalAmount)}</span>
           </div>
         </div>
 
@@ -103,13 +105,13 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         setError(null);
 
         const intentResponse = isDevelopmentMode
-          ? await createPaymentIntentMock(payableAmount * 100, 'sek', {
+          ? await createPaymentIntentMock(payableAmount * 100, currency.toLowerCase(), {
               bookingId: booking.id,
               paymentType,
             })
           : await createPaymentIntent({
               amount: payableAmount * 100,
-              currency: 'sek',
+              currency: currency.toLowerCase(),
               metadata: {
                 bookingId: booking.id,
                 paymentType,
@@ -127,7 +129,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
     };
 
     createIntent();
-  }, [payableAmount, booking, paymentType, isDevelopmentMode]);
+  }, [payableAmount, booking, paymentType, isDevelopmentMode, currency]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -238,7 +240,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         </div>
         <div className="flex justify-between text-sm font-semibold pt-2 border-t border-gray-200">
           <span className="text-gray-900">Amount to Pay:</span>
-          <span className="text-lg text-blue-600">{formatCurrency(payableAmount)} SEK</span>
+          <span className="text-lg text-blue-600">{formatCurrency(payableAmount)}</span>
         </div>
       </div>
 
@@ -284,7 +286,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         ) : (
           <>
             <CheckCircle2 className="h-4 w-4" />
-            <span>Pay {formatCurrency(payableAmount)} SEK</span>
+            <span>Pay {formatCurrency(payableAmount)}</span>
           </>
         )}
       </button>

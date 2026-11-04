@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { Booking } from '../../../../types';
-import { formatCurrency } from '../../../shared/utils';
+import { formatCurrency, getActiveCurrency } from '../../../shared/utils';
 import { EmailService } from '../services/email.service';
 import { Loader, AlertCircle } from 'lucide-react';
 
@@ -21,7 +21,7 @@ interface RemainingPaymentFormProps {
 export const RemainingPaymentForm: React.FC<RemainingPaymentFormProps> = ({
   booking,
   remainingAmount,
-  currency = 'SEK',
+  currency = getActiveCurrency(),
   onSuccess,
   onError,
   onProcessing,

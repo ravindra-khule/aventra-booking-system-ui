@@ -6,11 +6,13 @@ import { Search, User, Mail, Phone, MapPin, DollarSign, ShoppingBag, Calendar, E
 import { Button, Badge, Card, Input } from '../../../shared/components/ui';
 import { BulkActionsToolbar } from '../../../shared/components/BulkActionsToolbar';
 import { useBulkSelection } from '../../../shared/hooks/useBulkSelection';
+import { useCurrency } from '../../../shared/hooks/useCurrency';
 import { formatCurrency, formatDate } from '../../../shared/utils';
 import { useTranslation } from 'react-i18next';
 
 export const CustomerManager = () => {
   const { t } = useTranslation();
+  const currency = useCurrency();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState('');
@@ -139,7 +141,7 @@ export const CustomerManager = () => {
                     <DollarSign className="h-4 w-4 mr-1" />
                     {t('admin:totalSpent')}
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{customer.totalSpent.toLocaleString()} SEK</div>
+                  <div className="text-2xl font-bold text-gray-900">{customer.totalSpent.toLocaleString()} {currency}</div>
                 </div>
               </div>
 
@@ -381,11 +383,11 @@ export const CustomerManager = () => {
                                 </div>
                                 <div>
                                   <span className="text-gray-500">{t('admin:totalAmount')}:</span>
-                                  <p className="font-medium">{booking.totalAmount.toLocaleString()} SEK</p>
+                                  <p className="font-medium">{booking.totalAmount.toLocaleString()} {currency}</p>
                                 </div>
                                 <div>
                                   <span className="text-gray-500">{t('admin:paidAmount')}:</span>
-                                  <p className="font-medium text-green-600">{booking.paidAmount.toLocaleString()} SEK</p>
+                                  <p className="font-medium text-green-600">{booking.paidAmount.toLocaleString()} {currency}</p>
                                 </div>
                                 <div>
                                   <span className="text-gray-500">{t('admin:paymentStatus')}:</span>
@@ -483,7 +485,7 @@ export const CustomerManager = () => {
             <div>
               <p className="text-sm text-gray-500 mb-1">{t('admin:totalSpent')}</p>
               <p className="text-2xl font-bold text-gray-900">
-                {customers.reduce((sum, c) => sum + c.totalSpent, 0).toLocaleString()} SEK
+                {customers.reduce((sum, c) => sum + c.totalSpent, 0).toLocaleString()} {currency}
               </p>
             </div>
             <DollarSign className="h-8 w-8 text-purple-600" />
@@ -590,7 +592,7 @@ export const CustomerManager = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {customer.totalSpent.toLocaleString()} SEK
+                        {customer.totalSpent.toLocaleString()} {currency}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

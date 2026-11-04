@@ -11,3 +11,4 @@ export type { UseFetchResult } from './useFetch';
 export { useToggle } from './useToggle';
 export type { UseToggleResult } from './useToggle';
 export { useBulkSelection } from './useBulkSelection';
+export { useCurrency } from './useCurrency';

@@ -214,6 +214,11 @@ const AppRoutes = () => {
 };
 
 function App() {
+  // Load the site-wide currency from backend settings (Admin > Settings > Payment)
+  useEffect(() => {
+    ensureCurrencyLoaded();
+  }, []);
+
   return (
     <AuthProvider>
       <ToastProvider>

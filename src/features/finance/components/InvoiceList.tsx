@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { Invoice, InvoiceStatus, InvoiceFilters } from '../types/invoice.types';
 import { InvoiceService } from '../services/invoice.service';
+import { getActiveCurrency } from '../../../shared/utils';
+import { useCurrency } from '../../../shared/hooks';
 
 interface InvoiceListProps {
   onSelectInvoice?: (invoice: Invoice) => void;
@@ -37,6 +39,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
 }) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  useCurrency(); // re-render when the site currency changes
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus[]>([]);
   const [selectedInvoices, setSelectedInvoices] = useState<Set<string>>(new Set());
@@ -112,7 +115,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({
   };
 
   // Format currency
-  const formatCurrency = (amount: number, currency: string = 'SEK') => {
+  const formatCurrency = (amount: number, currency: string = getActiveCurrency()) => {
     return new Intl.NumberFormat('sv-SE', {
       style: 'currency',
       currency: currency,
