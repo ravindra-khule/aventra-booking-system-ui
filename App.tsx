@@ -1,5 +1,5 @@
-import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { Home } from './pages/Home';
@@ -33,6 +33,19 @@ import { MyPages } from './pages/MyPages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './src/shared/context/ToastContext';
 import { UserRole } from './types';
+
+// Scrolls the window back to the top whenever the route changes.
+// Without this, the browser keeps the previous scroll position and
+// pages (e.g. tour details) can open already scrolled down.
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, requiredRole }: { children?: React.ReactNode, requiredRole?: UserRole }) => {
@@ -205,6 +218,7 @@ function App() {
     <AuthProvider>
       <ToastProvider>
         <Router>
+            <ScrollToTop />
             <AppRoutes />
         </Router>
       </ToastProvider>
