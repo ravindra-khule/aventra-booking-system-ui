@@ -72,12 +72,11 @@ export class ItineraryService {
   static async duplicate(itineraryId: string, newTourId: string): Promise<CompleteItinerary> {
     // TODO: Replace with actual API call
     const itinerary = await this.getById(itineraryId);
+    const { id: _id, version: _version, createdAt: _createdAt, updatedAt: _updatedAt, ...rest } = itinerary;
     return this.create({
-      ...itinerary,
-      id: undefined as any,
+      ...rest,
       tourId: newTourId,
-      title: `${itinerary.title} (Copy)`,
-      version: undefined as any
+      title: `${itinerary.title} (Copy)`
     });
   }
 

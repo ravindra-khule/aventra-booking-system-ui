@@ -8,6 +8,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #e5e7eb;
@@ -22,6 +24,7 @@
 
 .buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -107,7 +110,7 @@
 
 .formRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
   gap: 1rem;
 }
 
@@ -133,6 +136,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 1rem;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -148,8 +153,10 @@
 .listItemContent {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
   flex: 1;
+  min-width: 0;
 }
 
 .listItemTime {
@@ -199,7 +206,7 @@
 .listItemActions {
   display: flex;
   gap: 0.5rem;
-  margin-left: 1rem;
+  margin-left: auto;
 }
 
 .editBtn,

@@ -128,14 +128,14 @@ export const Invoices: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Invoice Management</h1>
           <p className="text-gray-600 mt-1">
             Create, manage, and track invoices for your tours
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {viewMode === 'list' && (
             <>
               <button
@@ -248,7 +248,7 @@ export const Invoices: React.FC = () => {
       {/* Payment Recording Modal */}
       {showPaymentModal && selectedInvoice && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Record Payment</h3>
             
             <div className="space-y-4">

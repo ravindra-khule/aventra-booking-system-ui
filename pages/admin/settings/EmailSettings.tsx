@@ -160,7 +160,7 @@ https://swettbooking.com`,
           { category: SETTINGS_CATEGORIES.EMAIL, key: 'smtp_username', value: smtpConfig.username },
           { category: SETTINGS_CATEGORIES.EMAIL, key: 'smtp_password', value: smtpConfig.password }
         );
-      } else if (selectedProvider === 'SENDGRID') {
+      } else if (selectedProvider === 'SendGrid') {
         updates.push({ category: SETTINGS_CATEGORIES.EMAIL, key: 'sendgrid_api_key', value: sendGridConfig.apiKey });
       }
 

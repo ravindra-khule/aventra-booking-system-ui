@@ -38,7 +38,7 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ setting, onU
 
       {isEditing ? (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Minimum Capacity
@@ -78,7 +78,7 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ setting, onU
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Preferred Capacity
@@ -119,7 +119,7 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ setting, onU
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Buffer Capacity

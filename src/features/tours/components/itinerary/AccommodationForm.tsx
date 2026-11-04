@@ -216,7 +216,7 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
       </div>
 
       <div className={styles.formActions}>
-        <Button onClick={onCancel} variant="ghost" icon={<X className="h-4 w-4" />}>
+        <Button onClick={onCancel} variant="secondary-dark" icon={<X className="h-4 w-4" />}>
           Cancel
         </Button>
         <Button onClick={handleSave} variant="primary" icon={<Save className="h-4 w-4" />}>

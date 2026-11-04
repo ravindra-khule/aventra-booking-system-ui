@@ -18,6 +18,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 1rem;
   gap: 1rem;
 }
@@ -72,11 +73,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
 .actionButtons {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -174,6 +177,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e5e7eb;
@@ -203,6 +208,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 1rem 1.5rem;
   background: linear-gradient(to right, #f3f4f6, #ffffff);
   border-bottom: 1px solid #e5e7eb;
@@ -216,9 +223,11 @@
 
 .dayInfo {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 
 .dayNumber {
@@ -296,4 +305,36 @@
 
 .expandBtn:hover {
   color: #374151;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .headerContent {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 1.375rem;
+  }
+
+  .builderContent {
+    padding: 1rem;
+  }
+
+  .daysContainer,
+  .settingsPanel {
+    padding: 1rem;
+  }
+
+  .dayCardHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .dayMeta {
+    margin-left: 0;
+  }
 }

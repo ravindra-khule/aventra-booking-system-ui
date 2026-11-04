@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, AlertCircle, Loader } from 'lucide-react';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../src/shared/services/auth.service';
 
 interface LoginFormData {
   email: string;

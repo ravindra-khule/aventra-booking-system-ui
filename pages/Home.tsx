@@ -78,7 +78,7 @@ export const Home = () => {
                 img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23ddd" width="800" height="600"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="24" font-family="sans-serif" fill="%23666"%3ETour Image%3C/text%3E%3C/svg%3E';
               };
               return (
-              <Card key={tour.id} padding="none" hover clickable className="flex flex-col">
+              <Card key={tour.id} padding="none" hover className="flex flex-col">
                 <div className="relative h-48">
                   <img 
                     src={tour.imageUrl} 

@@ -71,7 +71,7 @@
   background-color: #f9fafb;
 }
 
-form {
+.bulk-dialog form {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -209,7 +209,7 @@ form {
 }
 
 .form-input,
-select {
+.bulk-dialog select {
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -219,7 +219,7 @@ select {
 }
 
 .form-input:focus,
-select:focus {
+.bulk-dialog select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);

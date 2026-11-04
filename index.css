@@ -917,3 +917,31 @@ textarea:focus-visible {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ========================================
+   RESPONSIVE SAFEGUARDS
+   ======================================== */
+
+/* Prevent media from overflowing their containers */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+/* Prevent long strings/code from causing horizontal overflow */
+pre,
+code {
+  overflow-wrap: break-word;
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}

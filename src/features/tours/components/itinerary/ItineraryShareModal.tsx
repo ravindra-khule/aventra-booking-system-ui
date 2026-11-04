@@ -181,7 +181,7 @@ export const ItineraryShareModal: React.FC<ItineraryShareModalProps> = ({
         </div>
 
         <div className={styles.footer}>
-          <Button onClick={onClose} variant="ghost">
+          <Button onClick={onClose} variant="secondary-dark">
             Cancel
           </Button>
           <Button onClick={handleShare} variant="primary">

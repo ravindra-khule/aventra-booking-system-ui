@@ -92,7 +92,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal Container */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={`relative bg-white rounded-xl shadow-xl ${sizeClasses[size]} w-full`}
+          className={`relative bg-white rounded-xl shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

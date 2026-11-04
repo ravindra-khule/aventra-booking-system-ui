@@ -157,7 +157,7 @@ export const ItineraryDayBuilder: React.FC<ItineraryDayBuilderProps> = ({
       <div className={styles.builderHeader}>
         <h3>Edit Day {editingDay.day}</h3>
         <div className={styles.buttons}>
-          <Button onClick={onCancel} variant="ghost" size="sm" icon={<X className="h-4 w-4" />}>
+          <Button onClick={onCancel} variant="secondary-dark" size="sm" icon={<X className="h-4 w-4" />}>
             Cancel
           </Button>
           <Button onClick={() => onSave(editingDay)} variant="primary" size="sm" icon={<Save className="h-4 w-4" />}>
@@ -310,7 +310,7 @@ export const ItineraryDayBuilder: React.FC<ItineraryDayBuilderProps> = ({
 
                   <Button
                     onClick={() => setShowActivityForm(true)}
-                    variant="outline"
+                    variant="secondary-dark"
                     size="sm"
                     icon={<Plus className="h-4 w-4" />}
                     className={styles.addButton}
@@ -384,7 +384,7 @@ export const ItineraryDayBuilder: React.FC<ItineraryDayBuilderProps> = ({
 
                   <Button
                     onClick={() => setShowMealForm(true)}
-                    variant="outline"
+                    variant="secondary-dark"
                     size="sm"
                     icon={<Plus className="h-4 w-4" />}
                     className={styles.addButton}
@@ -446,7 +446,7 @@ export const ItineraryDayBuilder: React.FC<ItineraryDayBuilderProps> = ({
                   {!editingDay.accommodation && (
                     <Button
                       onClick={() => setShowAccommodationForm(true)}
-                      variant="outline"
+                      variant="secondary-dark"
                       size="sm"
                       icon={<Plus className="h-4 w-4" />}
                       className={styles.addButton}
@@ -521,7 +521,7 @@ export const ItineraryDayBuilder: React.FC<ItineraryDayBuilderProps> = ({
 
                   <Button
                     onClick={() => setShowTransportationForm(true)}
-                    variant="outline"
+                    variant="secondary-dark"
                     size="sm"
                     icon={<Plus className="h-4 w-4" />}
                     className={styles.addButton}
@@ -570,7 +570,7 @@ export const ItineraryDayBuilder: React.FC<ItineraryDayBuilderProps> = ({
 
                   <Button
                     onClick={() => setShowGalleryManager(true)}
-                    variant="outline"
+                    variant="secondary-dark"
                     size="sm"
                     icon={<Plus className="h-4 w-4" />}
                     className={styles.addButton}

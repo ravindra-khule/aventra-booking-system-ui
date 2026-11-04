@@ -6,7 +6,7 @@ import React from 'react';
  */
 export const TourDebugPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Available Tours for Booking</h1>
         
@@ -16,7 +16,7 @@ export const TourDebugPage: React.FC = () => {
           </p>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-            <p className="font-mono text-sm">
+            <p className="font-mono text-sm break-all">
               <span className="text-blue-600">http://localhost:3000/#/book/</span>
               <span className="text-red-600 font-bold">{'{tourId}'}</span>
             </p>
@@ -29,7 +29,7 @@ export const TourDebugPage: React.FC = () => {
               <p className="font-mono text-lg text-green-700 font-bold">✅ Tour ID: 3</p>
               <p className="text-gray-700">Patagonia Adventure Tour</p>
               <p className="text-sm text-gray-600 mt-2">
-                Link: <a href="http://localhost:3000/#/book/3" className="text-blue-600 hover:underline">
+                Link: <a href="http://localhost:3000/#/book/3" className="text-blue-600 hover:underline break-all">
                   http://localhost:3000/#/book/3
                 </a>
               </p>

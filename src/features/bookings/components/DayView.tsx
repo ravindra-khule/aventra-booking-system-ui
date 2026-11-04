@@ -66,7 +66,7 @@ export const DayView: React.FC<DayViewProps> = ({
               onClick={() => onEventClick(event)}
               style={{
                 borderLeftColor: event.color,
-                backgroundColor: event.tour.category?.color ? event.tour.category.color + '15' : '#f0f9ff',
+                backgroundColor: event.color ? event.color + '15' : '#f0f9ff',
               }}
             >
               <div className={styles.eventCardHeader}>

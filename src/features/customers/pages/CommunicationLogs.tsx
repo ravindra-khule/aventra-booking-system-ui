@@ -188,7 +188,7 @@ export const CommunicationLogs = () => {
           </div>
 
           {/* View Mode Tabs */}
-          <div className="flex gap-2 border-b -mb-px">
+          <div className="flex flex-wrap gap-2 border-b -mb-px">
             <button
               onClick={() => setViewMode('list')}
               className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
@@ -246,7 +246,10 @@ export const CommunicationLogs = () => {
                 />
               </div>
 
-              <CommunicationFilter onFilterChange={setFilter} isExpanded={true} />
+              <CommunicationFilter
+                onFilterChange={(f) => setFilter({ ...f, hasAttachments: f.hasAttachments ?? undefined })}
+                isExpanded={true}
+              />
 
               {/* Results Summary */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
