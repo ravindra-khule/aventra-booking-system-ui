@@ -56,6 +56,8 @@ i18n
       },
     },
     fallbackLng: 'en', // Fallback language
+    supportedLngs: ['en', 'sv'], // Only these languages are supported
+    nonExplicitSupportedLngs: true, // Map regional codes like en-US / sv-SE to en / sv
     defaultNS: 'common', // Default namespace
     interpolation: {
       escapeValue: false, // React already escapes by default
