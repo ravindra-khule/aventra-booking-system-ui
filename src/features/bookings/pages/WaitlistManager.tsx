@@ -339,7 +339,7 @@ export const WaitlistManager = () => {
                   id: 'mark-contacted',
                   label: t('admin:markAsContacted'),
                   icon: <MessageSquare className="h-4 w-4" />,
-                  variant: 'secondary',
+                  variant: 'secondary-dark',
                   onClick: () => console.log('Mark selected as contacted')
                 }
               ]}

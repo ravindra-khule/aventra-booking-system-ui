@@ -6,7 +6,7 @@ export interface BulkAction {
   id: string;
   label: string;
   icon: React.ReactNode;
-  variant?: 'primary' | 'danger' | 'secondary';
+  variant?: 'primary' | 'danger' | 'secondary' | 'secondary-dark' | 'tertiary' | 'success';
   onClick: () => void;
   confirm?: boolean;
   confirmMessage?: string;
@@ -59,7 +59,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
         ))}
         <Button
           onClick={onClearSelection}
-          variant="secondary"
+          variant="secondary-dark"
           size="sm"
         >
           Clear Selection
